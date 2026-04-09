@@ -255,3 +255,48 @@ export async function logNotification(data: {
     logger.error('Error logging notification:', error);
   }
 }
+
+// Send contact form notification email to admin
+export async function sendContactFormEmail(data: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  phone?: string;
+}): Promise<boolean> {
+  try {
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #3052d5 0%, #4f7aff 100%); color: white; padding: 40px 20px; text-align: center;">
+          <h1 style="margin: 0; font-size: 28px;">New Contact Form Submission</h1>
+        </div>
+
+        <div style="padding: 40px 20px; background-color: #f9fafb;">
+          <h3 style="color: #333; margin-top: 0;">Submitted by: ${data.name}</h3>
+
+          <div style="background-color: white; border: 1px solid #ddd; padding: 20px; margin: 20px 0; border-radius: 4px;">
+            <p><strong>Email:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+            ${data.phone ? `<p><strong>Phone:</strong> ${data.phone}</p>` : ''}
+            <p><strong>Subject:</strong> ${data.subject}</p>
+            <p><strong>Message:</strong></p>
+            <p style="white-space: pre-wrap; color: #666;">${data.message}</p>
+          </div>
+
+          <div style="background-color: #f0f0f0; padding: 15px; border-radius: 4px; font-size: 12px; color: #666;">
+            <p style="margin: 0;">This is an automated message. Someone from the team will review and respond shortly.</p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    return await sendEmail({
+      to: process.env.CONTACT_FORM_RECIPIENT_EMAIL || 'info@wissen-haus.org',
+      subject: `New Contact Form: ${data.subject}`,
+      htmlContent,
+      textContent: `New Contact Form Submission\n\nName: ${data.name}\nEmail: ${data.email}\n${data.phone ? `Phone: ${data.phone}\n` : ''}Subject: ${data.subject}\n\nMessage:\n${data.message}`,
+    });
+  } catch (error) {
+    logger.error('Error sending contact form email:', error);
+    return false;
+  }
+}

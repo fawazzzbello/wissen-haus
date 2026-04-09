@@ -149,6 +149,24 @@ CREATE TABLE IF NOT EXISTS donation_events (
 CREATE INDEX IF NOT EXISTS idx_donation_events_donation_id ON donation_events(donation_id);
 CREATE INDEX IF NOT EXISTS idx_donation_events_created_at ON donation_events(created_at);
 
+-- Contact form messages
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(20),
+  subject VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  ip_address INET,
+  is_read BOOLEAN DEFAULT FALSE,
+  read_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_contact_messages_email ON contact_messages(email);
+CREATE INDEX IF NOT EXISTS idx_contact_messages_created_at ON contact_messages(created_at);
+CREATE INDEX IF NOT EXISTS idx_contact_messages_is_read ON contact_messages(is_read);
+
 -- Insert default settings
 INSERT INTO settings (setting_key, setting_value, data_type, description, is_secret)
 VALUES

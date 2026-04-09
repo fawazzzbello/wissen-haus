@@ -5,6 +5,7 @@ import { userRouter } from './users';
 import { donationRouter } from './donations';
 import { contentRouter } from './content';
 import { notificationRouter } from './notifications';
+import { contactRouter } from './contact';
 
 export function setupRoutes(app: Express) {
   // Health check
@@ -21,6 +22,9 @@ export function setupRoutes(app: Express) {
 
   // Content routes
   app.use('/api/content', contentRouter);
+
+  // Contact routes
+  app.use('/api/contact', contactRouter);
 
   // Notification routes
   app.use('/api/notifications', notificationRouter);
