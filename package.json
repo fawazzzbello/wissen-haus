@@ -1,0 +1,28 @@
+{
+  "name": "wissen-haus",
+  "version": "1.0.0",
+  "description": "Wissen-Haus Empowerment Foundation - Charity Platform",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "migrate": "npm run migrate -w apps/api",
+    "seed": "npm run seed -w apps/api",
+    "migrate:dev": "npm run migrate:dev -w apps/api"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
+  },
+  "engines": {
+    "node": "^18.0.0",
+    "npm": "^9.0.0"
+  }
+}

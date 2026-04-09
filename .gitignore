@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Production
+/build
+/.next
+/out
+/dist
+
+# Misc
+.DS_Store
+*.pem
+.env
+.env.local
+.env.*.local
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.prettier-ignore
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Database
+/data/postgres_data
+*.sql.bak
+
+# Logs
+logs/
+*.log
+
+# Stripe files
+.stripe-cli-history
+
+# Build outputs
+/apps/api/dist
+/apps/web/.next
+
+# Environment files
+.env
+.env.local
+.env.*.local
