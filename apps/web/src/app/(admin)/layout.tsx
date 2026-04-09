@@ -20,7 +20,7 @@ export default function AdminLayout({
 
   useEffect(() => {
     if (isMounted && !isLoading && !user) {
-      router.push('/admin/login');
+      router.push('/login');
     }
   }, [user, isLoading, router, isMounted]);
 

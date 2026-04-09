@@ -6,38 +6,38 @@ export default function AdminDashboard() {
   const { user } = useAuth();
 
   return (
-    <div className="p-8">
+    <div className="p-8 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
       <div className="max-w-7xl">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-2">Welcome back, {user?.firstName}!</p>
+        <div className="mb-12">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">Dashboard</h1>
+          <p className="text-gray-600 mt-3 text-lg">Welcome back, <span className="font-semibold text-primary-600">{user?.firstName}</span>! 👋</p>
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="card">
-            <div className="text-sm font-medium text-gray-600 mb-2">Total Donations</div>
-            <div className="text-3xl font-bold text-primary-600">$24,500</div>
-            <p className="text-xs text-gray-500 mt-2">+12% from last month</p>
+          <div className="card-dark bg-gradient-to-br from-slate-800 to-slate-900">
+            <div className="text-sm font-medium text-gray-400 mb-3">💰 Total Donations</div>
+            <div className="text-4xl font-bold text-transparent bg-gradient-to-r from-primary-400 to-primary-500 bg-clip-text">$24,500</div>
+            <p className="text-xs text-green-400 mt-3 font-semibold">↑ +12% from last month</p>
           </div>
 
-          <div className="card">
-            <div className="text-sm font-medium text-gray-600 mb-2">Donors</div>
-            <div className="text-3xl font-bold text-primary-600">128</div>
-            <p className="text-xs text-gray-500 mt-2">+8 new this month</p>
+          <div className="card-dark bg-gradient-to-br from-slate-800 to-slate-900">
+            <div className="text-sm font-medium text-gray-400 mb-3">👥 Donors</div>
+            <div className="text-4xl font-bold text-transparent bg-gradient-to-r from-primary-400 to-primary-500 bg-clip-text">128</div>
+            <p className="text-xs text-green-400 mt-3 font-semibold">↑ +8 new this month</p>
           </div>
 
-          <div className="card">
-            <div className="text-sm font-medium text-gray-600 mb-2">Avg Donation</div>
-            <div className="text-3xl font-bold text-primary-600">$191</div>
-            <p className="text-xs text-gray-500 mt-2">Monthly average</p>
+          <div className="card-dark bg-gradient-to-br from-slate-800 to-slate-900">
+            <div className="text-sm font-medium text-gray-400 mb-3">📊 Avg Donation</div>
+            <div className="text-4xl font-bold text-transparent bg-gradient-to-r from-primary-400 to-primary-500 bg-clip-text">$191</div>
+            <p className="text-xs text-gray-400 mt-3">Monthly average</p>
           </div>
 
-          <div className="card">
-            <div className="text-sm font-medium text-gray-600 mb-2">Recipients</div>
-            <div className="text-3xl font-bold text-primary-600">2,450</div>
-            <p className="text-xs text-gray-500 mt-2">Young people helped</p>
+          <div className="card-dark bg-gradient-to-br from-slate-800 to-slate-900">
+            <div className="text-sm font-medium text-gray-400 mb-3">🎯 Recipients</div>
+            <div className="text-4xl font-bold text-transparent bg-gradient-to-r from-primary-400 to-primary-500 bg-clip-text">2,450</div>
+            <p className="text-xs text-gray-400 mt-3">Young people helped</p>
           </div>
         </div>
 

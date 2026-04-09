@@ -34,7 +34,7 @@ export default function AdminLogin() {
       setToken(response.accessToken);
 
       // Redirect to dashboard
-      router.push('/admin');
+      router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to login');
       setPassword('');
@@ -44,29 +44,35 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-primary-900 to-slate-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 -right-20 w-96 h-96 bg-primary-500/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-secondary-500/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+      </div>
+
+      <div className="max-w-md w-full relative z-10">
         {/* Logo & Title */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-block">
-            <div className="text-3xl font-bold text-primary-600 mb-2">Wissen-Haus</div>
+        <div className="text-center mb-10">
+          <Link href="/" className="inline-block mb-4">
+            <div className="text-4xl font-bold bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">✨ Wissen-Haus</div>
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600 mt-2">Sign in to your account</p>
+          <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
+          <p className="text-gray-300 mt-3 font-light">Sign in to your account</p>
         </div>
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="card">
+        <form onSubmit={handleSubmit} className="card-dark bg-slate-800/80 backdrop-blur-sm border border-primary-500/20">
           {/* Error Message */}
           {error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-700 text-sm">{error}</p>
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg backdrop-blur-sm">
+              <p className="text-red-300 text-sm font-medium">⚠️ {error}</p>
             </div>
           )}
 
           {/* Email Field */}
-          <div className="mb-4">
-            <label htmlFor="email" className="label">
+          <div className="mb-5">
+            <label htmlFor="email" className="label text-gray-300">
               Email Address
             </label>
             <input
@@ -82,8 +88,8 @@ export default function AdminLogin() {
           </div>
 
           {/* Password Field */}
-          <div className="mb-6">
-            <label htmlFor="password" className="label">
+          <div className="mb-7">
+            <label htmlFor="password" className="label text-gray-300">
               Password
             </label>
             <input
@@ -102,22 +108,22 @@ export default function AdminLogin() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full btn-primary-gradient disabled:opacity-50 disabled:cursor-not-allowed mt-2"
           >
-            {isLoading ? 'Signing in...' : 'Sign In'}
+            {isLoading ? '🔄 Signing in...' : '🔐 Sign In'}
           </button>
 
           {/* Demo Credentials */}
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-xs font-semibold text-blue-900 mb-2">Demo Credentials</p>
-            <p className="text-xs text-blue-700">Email: admin@wissen-haus.org</p>
-            <p className="text-xs text-blue-700">Password: admin@123456</p>
+          <div className="mt-7 p-4 bg-primary-500/20 border border-primary-500/50 rounded-lg backdrop-blur-sm">
+            <p className="text-xs font-semibold text-primary-300 mb-3">🔑 Demo Credentials</p>
+            <p className="text-xs text-primary-200 font-mono">Email: admin@wissen-haus.org</p>
+            <p className="text-xs text-primary-200 font-mono">Password: admin@123456</p>
           </div>
         </form>
 
         {/* Back to Home */}
-        <div className="mt-6 text-center">
-          <Link href="/" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
+        <div className="mt-8 text-center">
+          <Link href="/" className="text-primary-300 hover:text-primary-200 text-sm font-medium transition-colors">
             ← Back to Home
           </Link>
         </div>
