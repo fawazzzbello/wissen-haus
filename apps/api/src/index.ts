@@ -78,26 +78,29 @@ app.use((req, res) => {
 
 // Initialize database and start server
 async function startServer() {
+  let dbReady = false;
+
+  // Try to initialize database
   try {
-    // Test database connection
     const client = await pool.connect();
     await client.query('SELECT NOW()');
     client.release();
     logger.info('✓ Database connection successful');
 
-    // Initialize database schema
     await initializeDatabase();
     logger.info('✓ Database schema initialized');
-
-    // Start Express server
-    app.listen(PORT, () => {
-      logger.info(`✓ Server running on http://localhost:${PORT}`);
-      logger.info(`✓ Environment: ${NODE_ENV}`);
-    });
-  } catch (error) {
-    logger.error('Failed to start server:', error);
-    process.exit(1);
+    dbReady = true;
+  } catch (error: any) {
+    logger.warn('⚠ Database connection failed at startup:', error.message);
+    logger.info('Server will continue without database. Reconnection will be attempted on requests.');
   }
+
+  // Start Express server regardless of database status
+  app.listen(PORT, () => {
+    logger.info(`✓ Server running on http://localhost:${PORT}`);
+    logger.info(`✓ Environment: ${NODE_ENV}`);
+    logger.info(`✓ Database ready: ${dbReady}`);
+  });
 }
 
 startServer();

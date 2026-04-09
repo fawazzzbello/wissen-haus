@@ -3,7 +3,16 @@ import { v4 as uuidv4 } from 'uuid';
 import { query } from '@/config/database';
 import { logger } from '@/utils/logger';
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+if (SENDGRID_API_KEY) {
+  try {
+    sgMail.setApiKey(SENDGRID_API_KEY);
+  } catch (error) {
+    logger.warn('⚠ SendGrid API key is invalid or malformed:', error);
+  }
+} else {
+  logger.warn('⚠ SENDGRID_API_KEY not set - email functionality will be disabled');
+}
 
 const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@wissen-haus.org';
 const FROM_NAME = process.env.SENDGRID_FROM_NAME || 'Wissen-Haus';
@@ -118,6 +127,11 @@ export function getWelcomeTemplate(donorName: string): EmailTemplate {
 // Send email
 export async function sendEmail(request: SendEmailRequest): Promise<boolean> {
   try {
+    if (!SENDGRID_API_KEY) {
+      logger.warn(`⚠ Email sending disabled for ${request.to} - SENDGRID_API_KEY not configured`);
+      return false;
+    }
+
     const message = {
       to: request.to,
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
