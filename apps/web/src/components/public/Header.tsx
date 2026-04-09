@@ -21,14 +21,17 @@ export default function Header() {
           <Link href="/about" className="text-gray-700 hover:text-primary-600 transition">
             About
           </Link>
+          <Link href="/blog" className="text-gray-700 hover:text-primary-600 transition">
+            Blog
+          </Link>
           <Link href="/contact" className="text-gray-700 hover:text-primary-600 transition">
             Contact
           </Link>
+          <Link href="/faq" className="text-gray-700 hover:text-primary-600 transition">
+            FAQ
+          </Link>
           <Link href="/donate" className="btn-primary">
             Donate
-          </Link>
-          <Link href="/admin/login" className="text-gray-700 hover:text-primary-600 transition">
-            Admin
           </Link>
         </div>
 
@@ -63,14 +66,17 @@ export default function Header() {
             <Link href="/about" className="block text-gray-700 hover:text-primary-600">
               About
             </Link>
+            <Link href="/blog" className="block text-gray-700 hover:text-primary-600">
+              Blog
+            </Link>
             <Link href="/contact" className="block text-gray-700 hover:text-primary-600">
               Contact
             </Link>
+            <Link href="/faq" className="block text-gray-700 hover:text-primary-600">
+              FAQ
+            </Link>
             <Link href="/donate" className="block btn-primary">
               Donate
-            </Link>
-            <Link href="/admin/login" className="block text-gray-700 hover:text-primary-600">
-              Admin
             </Link>
           </div>
         </div>
