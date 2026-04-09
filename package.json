@@ -11,7 +11,7 @@
     "dev": "npm run dev --workspaces",
     "build": "npm run build --workspaces",
     "build:prod": "npm run build --workspaces",
-    "start": "npm run start -w apps/api & npm run start -w apps/web",
+    "start": "npm run start:api",
     "start:api": "npm run start -w apps/api",
     "start:web": "npm run start -w apps/web",
     "test": "npm run test --workspaces",
@@ -30,6 +30,6 @@
     "npm": "^9.0.0"
   },
   "_moduleAliases": {
-    "@": "apps/api/dist"
+    "@": "dist"
   }
 }
