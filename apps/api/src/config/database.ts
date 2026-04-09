@@ -23,8 +23,29 @@ export async function initializeDatabase(): Promise<void> {
     const schemaPath = path.join(__dirname, '../db/migrations/001_init_schema.sql');
     if (fs.existsSync(schemaPath)) {
       const schema = fs.readFileSync(schemaPath, 'utf-8');
-      await client.query(schema);
-      logger.info('✓ Main schema initialized');
+      try {
+        await client.query(schema);
+        logger.info('✓ Main schema initialized');
+      } catch (error: any) {
+        // Skip if schema objects already exist (table, trigger, constraint, etc.)
+        const alreadyExistsErrors = [
+          'already exists',
+          'duplicate key',
+          'constraint',
+          '42P07', // duplicate table
+          '42710', // duplicate trigger
+          '42712', // duplicate object
+        ];
+
+        const isExpectedError = alreadyExistsErrors.some(err =>
+          error.message?.includes(err) || error.code === err.substring(0, 5)
+        );
+
+        if (!isExpectedError) {
+          throw error;
+        }
+        logger.info('✓ Main schema already initialized');
+      }
     }
 
     // Execute other migration files in order
@@ -46,6 +67,7 @@ export async function initializeDatabase(): Promise<void> {
           if (!error.message.includes('already exists')) {
             throw error;
           }
+          logger.info(`⚠ Migration ${file} already applied`);
         }
       }
     } else {
