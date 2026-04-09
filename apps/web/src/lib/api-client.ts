@@ -7,8 +7,11 @@ let axiosInstance: AxiosInstance | null = null;
 
 function getAxiosInstance(): AxiosInstance {
   if (!axiosInstance) {
+    // If API_URL already includes /api, don't double it
+    const baseURL = API_URL.endsWith('/api') ? API_URL : `${API_URL}/api`;
+
     axiosInstance = axios.create({
-      baseURL: `${API_URL}/api`,
+      baseURL,
       headers: {
         'Content-Type': 'application/json',
       },
