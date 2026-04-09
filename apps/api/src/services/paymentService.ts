@@ -405,7 +405,7 @@ export async function refundDonation(donationId: string, reason?: string): Promi
 
     // Process refund with Stripe
     await stripe.refunds.create({
-      payment_intent: donation.stripe_payment_intent_id,
+      payment_intent: donation.stripePaymentIntentId,
       reason: reason ? 'requested_by_customer' : undefined,
       metadata: {
         donation_id: donationId,
