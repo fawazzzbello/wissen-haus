@@ -36,7 +36,7 @@
     "winston": "^3.11.0"
   },
   "_moduleAliases": {
-    "@": "dist"
+    "@": "apps/api/dist"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
