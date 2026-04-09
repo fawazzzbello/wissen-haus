@@ -2,6 +2,8 @@ import Stripe from 'stripe';
 import { v4 as uuidv4 } from 'uuid';
 import { query } from '@/config/database';
 import { logger } from '@/utils/logger';
+import { sendDonationConfirmationEmail } from './emailService';
+import { sendDonationNotificationSMS } from './smsService';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2023-10-16',
@@ -206,6 +208,40 @@ export async function handlePaymentIntentSucceeded(paymentIntent: any): Promise<
         }),
       ]
     );
+
+    // Get donor details for notifications
+    const donorDetails = await query(
+      'SELECT email, first_name, last_name, phone FROM donors WHERE id = $1',
+      [donorId]
+    );
+
+    if (donorDetails.rows.length > 0) {
+      const donor = donorDetails.rows[0];
+
+      // Send confirmation email
+      const emailEnabled = process.env.SENDGRID_ENABLED !== 'false';
+      if (emailEnabled) {
+        await sendDonationConfirmationEmail(
+          donor.email,
+          `${donor.first_name} ${donor.last_name}`,
+          amount / 100,
+          currency,
+          donorId
+        ).catch(err => logger.error('Error sending confirmation email:', err));
+      }
+
+      // Send SMS if enabled and phone is available
+      const smsEnabled = process.env.SEND_DONATION_CONFIRMATION_SMS === 'true';
+      if (smsEnabled && donor.phone) {
+        await sendDonationNotificationSMS(
+          donor.phone,
+          donor.first_name,
+          amount / 100,
+          currency,
+          donorId
+        ).catch(err => logger.error('Error sending SMS:', err));
+      }
+    }
 
     logger.info(`Donation recorded: ${donationId} from ${stripeCustomerId}`);
   } catch (error) {
