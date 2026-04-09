@@ -1,13 +1,12 @@
 import { Express } from 'express';
 import { healthRouter } from './health';
 import { authRouter } from './auth';
+import { donationRouter } from './donations';
 // Import routers will be added in subsequent phases
-// import { donationRouter } from './donations';
 // import { userRouter } from './users';
 // import { contentRouter } from './content';
 // import { notificationRouter } from './notifications';
 // import { settingsRouter } from './settings';
-// import { webhookRouter } from './webhooks';
 
 export function setupRoutes(app: Express) {
   // Health check
@@ -17,7 +16,7 @@ export function setupRoutes(app: Express) {
   app.use('/api/auth', authRouter);
 
   // Donation routes (Phase 3)
-  // app.use('/api/donations', donationRouter);
+  app.use('/api/donations', donationRouter);
 
   // User routes (Phase 5)
   // app.use('/api/users', userRouter);
@@ -30,7 +29,4 @@ export function setupRoutes(app: Express) {
 
   // Settings routes (Phase 5)
   // app.use('/api/settings', settingsRouter);
-
-  // Webhook routes (Phase 3)
-  // app.use('/api/webhooks', webhookRouter);
 }

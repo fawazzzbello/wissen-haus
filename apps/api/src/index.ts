@@ -27,6 +27,17 @@ app.use(cors({
   credentials: true,
 }));
 
+// Middleware: Webhook handler (raw body) - must come before json parser
+app.post(
+  '/api/donations/webhook/stripe',
+  express.raw({ type: 'application/json' }),
+  (req, res, next) => {
+    (req as any).rawBody = req.body;
+    next();
+  },
+  express.json()
+);
+
 // Middleware: Body Parser
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
