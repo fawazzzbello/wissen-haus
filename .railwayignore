@@ -1,0 +1,70 @@
+# Railway Ignore File
+# Files and directories that Railway will not deploy
+
+# Git
+.git/
+.gitignore
+.github/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Development
+.env
+.env.local
+.env.*.local
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
+.next/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Logs
+logs/
+*.log
+
+# Documentation
+docs/
+README.md
+ARCHITECTURE.md
+DEPLOYMENT.md
+GETTING_STARTED.md
+IMPLEMENTATION_STATUS.md
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Testing
+jest.config.js
+playwright.config.ts
+e2e/
+tests/
+
+# Scripts
+scripts/
+
+# Misc
+.prettierrc
+.eslintrc
+tsconfig.json
+postcss.config.js
+tailwind.config.js

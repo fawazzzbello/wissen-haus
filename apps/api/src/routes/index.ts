@@ -1,32 +1,27 @@
 import { Express } from 'express';
 import { healthRouter } from './health';
 import { authRouter } from './auth';
+import { userRouter } from './users';
 import { donationRouter } from './donations';
+import { contentRouter } from './content';
 import { notificationRouter } from './notifications';
-// Import routers will be added in subsequent phases
-// import { userRouter } from './users';
-// import { contentRouter } from './content';
-// import { settingsRouter } from './settings';
 
 export function setupRoutes(app: Express) {
   // Health check
   app.use('/api/health', healthRouter);
 
-  // Auth routes (Phase 2)
+  // Auth routes
   app.use('/api/auth', authRouter);
 
-  // Donation routes (Phase 3)
+  // User management routes
+  app.use('/api/users', userRouter);
+
+  // Donation routes
   app.use('/api/donations', donationRouter);
 
-  // Notification routes (Phase 4)
+  // Content routes
+  app.use('/api/content', contentRouter);
+
+  // Notification routes
   app.use('/api/notifications', notificationRouter);
-
-  // User routes (Phase 5)
-  // app.use('/api/users', userRouter);
-
-  // Content routes (Phase 5)
-  // app.use('/api/content', contentRouter);
-
-  // Settings routes (Phase 5)
-  // app.use('/api/settings', settingsRouter);
 }
