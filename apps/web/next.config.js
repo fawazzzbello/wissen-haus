@@ -1,11 +1,12 @@
 /** @type {import('next').NextConfig} */
+const apiInternalUrl = process.env.API_INTERNAL_URL || 'http://localhost:5000';
+
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   env: {
-    // In production (wissenhaus.org), use /api for frontend calls (proxied by rewrites)
-    // In development, use localhost:5000 for direct API access
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:5000'),
+    // Frontend always calls /api/* (proxied by Next.js rewrites)
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || '/api',
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '',
   },
   async headers() {
@@ -26,7 +27,7 @@ const nextConfig = {
       fallback: [
         {
           source: '/api/:path*',
-          destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/:path*`,
+          destination: `${apiInternalUrl}/api/:path*`,
         },
       ],
     };
