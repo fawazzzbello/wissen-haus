@@ -11,7 +11,7 @@
     "dev": "npm run dev --workspaces",
     "build": "npm run build --workspaces",
     "build:prod": "npm run build --workspaces",
-    "start": "PORT=5000 npm run start:api & npm run start:web",
+    "start": "npm run start:api & npm run start:web",
     "start:api": "npm run start -w apps/api",
     "start:web": "npm run start -w apps/web",
     "test": "npm run test --workspaces",
