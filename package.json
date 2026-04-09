@@ -30,6 +30,6 @@
     "npm": "^9.0.0"
   },
   "_moduleAliases": {
-    "@": "dist"
+    "@": "apps/api/dist"
   }
 }
