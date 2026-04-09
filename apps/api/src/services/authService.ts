@@ -28,8 +28,8 @@ export interface DecodedToken {
   exp: number;
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_jwt_key_change_in_production';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your_super_secret_refresh_key_change_in_production';
+const JWT_SECRET: string = process.env.JWT_SECRET || 'your_super_secret_jwt_key_change_in_production';
+const JWT_REFRESH_SECRET: string = process.env.JWT_REFRESH_SECRET || 'your_super_secret_refresh_key_change_in_production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '15m';
 const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
 
@@ -54,11 +54,11 @@ export function generateTokens(user: User): AuthToken {
 
   const accessToken = jwt.sign(payload, JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN,
-  });
+  } as any);
 
   const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {
     expiresIn: JWT_REFRESH_EXPIRES_IN,
-  });
+  } as any);
 
   return {
     accessToken,

@@ -3,11 +3,6 @@
 import { useState } from 'react';
 import DonationForm from '@/components/public/DonationForm';
 
-export const metadata = {
-  title: 'Donate - Wissen-Haus',
-  description: 'Support our mission to empower young people. Your donation makes a difference.',
-};
-
 export default function DonatePage() {
   const [isDonating, setIsDonating] = useState(false);
 

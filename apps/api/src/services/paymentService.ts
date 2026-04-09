@@ -404,14 +404,19 @@ export async function refundDonation(donationId: string, reason?: string): Promi
     }
 
     // Process refund with Stripe
-    await stripe.refunds.create({
+    const refundParams: any = {
       payment_intent: donation.stripePaymentIntentId,
-      reason: reason ? 'requested_by_customer' : undefined,
       metadata: {
         donation_id: donationId,
-        refund_reason: reason,
+        refund_reason: reason || '',
       },
-    });
+    };
+
+    if (reason) {
+      refundParams.reason = 'requested_by_customer';
+    }
+
+    await stripe.refunds.create(refundParams);
 
     // Update donation status
     await query(

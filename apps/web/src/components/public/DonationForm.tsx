@@ -73,8 +73,8 @@ export default function DonationForm() {
       });
 
       // Store donation info and redirect to payment
-      sessionStorage.setItem('donation_intent', response.sessionId);
-      sessionStorage.setItem('client_secret', response.clientSecret);
+      sessionStorage.setItem('donation_intent', response.data.sessionId);
+      sessionStorage.setItem('client_secret', response.data.clientSecret);
 
       router.push('/donate/checkout');
     } catch (err: any) {

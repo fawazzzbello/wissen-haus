@@ -32,7 +32,7 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
       }
 
       // Confirm payment with Stripe
-      const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
+      const result = await stripe.confirmPayment({
         elements,
         clientSecret,
         confirmParams: {
@@ -40,10 +40,8 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
         },
       });
 
-      if (confirmError) {
-        setError(confirmError.message || 'Payment processing failed');
-      } else if (paymentIntent?.status === 'succeeded') {
-        router.push('/donate/success');
+      if (result.error) {
+        setError(result.error.message || 'Payment processing failed');
       }
     } catch (err) {
       console.error('Payment error:', err);
@@ -175,7 +173,7 @@ export default function CheckoutPage() {
           </div>
 
           {stripe && clientSecret && (
-            <Elements stripe={stripe} options={{ clientSecret, appearance: { theme: 'light' } }}>
+            <Elements stripe={stripe} options={{ clientSecret, appearance: { theme: 'stripe' } }}>
               <CheckoutForm clientSecret={clientSecret} />
             </Elements>
           )}

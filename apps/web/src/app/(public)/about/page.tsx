@@ -1,10 +1,3 @@
-'use client';
-
-export const metadata = {
-  title: 'About Us - Wissen-Haus',
-  description: 'Learn about the Wissen-Haus Empowerment Foundation and our mission to empower young people.',
-};
-
 export default function AboutPage() {
   return (
     <>
