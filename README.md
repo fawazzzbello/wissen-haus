@@ -10,306 +10,368 @@ To empower young people through access to knowledge, skills development, mentors
 
 To see a world where young people are empowered, self-reliant, and equipped to shape their own futures and positively impact their communities.
 
+---
+
+## 🚀 Quick Start: Deploy to Railway (5 minutes)
+
+### Prerequisites
+- GitHub account connected to Railway
+- SendGrid account (for email - optional)
+- Stripe account (for donations - optional)
+
+### Step 1: Create API Service on Railway
+
+1. Go to [Railway.app](https://railway.app)
+2. Click "New Project" → "GitHub Repo" → Select this repository
+3. Set up the service:
+   - **Service Name**: `api`
+   - **Root Directory**: `apps/api`
+   - **Build Command**: `npm run build -w apps/api`
+   - **Start Command**: `npm run start -w apps/api`
+4. Click "Deploy"
+5. Once deployed, click "Generate Domain" to get your API URL (save it)
+
+### Step 2: Add PostgreSQL Database
+
+1. In Railway project, click "Add" → "PostgreSQL"
+2. Wait for it to initialize
+3. This automatically sets `DATABASE_URL` environment variable
+
+### Step 3: Create Web Service on Railway
+
+1. Click "Add" → "GitHub Repo" → Select this repository
+2. Set up the service:
+   - **Service Name**: `web`
+   - **Root Directory**: `apps/web`
+   - **Build Command**: `npm run build -w apps/web`
+   - **Start Command**: `npm run start -w apps/web`
+3. Click "Deploy"
+4. Once deployed, click "Generate Domain" to get your Web URL (save it)
+
+### Step 4: Connect Services
+
+**In API Service Environment Variables:**
+- Add: `FRONTEND_URL` = your web domain (e.g., `https://wissen-haus-web.railway.app`)
+- Add: `SENDGRID_API_KEY` = Your SendGrid key (optional, starts with "SG.")
+- Add: `STRIPE_SECRET_KEY` = Your Stripe secret key (optional)
+
+**In Web Service Environment Variables:**
+- Add: `NEXT_PUBLIC_API_URL` = your API domain + `/api` (e.g., `https://wissen-haus-api.railway.app/api`)
+- Add: `NEXT_PUBLIC_STRIPE_PUBLIC_KEY` = Your Stripe public key (optional)
+
+### Step 5: Redeploy Both Services
+
+Click "Redeploy" on each service. Done! 🎉
+
+---
+
 ## 🏗️ Project Structure
 
 ```
 wissen-haus/
 ├── apps/
-│   ├── api/           # Express.js backend
-│   └── web/           # Next.js frontend
-├── packages/          # Shared code (types, utilities)
-├── docker-compose.yml # Local development environment
-└── package.json       # Root monorepo configuration
+│   ├── api/               # Express.js backend
+│   │   ├── src/
+│   │   ├── dist/          # Built files
+│   │   └── package.json
+│   └── web/               # Next.js frontend
+│       ├── src/
+│       │   └── app/
+│       │       ├── (public)/      # Public pages
+│       │       └── (admin)/       # Admin pages
+│       └── package.json
+├── packages/              # Shared utilities
+├── .npmrc                 # npm configuration
+├── .env.example           # Environment template
+├── docker-compose.yml     # Local development
+└── package.json           # Root monorepo config
 ```
 
-## 🚀 Features
+---
 
-### Phase 1: Core Infrastructure ✅
-- [x] Monorepo structure with pnpm workspaces
-- [x] Express.js backend with TypeScript
-- [x] Next.js frontend with TypeScript
-- [x] PostgreSQL database with migrations
-- [x] Docker Compose for local development
-- [x] Basic middleware (logging, error handling, CORS)
-- [x] Health check endpoints
+## 📦 Development Setup (Local)
 
-### Phase 2: Authentication (In Progress)
-- [ ] JWT authentication and password hashing
-- [ ] User registration and login endpoints
-- [ ] Role-based access control (RBAC)
-- [ ] Admin login page
-- [ ] Protected admin dashboard
-
-### Phase 3: Donations & Payments
-- [ ] Stripe integration for payments
-- [ ] Donation checkout flow
-- [ ] One-time and recurring donations
-- [ ] Payment webhook handling
-- [ ] Donation tracking and analytics
-
-### Phase 4: Notifications
-- [ ] SendGrid email integration
-- [ ] Twilio SMS integration
-- [ ] Donation confirmation emails
-- [ ] High-value donation SMS alerts
-- [ ] Notification template system
-- [ ] Notification logging
-
-### Phase 5: Admin Features
-- [ ] User management system
-- [ ] Content management system (CMS)
-- [ ] Organization settings
-- [ ] Donation reporting and export
-- [ ] Activity audit logs
-
-### Phase 6: Public Website
-- [ ] Landing page with hero section
-- [ ] About, mission, and vision pages
-- [ ] Impact statistics
-- [ ] Contact page
-- [ ] FAQ section
-- [ ] SEO optimization
-
-### Phase 7: Testing & Quality
-- [ ] Unit tests for services
-- [ ] Integration tests for APIs
-- [ ] E2E tests for critical flows
-- [ ] Security audit
-- [ ] Performance optimization
-
-### Phase 8: Deployment
-- [ ] Production environment setup
-- [ ] Monitoring and error tracking
-- [ ] CI/CD automation
-- [ ] Logging and alerting
-- [ ] Database backups
-
-## 📋 Prerequisites
-
-- Node.js 18.0.0 or higher
-- npm 9.0.0 or higher
-- Docker and Docker Compose
+### Prerequisites
+- Node.js 18.0.0+
+- npm 9.0.0+ or 10.0.0+
+- Docker & Docker Compose
 - PostgreSQL 14+ (via Docker)
-- Redis (optional, via Docker)
 
-## 🛠️ Installation
-
-### 1. Clone the repository
+### Installation
 
 ```bash
+# 1. Clone repository
 git clone https://github.com/fawazzzbello/wissen-haus.git
 cd wissen-haus
-```
 
-### 2. Install dependencies
-
-```bash
+# 2. Install dependencies
 npm install
-```
 
-### 3. Set up environment variables
-
-```bash
-# Backend
-cp apps/api/.env.example apps/api/.env
-# Edit apps/api/.env with your configuration
-
-# Frontend
-cp apps/web/.env.example apps/web/.env.local
-# Edit apps/web/.env.local with your configuration
-```
-
-### 4. Start Docker services
-
-```bash
+# 3. Start Docker services (PostgreSQL, etc.)
 docker-compose up -d
-```
 
-### 5. Run database migrations
+# 4. Set up environment
+cp .env.example .env.local
+# Edit .env.local with your local values
 
-```bash
+# 5. Run migrations
 npm run migrate
-```
 
-### 6. Seed the database (optional)
-
-```bash
-npm run seed
-```
-
-### 7. Start development servers
-
-```bash
+# 6. Start development servers
 npm run dev
 ```
 
-## 📦 Development Commands
+Access the application:
+- **Web**: http://localhost:3000
+- **API**: http://localhost:5000
+- **Admin**: http://localhost:3000/login (Demo: admin@wissen-haus.org / admin@123456)
+
+---
+
+## 🔑 Environment Variables
+
+### Required for Railway Deployment
+
+```env
+# API Service
+NODE_ENV=production
+FRONTEND_URL=https://your-web-domain.railway.app
+DATABASE_URL=postgresql://user:pass@host:port/db  # Auto-set by Railway PostgreSQL plugin
+
+# Web Service
+NEXT_PUBLIC_API_URL=https://your-api-domain.railway.app/api
+```
+
+### Optional (for Features)
+
+```env
+# Email (SendGrid)
+SENDGRID_API_KEY=SG.your_key_here
+SENDGRID_FROM_EMAIL=noreply@wissen-haus.org
+
+# Payments (Stripe)
+STRIPE_PUBLIC_KEY=pk_live_your_key
+STRIPE_SECRET_KEY=sk_live_your_key
+STRIPE_WEBHOOK_SECRET=whsec_your_key
+
+# SMS (Twilio - optional)
+TWILIO_ACCOUNT_SID=your_sid
+TWILIO_AUTH_TOKEN=your_token
+TWILIO_PHONE_NUMBER=+1234567890
+```
+
+See `.env.example` for complete list.
+
+---
+
+## 📋 Development Commands
 
 ### Root Level
 ```bash
-npm run dev          # Start all apps in development mode
-npm run build        # Build all apps
-npm run test         # Run tests in all apps
-npm run lint         # Lint all apps
-npm run migrate      # Run database migrations
-npm run seed         # Seed the database
+npm run dev              # Start all apps locally
+npm run build           # Build all apps for production
+npm run start           # Start web app (for production)
+npm run start:api       # Start API only
+npm run start:web       # Start web only
+npm run test            # Run all tests
+npm run lint            # Lint all code
+npm run migrate         # Run database migrations
+npm run seed            # Seed database with sample data
 ```
 
-### Backend (apps/api)
+### Backend (API)
 ```bash
-npm run dev -w apps/api          # Start API in dev mode
-npm run build -w apps/api        # Build API
-npm run test -w apps/api         # Run API tests
-npm run migrate -w apps/api      # Run migrations
-npm run seed -w apps/api         # Seed database
+npm run dev -w apps/api         # Start API dev server
+npm run build -w apps/api       # Build API
+npm run test -w apps/api        # Test API
+npm run start -w apps/api       # Start API production
 ```
 
-### Frontend (apps/web)
+### Frontend (Web)
 ```bash
-npm run dev -w apps/web          # Start web in dev mode
-npm run build -w apps/web        # Build web
-npm run test -w apps/web         # Run web tests
+npm run dev -w apps/web         # Start web dev server
+npm run build -w apps/web       # Build web
+npm run test -w apps/web        # Test web
+npm run start -w apps/web       # Start web production
 ```
 
-## 🔌 API Endpoints (Phase 1 - Health Check)
+---
 
-### Health Check
-- `GET /health` - Server health status
-- `GET /api/health` - API health status
+## 🌐 Application Routes
 
-## 🗄️ Database Schema
+### Public Pages
+- `/` - Homepage
+- `/about` - About page
+- `/contact` - Contact form
+- `/donate` - Donation page
+- `/donate/checkout` - Stripe checkout
+- `/donate/success` - Donation confirmation
+- `/blog` - Blog page
+- `/faq` - FAQ page
+- `/login` - Admin login page
 
-The database includes the following tables:
-- **users** - Admin users with roles and permissions
-- **donors** - Donor information and history
-- **donations** - Donation transactions and status
-- **content_pages** - CMS pages (homepage, about, etc.)
-- **settings** - Organization configuration
-- **notification_logs** - Email/SMS delivery tracking
-- **activity_logs** - Audit trail of actions
-- **donation_events** - Donation event history
+### Admin Pages (Protected)
+- `/dashboard` - Admin dashboard
+- `/donations` - Donation history
+- `/users` - User management
+- `/content` - Content editor
+- `/settings` - Organization settings
+- `/notifications` - Notification history
 
-## 🔐 Security Features
+### API Endpoints
+- `GET /health` - Server health check
+- `POST /api/auth/login` - Admin login
+- `POST /api/auth/register` - User registration
+- `GET /api/auth/me` - Current user info
+- `POST /api/donations/create-checkout-session` - Stripe checkout
+- `POST /api/donations/webhook/stripe` - Webhook receiver
 
-- JWT-based authentication
-- Password hashing with bcrypt
-- Role-based access control (RBAC)
-- CORS configuration
-- Helmet.js for security headers
-- Rate limiting on API endpoints
-- SQL injection prevention
-- XSS protection
-- CSRF tokens (to be implemented)
+---
 
-## 📊 Architecture
+## 🔐 Security & Features
 
-### Backend (Express.js + PostgreSQL)
-- RESTful API architecture
-- Service-based business logic
-- Middleware for cross-cutting concerns
-- Error handling and logging
-- Database migrations system
+### Authentication
+- ✅ JWT-based auth with refresh tokens
+- ✅ Password hashing with bcrypt
+- ✅ Role-based access control (RBAC)
+- ✅ Protected admin dashboard
 
-### Frontend (Next.js + React)
-- App Router for file-based routing
-- Component-based architecture
-- Tailwind CSS for styling
-- TypeScript for type safety
-- API client utilities
+### API Security
+- ✅ CORS configuration (configurable domains)
+- ✅ Helmet.js security headers
+- ✅ Rate limiting (100 requests/15min)
+- ✅ SQL injection prevention
+- ✅ XSS protection
 
-### Database
-- PostgreSQL with ACID compliance
-- UUID for primary keys
-- Automated timestamps
-- Proper indexing for performance
-- Audit trail for compliance
+### Features
+- ✅ User authentication & authorization
+- ✅ Donation processing with Stripe
+- ✅ Email notifications with SendGrid
+- ✅ Admin dashboard
+- ✅ Content management system
+- ✅ Responsive design with Tailwind CSS
 
-## 📚 Documentation
+---
 
-- [Architecture Overview](./ARCHITECTURE.md) - System design and components
-- [API Documentation](./API.md) - Endpoint specifications
-- [Deployment Guide](./DEPLOYMENT.md) - Production setup
+## 🚨 Troubleshooting Railway Deployment
 
-## 🧪 Testing
+### Issue: Build fails with "npm error EBADENGINE"
+**Solution**: Already fixed! The `package.json` now supports both npm 9.x and 10.x.
 
-### Unit Tests
-```bash
-npm run test -w apps/api
-npm run test -w apps/web
-```
+### Issue: Login page not loading
+**Solution**: Already fixed! Login page moved to public route group. Access at `/login`.
 
-### Integration Tests
-```bash
-npm run test -w apps/api
-```
+### Issue: EADDRINUSE error on port 5000
+**Solution**: Make sure API and Web are separate Railway services with separate domains.
 
-### E2E Tests (Phase 7)
-```bash
-npm run test:e2e
-```
+### Issue: Database connection refused
+**Solution**: 
+1. Verify PostgreSQL plugin is added to project
+2. Check `DATABASE_URL` is set in API service environment
+3. Restart API service after adding database
 
-## 🚢 Deployment
+### Issue: SendGrid "API key does not start with SG."
+**Solution**: 
+1. Get valid API key from SendGrid dashboard
+2. Ensure it starts with "SG."
+3. Paste into SENDGRID_API_KEY variable
+4. Email is optional - service continues without it
 
-### Development
-```bash
-docker-compose up -d
-npm install
-npm run migrate
-npm run dev
-```
+### Issue: API and Web can't communicate
+**Solution**:
+1. In Web service, set: `NEXT_PUBLIC_API_URL=https://your-api-domain.railway.app/api`
+2. In API service, set: `FRONTEND_URL=https://your-web-domain.railway.app`
+3. Redeploy both services
 
-### Staging
-- See [DEPLOYMENT.md](./DEPLOYMENT.md)
+---
 
-### Production
-- See [DEPLOYMENT.md](./DEPLOYMENT.md)
+## 🏗️ Architecture
 
-## 📝 Environment Variables
+### Backend Architecture
+- **Framework**: Express.js
+- **Language**: TypeScript
+- **Database**: PostgreSQL
+- **Auth**: JWT + bcrypt
+- **Payment**: Stripe API
+- **Email**: SendGrid API
+- **Logging**: Winston
+- **Validation**: Joi
 
-### Backend (apps/api/.env)
-```
-NODE_ENV=development
-PORT=5000
-DATABASE_URL=postgresql://...
-JWT_SECRET=your_secret_key
-STRIPE_SECRET_KEY=sk_test_...
-SENDGRID_API_KEY=SG_...
-TWILIO_ACCOUNT_SID=...
-```
+### Frontend Architecture
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **State**: Zustand
+- **Validation**: React Hook Form + Zod
+- **Payment**: Stripe React
 
-See `apps/api/.env.example` for complete list.
+### Database Schema
+- `users` - Admin users with roles
+- `donors` - Donor profiles
+- `donations` - Donation transactions
+- `content_pages` - CMS pages
+- `notification_logs` - Email/SMS tracking
+- `activity_logs` - Audit trail
+- `settings` - Organization config
 
-### Frontend (apps/web/.env.local)
-```
-NEXT_PUBLIC_API_URL=http://localhost:5000
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-```
+---
 
-See `apps/web/.env.example` for complete list.
+## 📊 Project Status
+
+- ✅ Phase 1: Core Infrastructure
+- ✅ Phase 2: Authentication & Login
+- ✅ Phase 3: Donation System
+- ✅ Phase 4: Email Notifications
+- 🔄 Phase 5: Admin Features
+- 🔄 Phase 6: Public Website
+- ⏳ Phase 7: Testing & Quality
+- ⏳ Phase 8: Production Setup
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology | Version |
+|-------|-----------|---------|
+| Runtime | Node.js | 18.0.0+ |
+| Package Manager | npm | 9.0.0+ |
+| Backend | Express.js | 4.18.2 |
+| Frontend | Next.js | 14.0.4 |
+| Database | PostgreSQL | 14+ |
+| Language | TypeScript | 5.3.3 |
+| Styling | Tailwind CSS | 3.4.1 |
+| Auth | JWT + bcrypt | - |
+| Payments | Stripe | 14.18.0 |
+| Email | SendGrid | 8.1.0 |
+| Deployment | Railway | - |
+
+---
 
 ## 🤝 Contributing
 
-We welcome contributions! Please follow these steps:
-
 1. Create a feature branch: `git checkout -b feature/your-feature`
-2. Make your changes and commit: `git commit -am 'Add feature'`
-3. Push to the branch: `git push origin feature/your-feature`
+2. Make changes and commit: `git commit -am 'Add feature'`
+3. Push to branch: `git push origin feature/your-feature`
 4. Submit a pull request
 
-## 📧 Contact
+---
 
-- Email: info@wissen-haus.org
-- Website: www.wissen-haus.org
-- Phone: +1 (555) 123-4567
+## 📧 Support
+
+- **Email**: info@wissen-haus.org
+- **Website**: www.wissen-haus.org
+- **GitHub**: https://github.com/fawazzzbello/wissen-haus
+
+---
 
 ## 📄 License
 
 This project is proprietary and confidential. Unauthorized copying is prohibited.
 
+---
+
 ## 🙏 Acknowledgments
 
 Built with ❤️ for the youth and communities of Wissen-Haus Empowerment Foundation.
 
----
-
-**Status**: Phase 1 Complete ✅ | Moving to Phase 2: Authentication
+**Current Status**: Ready for production deployment on Railway ✅
