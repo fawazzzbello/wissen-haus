@@ -1,7 +1,7 @@
 import { Express } from 'express';
 import { healthRouter } from './health';
+import { authRouter } from './auth';
 // Import routers will be added in subsequent phases
-// import { authRouter } from './auth';
 // import { donationRouter } from './donations';
 // import { userRouter } from './users';
 // import { contentRouter } from './content';
@@ -14,7 +14,7 @@ export function setupRoutes(app: Express) {
   app.use('/api/health', healthRouter);
 
   // Auth routes (Phase 2)
-  // app.use('/api/auth', authRouter);
+  app.use('/api/auth', authRouter);
 
   // Donation routes (Phase 3)
   // app.use('/api/donations', donationRouter);
