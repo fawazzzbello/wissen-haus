@@ -29,23 +29,27 @@ export async function initializeDatabase(): Promise<void> {
 
     // Execute other migration files in order
     const migrationsDir = path.join(__dirname, '../db/migrations');
-    const files = fs.readdirSync(migrationsDir)
-      .filter(f => f.endsWith('.sql') && f !== '001_init_schema.sql')
-      .sort();
+    if (fs.existsSync(migrationsDir)) {
+      const files = fs.readdirSync(migrationsDir)
+        .filter(f => f.endsWith('.sql') && f !== '001_init_schema.sql')
+        .sort();
 
-    for (const file of files) {
-      const filePath = path.join(migrationsDir, file);
-      const migration = fs.readFileSync(filePath, 'utf-8');
+      for (const file of files) {
+        const filePath = path.join(migrationsDir, file);
+        const migration = fs.readFileSync(filePath, 'utf-8');
 
-      try {
-        await client.query(migration);
-        logger.info(`✓ Migration ${file} executed`);
-      } catch (error: any) {
-        // Skip if migration already applied
-        if (!error.message.includes('already exists')) {
-          throw error;
+        try {
+          await client.query(migration);
+          logger.info(`✓ Migration ${file} executed`);
+        } catch (error: any) {
+          // Skip if migration already applied
+          if (!error.message.includes('already exists')) {
+            throw error;
+          }
         }
       }
+    } else {
+      logger.warn('⚠ Migrations directory not found - skipping database initialization');
     }
   } finally {
     client.release();
