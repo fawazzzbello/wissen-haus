@@ -8,6 +8,7 @@ import { notificationRouter } from './notifications';
 import { contactRouter } from './contact';
 import { aiRouter } from './ai';
 import { paymentRouter } from './payments';
+import { emailRouter } from './emails';
 
 export function setupRoutes(app: Express) {
   // Root endpoint - API info
@@ -55,4 +56,7 @@ export function setupRoutes(app: Express) {
 
   // Payment and subscription routes
   app.use('/api/payments', paymentRouter);
+
+  // Email and automation routes
+  app.use('/api/emails', emailRouter);
 }

@@ -30,6 +30,7 @@
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
     "module-alias": "^2.3.4",
+    "nodemailer": "^6.9.7",
     "openai": "^4.52.0",
     "pg": "^8.11.3",
     "redis": "^4.6.12",
