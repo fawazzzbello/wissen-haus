@@ -57,6 +57,7 @@ To see a world where young people are empowered, self-reliant, and equipped to s
 
 **In Web Service Environment Variables:**
 - Add: `NEXT_PUBLIC_API_URL` = your API domain + `/api` (e.g., `https://wissen-haus-api.railway.app/api`)
+- Add: `API_INTERNAL_URL` = your API domain (e.g., `https://wissen-haus-api.railway.app`) **← IMPORTANT FOR LOGIN**
 - Add: `NEXT_PUBLIC_STRIPE_PUBLIC_KEY` = Your Stripe public key (optional)
 
 ### Step 5: Redeploy Both Services
@@ -277,11 +278,16 @@ npm run start -w apps/web       # Start web production
 3. Paste into SENDGRID_API_KEY variable
 4. Email is optional - service continues without it
 
-### Issue: API and Web can't communicate
+### Issue: API and Web can't communicate / Login fails
+**Symptom**: "Failed to proxy http://localhost:5000/api/" or login returns 404
+
 **Solution**:
-1. In Web service, set: `NEXT_PUBLIC_API_URL=https://your-api-domain.railway.app/api`
+1. In Web service environment variables, set BOTH:
+   - `NEXT_PUBLIC_API_URL=https://your-api-domain.railway.app/api` (for client-side)
+   - `API_INTERNAL_URL=https://your-api-domain.railway.app` (for server-side proxying) ← **Don't forget this!**
 2. In API service, set: `FRONTEND_URL=https://your-web-domain.railway.app`
-3. Redeploy both services
+3. **Redeploy both services** (redeploy is required for env var changes to take effect)
+4. Test login at `/login`
 
 ---
 

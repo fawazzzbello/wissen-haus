@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
-const apiInternalUrl = process.env.API_INTERNAL_URL || 'http://localhost:5000';
+// For Railway: API_INTERNAL_URL should be the external API domain (same as client uses)
+// For local dev: defaults to localhost:5000
+const apiInternalUrl = process.env.API_INTERNAL_URL || process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000';
 
 const nextConfig = {
   reactStrictMode: true,
