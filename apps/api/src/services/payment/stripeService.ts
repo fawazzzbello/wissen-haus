@@ -194,14 +194,13 @@ export class StripePaymentService {
    */
   async cancelSubscription(
     subscriptionId: string,
-    cancellationDetails?: { reason: 'cancellation_requested' | string }
+    cancellationDetails?: { reason?: string }
   ): Promise<Stripe.Subscription> {
     try {
-      const subscription = await stripe.subscriptions.update(subscriptionId, {
-        cancellation_details: cancellationDetails,
-      });
-
-      const canceled = await stripe.subscriptions.del(subscriptionId);
+      // Update subscription to cancel at end of billing period
+      const canceled = await stripe.subscriptions.update(subscriptionId, {
+        cancel_at_period_end: true,
+      } as any);
 
       logger.info(`✓ Cancelled subscription: ${subscriptionId}`);
       return canceled;

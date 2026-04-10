@@ -247,10 +247,15 @@ class EmailQueueManager {
    */
   async cleanOldJobs(maxAge: number = 86400000): Promise<number> {
     // Default: 24 hours
-    const removed = await this.queue.clean(maxAge, undefined, 'completed');
-    const count = Array.isArray(removed) ? removed.length : (removed as any);
-    logger.info(`✓ Cleaned ${count} old email jobs`);
-    return count;
+    try {
+      const removed = await (this.queue.clean as any)(maxAge, 'completed');
+      const count = Array.isArray(removed) ? removed.length : (removed as any);
+      logger.info(`✓ Cleaned ${count} old email jobs`);
+      return count;
+    } catch (error: any) {
+      logger.warn('Failed to clean old jobs:', error.message);
+      return 0;
+    }
   }
 
   /**

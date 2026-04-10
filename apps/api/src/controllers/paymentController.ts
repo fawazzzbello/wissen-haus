@@ -329,10 +329,10 @@ export async function handleStripeWebhook(req: Request, res: Response) {
     }
 
     const stripeService = getStripeService();
-    const event = stripeService.validateWebhookSignature(req.body as any, signature);
+    const event = stripeService.validateWebhookSignature(req.body as any, signature) as any;
 
     // Handle the event
-    await stripeService.handleWebhookEvent(event);
+    await stripeService.handleWebhookEvent(event as any);
 
     res.json({
       success: true,

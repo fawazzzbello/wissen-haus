@@ -1,5 +1,5 @@
 import { pool } from '@/config/database';
-import { redis } from '@/config/redis';
+import { getRedis } from '@/config/redis';
 import { logger } from '@/utils/logger';
 import axios from 'axios';
 
@@ -51,8 +51,21 @@ export class HealthCheckService {
   static async checkRedis(): Promise<HealthStatus> {
     const startTime = Date.now();
     try {
-      await redis.ping();
+      const redis = await getRedis();
       const responseTimeMs = Date.now() - startTime;
+
+      if (!redis) {
+        const status: HealthStatus = {
+          name: 'redis',
+          status: 'unhealthy',
+          responseTimeMs,
+          message: 'Redis not initialized',
+        };
+        await this.recordHealthCheck(status);
+        return status;
+      }
+
+      await redis.ping();
 
       const status: HealthStatus = {
         name: 'redis',
@@ -266,7 +279,11 @@ export class HealthCheckService {
         waitingRequests: pool.waitingCount,
       };
 
-      const redisInfo = await redis.info();
+      const redis = await getRedis();
+      let redisInfo = null;
+      if (redis) {
+        redisInfo = await redis.info();
+      }
 
       return {
         database: dbPool,
