@@ -3,10 +3,28 @@
   "build": {
     "builder": "nixpacks"
   },
-  "deploy": {
-    "numReplicas": 1,
-    "startCommand": "npm run start:api",
-    "restartPolicyType": "on_failure",
-    "restartPolicyMaxRetries": 10
+  "services": {
+    "api": {
+      "numReplicas": 1,
+      "startCommand": "npm run start:api",
+      "restartPolicyType": "on_failure",
+      "restartPolicyMaxRetries": 10,
+      "variables": {
+        "PORT": "5000",
+        "NODE_ENV": "production"
+      }
+    },
+    "web": {
+      "numReplicas": 1,
+      "startCommand": "npm run start:web",
+      "restartPolicyType": "on_failure",
+      "restartPolicyMaxRetries": 10,
+      "variables": {
+        "PORT": "3000",
+        "NODE_ENV": "production",
+        "NEXT_PUBLIC_API_URL": "${{ services.api.url }}/api",
+        "API_INTERNAL_URL": "${{ services.api.url }}"
+      }
+    }
   }
 }
