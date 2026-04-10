@@ -60,26 +60,22 @@ To see a world where young people are empowered, self-reliant, and equipped to s
 - Add: `API_INTERNAL_URL` = your API domain (e.g., `https://wissen-haus-api.railway.app`) **← IMPORTANT FOR LOGIN**
 - Add: `NEXT_PUBLIC_STRIPE_PUBLIC_KEY` = Your Stripe public key (optional)
 
-### Step 5: Seed Database with Demo User (⚠️ CRITICAL)
+### Step 5: Redeploy API Service and Verify
 
-This step is essential! The database needs a default admin user to login.
-
-1. Go to Railway dashboard → API Service → Deployments
-2. Click the latest deployment → **Terminal** tab
-3. Run this command:
-   ```bash
-   npm run seed
+1. Go to Railway → API Service
+2. Click **Redeploy** and wait for "Ready" status
+3. Check logs for:
    ```
-4. Wait for output:
+   ✓ Database connection successful
+   ✓ Created default admin user: admin@wissen-haus.org (password: admin@123456)
+   ✓ Server running on http://localhost:5000
    ```
-   ✓ Created admin user: admin@wissen-haus.org (password: admin@123456)
-   ✓ Database seeding completed successfully
-   ```
-5. If you see "✓ Created admin user", proceed to Step 6
 
-### Step 6: Redeploy Both Services
+The API will automatically create the demo admin user on first startup when the database is empty.
 
-Click "Redeploy" on each service. Done! 🎉
+### Step 6: Redeploy Web Service
+
+Click "Redeploy" on the Web service and wait for it to be ready.
 
 ---
 
