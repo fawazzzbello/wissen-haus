@@ -8,6 +8,25 @@ import { notificationRouter } from './notifications';
 import { contactRouter } from './contact';
 
 export function setupRoutes(app: Express) {
+  // Root endpoint - API info
+  app.get('/', (req, res) => {
+    res.json({
+      name: 'Wissen-Haus Charity Platform API',
+      version: '1.0.0',
+      status: 'operational',
+      endpoints: {
+        health: '/health',
+        auth: '/api/auth',
+        users: '/api/users',
+        donations: '/api/donations',
+        content: '/api/content',
+        contact: '/api/contact',
+        notifications: '/api/notifications',
+      },
+      documentation: 'https://github.com/fawazzzbello/wissen-haus',
+    });
+  });
+
   // Health check
   app.use('/api/health', healthRouter);
 
