@@ -289,6 +289,23 @@ npm run start -w apps/web       # Start web production
 3. **Redeploy both services** (redeploy is required for env var changes to take effect)
 4. Test login at `/login`
 
+### Issue: Invalid rewrite found / Build fails with malformed destination URL
+**Symptom**: "destination does not start with `/`, `http://`, or `https://`" or build error with malformed URL like `https:/-production-xxx.railway.app`
+
+**Root cause**: The `API_INTERNAL_URL` environment variable is not set or is set to a malformed value (missing `https://` prefix).
+
+**Solution**:
+1. Check your Web service environment variables on Railway
+2. Ensure `API_INTERNAL_URL` is set to a FULL URL starting with `https://`:
+   - ✅ Correct: `API_INTERNAL_URL=https://wissen-haus-api.railway.app`
+   - ❌ Wrong: `API_INTERNAL_URL=wissen-haus-api.railway.app` (missing https://)
+   - ❌ Wrong: `API_INTERNAL_URL=/api` (relative paths don't work)
+3. If you don't know your API service domain:
+   - Go to Railway dashboard → API service → Deployments → click the deployment
+   - Copy the "Domains" URL (e.g., `https://wissen-haus-api.railway.app`)
+   - Use that as your `API_INTERNAL_URL` (without any path suffix like `/api`)
+4. After fixing, **Redeploy the Web service**
+
 ---
 
 ## 🏗️ Architecture
