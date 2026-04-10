@@ -15,6 +15,8 @@
     "seed": "node -r ts-node/register -r tsconfig-paths/register src/scripts/seed.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.0",
+    "@google/generative-ai": "^0.12.0",
     "@sendgrid/mail": "^8.1.0",
     "axios": "^1.6.5",
     "bcrypt": "^5.1.1",
@@ -28,6 +30,7 @@
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
     "module-alias": "^2.3.4",
+    "openai": "^4.52.0",
     "pg": "^8.11.3",
     "redis": "^4.6.12",
     "stripe": "^14.18.0",

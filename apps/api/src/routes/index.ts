@@ -6,6 +6,7 @@ import { donationRouter } from './donations';
 import { contentRouter } from './content';
 import { notificationRouter } from './notifications';
 import { contactRouter } from './contact';
+import { aiRouter } from './ai';
 
 export function setupRoutes(app: Express) {
   // Root endpoint - API info
@@ -47,4 +48,7 @@ export function setupRoutes(app: Express) {
 
   // Notification routes
   app.use('/api/notifications', notificationRouter);
+
+  // AI routes
+  app.use('/api/ai', aiRouter);
 }
