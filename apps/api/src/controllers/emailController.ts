@@ -271,8 +271,6 @@ export async function sendBulkEmails(req: Request, res: Response) {
  */
 export async function testSMTP(req: Request, res: Response) {
   try {
-    const { smtpService } = req.body;
-
     // Get appropriate service and test
     const emailService = getEmailService();
 
@@ -289,7 +287,7 @@ export async function testSMTP(req: Request, res: Response) {
       data: {
         message: 'Test email queued',
         emailId: testEmail,
-        recipent: process.env.ADMIN_EMAIL || 'admin@wissen-haus.org',
+        recipient: process.env.ADMIN_EMAIL || 'admin@wissen-haus.org',
       },
     });
   } catch (error: any) {

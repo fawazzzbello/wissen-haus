@@ -31,31 +31,33 @@ export async function getUsers(
 ) {
   try {
     let baseQuery = 'SELECT * FROM users WHERE 1=1';
+    let countQuery = 'SELECT COUNT(*) FROM users WHERE 1=1';
     const params: any[] = [];
 
     if (filters?.role) {
       baseQuery += ' AND role = $' + (params.length + 1);
+      countQuery += ' AND role = $' + (params.length + 1);
       params.push(filters.role);
     }
 
     if (filters?.status) {
       baseQuery += ' AND status = $' + (params.length + 1);
+      countQuery += ' AND status = $' + (params.length + 1);
       params.push(filters.status);
     }
 
     if (filters?.search) {
-      baseQuery += ' AND (email ILIKE $' + (params.length + 1) + ' OR first_name ILIKE $' + (params.length + 1) + ' OR last_name ILIKE $' + (params.length + 1) + ')';
+      const searchIdx = params.length + 1;
+      baseQuery += ` AND (email ILIKE $${searchIdx} OR first_name ILIKE $${searchIdx} OR last_name ILIKE $${searchIdx})`;
+      countQuery += ` AND (email ILIKE $${searchIdx} OR first_name ILIKE $${searchIdx} OR last_name ILIKE $${searchIdx})`;
       params.push(`%${filters.search}%`);
     }
 
     // Get total count
-    const countResult = await query(
-      'SELECT COUNT(*) FROM users WHERE 1=1' +
-        (filters?.role ? ' AND role = $1' : '') +
-        (filters?.status ? ' AND status = $' + (filters?.role ? '2' : '1') : '') +
-        (filters?.search ? ' AND (email ILIKE $' + (filters?.role || filters?.status ? (filters?.role && filters?.status ? '3' : '2') : '1') + ')' : ''),
-      filters?.role ? [filters.role, ...(filters.status ? [filters.status] : []), ...(filters.search ? [`%${filters.search}%`] : [])] : filters?.status ? [filters.status, ...(filters.search ? [`%${filters.search}%`] : [])] : filters?.search ? [`%${filters.search}%`] : []
-    );
+    const countResult = await query(countQuery, params);
+    if (!countResult.rows[0]) {
+      throw new Error('Failed to fetch user count');
+    }
 
     // Get paginated results
     baseQuery += ' ORDER BY created_at DESC LIMIT $' + (params.length + 1) + ' OFFSET $' + (params.length + 2);

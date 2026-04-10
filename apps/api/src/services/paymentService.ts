@@ -68,6 +68,9 @@ async function createOrUpdateDonor(
          RETURNING id`,
         [donorId, email, firstName, lastName, phone || null, country || null]
       );
+      if (!insertResult.rows[0]) {
+        throw new Error('Failed to create donor record');
+      }
       donorId = insertResult.rows[0].id;
     }
 
@@ -355,6 +358,9 @@ export async function getDonations(
     }
 
     const countResult = await query(countQuery, status ? [status] : []);
+    if (!countResult.rows[0]) {
+      throw new Error('Failed to fetch donation count');
+    }
     const total = parseInt(countResult.rows[0].count);
 
     return {
@@ -383,6 +389,9 @@ export async function getDonationStats() {
       WHERE status = 'completed'
     `);
 
+    if (!result.rows[0]) {
+      throw new Error('Failed to fetch donation statistics');
+    }
     return result.rows[0];
   } catch (error) {
     logger.error('Error fetching donation stats:', error);

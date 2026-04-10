@@ -69,6 +69,9 @@ export class DonationManagementService {
         ]
       );
 
+      if (!result.rows[0]) {
+        throw new Error('Failed to create campaign');
+      }
       const campaignId = result.rows[0].id;
       logger.info(`✓ Created campaign: ${options.name} (${campaignId})`);
       return campaignId;
@@ -256,6 +259,9 @@ export class DonationManagementService {
         [campaignId, milestoneNumber, targetAmountCents, description || null, rewardDescription || null]
       );
 
+      if (!result.rows[0]) {
+        throw new Error('Failed to create milestone');
+      }
       logger.info(`✓ Created milestone for campaign ${campaignId}`);
       return result.rows[0].id;
     } catch (error: any) {
@@ -357,6 +363,9 @@ export class DonationManagementService {
         [donorId, noteType, content, createdBy, followUpDate || null]
       );
 
+      if (!result.rows[0]) {
+        throw new Error('Failed to create donor note');
+      }
       logger.info(`✓ Added note for donor ${donorId}`);
       return result.rows[0].id;
     } catch (error: any) {
@@ -406,6 +415,9 @@ export class DonationManagementService {
         [periodStart, periodEnd]
       );
 
+      if (!statsResult.rows[0]) {
+        throw new Error('Failed to fetch donation statistics');
+      }
       const stats = statsResult.rows[0];
 
       // Get new donors count
@@ -419,6 +431,9 @@ export class DonationManagementService {
         [periodStart, periodEnd]
       );
 
+      if (!newDonorsResult.rows[0]) {
+        throw new Error('Failed to fetch new donors count');
+      }
       const newDonors = newDonorsResult.rows[0].new_donors;
 
       // Insert report
@@ -444,6 +459,9 @@ export class DonationManagementService {
         ]
       );
 
+      if (!reportResult.rows[0]) {
+        throw new Error('Failed to create batch report');
+      }
       logger.info(`✓ Generated ${reportType} batch report`);
       return reportResult.rows[0].id;
     } catch (error: any) {

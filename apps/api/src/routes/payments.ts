@@ -11,7 +11,7 @@ import {
   getRevenueForecast,
   handleStripeWebhook,
 } from '@/controllers/paymentController';
-import { authMiddleware, adminOnly } from '@/middleware/auth';
+import { authenticate, adminOnly } from '@/middleware/auth';
 import express from 'express';
 
 const router = Router();
@@ -25,19 +25,19 @@ const router = Router();
  * POST /api/payments/subscriptions
  * Create a recurring donation subscription
  */
-router.post('/subscriptions', authMiddleware, adminOnly, createSubscription);
+router.post('/subscriptions', authenticate, adminOnly, createSubscription);
 
 /**
  * POST /api/payments/subscriptions/:subscriptionId/cancel
  * Cancel a subscription
  */
-router.post('/subscriptions/:subscriptionId/cancel', authMiddleware, adminOnly, cancelSubscription);
+router.post('/subscriptions/:subscriptionId/cancel', authenticate, adminOnly, cancelSubscription);
 
 /**
  * POST /api/payments/refunds
  * Create a refund for a donation
  */
-router.post('/refunds', authMiddleware, adminOnly, createRefund);
+router.post('/refunds', authenticate, adminOnly, createRefund);
 
 /**
  * Analytics Endpoints
@@ -47,40 +47,40 @@ router.post('/refunds', authMiddleware, adminOnly, createRefund);
  * GET /api/payments/analytics/metrics
  * Get donation metrics
  */
-router.get('/analytics/metrics', authMiddleware, adminOnly, getAnalyticsMetrics);
+router.get('/analytics/metrics', authenticate, adminOnly, getAnalyticsMetrics);
 
 /**
  * GET /api/payments/analytics/trends
  * Get donation trends (monthly)
  * Query: ?months=12 (default 12)
  */
-router.get('/analytics/trends', authMiddleware, adminOnly, getAnalyticsTrends);
+router.get('/analytics/trends', authenticate, adminOnly, getAnalyticsTrends);
 
 /**
  * GET /api/payments/analytics/segments
  * Get donor segmentation by donation amount
  */
-router.get('/analytics/segments', authMiddleware, adminOnly, getAnalyticsSegments);
+router.get('/analytics/segments', authenticate, adminOnly, getAnalyticsSegments);
 
 /**
  * GET /api/payments/analytics/lifetime-values
  * Get top donors by lifetime value
  * Query: ?limit=20 (default 20)
  */
-router.get('/analytics/lifetime-values', authMiddleware, adminOnly, getAnalyticsLifetimeValues);
+router.get('/analytics/lifetime-values', authenticate, adminOnly, getAnalyticsLifetimeValues);
 
 /**
  * GET /api/payments/analytics/churn-risk
  * Get donors at risk of churning (inactive >90 days)
  */
-router.get('/analytics/churn-risk', authMiddleware, adminOnly, getChurnRiskDonors);
+router.get('/analytics/churn-risk', authenticate, adminOnly, getChurnRiskDonors);
 
 /**
  * GET /api/payments/analytics/forecast
  * Get revenue forecast
  * Query: ?months=6 (default 6)
  */
-router.get('/analytics/forecast', authMiddleware, adminOnly, getRevenueForecast);
+router.get('/analytics/forecast', authenticate, adminOnly, getRevenueForecast);
 
 /**
  * POST /api/payments/webhook/stripe
