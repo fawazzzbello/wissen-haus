@@ -7,6 +7,7 @@ import { contentRouter } from './content';
 import { notificationRouter } from './notifications';
 import { contactRouter } from './contact';
 import { aiRouter } from './ai';
+import { paymentRouter } from './payments';
 
 export function setupRoutes(app: Express) {
   // Root endpoint - API info
@@ -51,4 +52,7 @@ export function setupRoutes(app: Express) {
 
   // AI routes
   app.use('/api/ai', aiRouter);
+
+  // Payment and subscription routes
+  app.use('/api/payments', paymentRouter);
 }
