@@ -37,7 +37,7 @@ function getAxiosInstance(): AxiosInstance {
           // Clear auth state and redirect to login
           useAuthStore.getState().logout();
           if (typeof window !== 'undefined') {
-            window.location.href = '/admin/login';
+            window.location.href = '/login';
           }
         }
         return Promise.reject(error);

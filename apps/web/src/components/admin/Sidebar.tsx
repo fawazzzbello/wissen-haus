@@ -51,11 +51,11 @@ export default function AdminSidebar() {
     try {
       await logoutUser();
       logout();
-      router.push('/admin/login');
+      router.push('/login');
     } catch (error) {
       console.error('Logout error:', error);
       logout();
-      router.push('/admin/login');
+      router.push('/login');
     }
   };
 
