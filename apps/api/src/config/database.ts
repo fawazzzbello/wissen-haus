@@ -3,17 +3,31 @@ import { logger } from '@/utils/logger';
 import fs from 'fs';
 import path from 'path';
 
-const pool = new Pool({
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432'),
-  database: process.env.DB_NAME || 'wissen_haus_db',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres',
-});
+// Parse DATABASE_URL (used by Railway) or fall back to individual env vars (used locally)
+const getDatabaseConfig = () => {
+  if (process.env.DATABASE_URL) {
+    // Railway provides DATABASE_URL in format: postgres://user:password@host:port/database
+    logger.info('🔗 Using DATABASE_URL configuration (Railway environment)');
+    return { connectionString: process.env.DATABASE_URL };
+  } else {
+    // Local development uses individual variables
+    logger.info('🔗 Using individual DB_* configuration (Local development)');
+    return {
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT || '5432'),
+      database: process.env.DB_NAME || 'wissen_haus_db',
+      user: process.env.DB_USER || 'postgres',
+      password: process.env.DB_PASSWORD || 'postgres',
+    };
+  }
+};
+
+const pool = new Pool(getDatabaseConfig());
 
 pool.on('error', (err) => {
-  logger.error('Unexpected error on idle client', err);
-  process.exit(-1);
+  logger.error('❌ Unexpected error on idle client:', err.message);
+  logger.error('Connection details - Host:', getDatabaseConfig().connectionString ? '[DATABASE_URL set]' : getDatabaseConfig().host);
+  // Don't exit immediately - let the connection try to reconnect
 });
 
 export async function initializeDatabase(): Promise<void> {
