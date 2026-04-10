@@ -7,7 +7,7 @@ import { getEmailQueue, EmailJobData } from '@/queue/emailQueue';
 export interface SendEmailOptions {
   to: string;
   toName?: string;
-  subject: string;
+  subject?: string;
   html?: string;
   text?: string;
   templateName?: string;
@@ -69,6 +69,8 @@ export class EmailService {
         if (template.textTemplate) {
           text = templateService.renderTemplate(template.textTemplate, options.templateVariables || {});
         }
+      } else if (!subject) {
+        throw new Error('Subject is required when not using a template');
       }
 
       // Queue email

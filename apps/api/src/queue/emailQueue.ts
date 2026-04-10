@@ -35,7 +35,6 @@ class EmailQueueManager {
       settings: {
         maxStalledCount: 3,
         stalledInterval: 5000,
-        maxRetriesPerJob: 5,
         guardInterval: 5000,
         retryProcessDelay: 60000, // Retry after 1 minute
       },
@@ -71,7 +70,7 @@ class EmailQueueManager {
     });
   }
 
-  private async processEmailJob(job: Bull.Job<EmailJobData>): Promise<void> {
+  private async processEmailJob(job: Bull.Job<EmailJobData>): Promise<any> {
     try {
       const data = job.data;
       const smtpService = getSMTPEmailService();
@@ -248,9 +247,10 @@ class EmailQueueManager {
    */
   async cleanOldJobs(maxAge: number = 86400000): Promise<number> {
     // Default: 24 hours
-    const removed = await this.queue.clean(maxAge, 100, 'completed');
-    logger.info(`✓ Cleaned ${removed} old email jobs`);
-    return removed;
+    const removed = await this.queue.clean(maxAge, undefined, 'completed');
+    const count = Array.isArray(removed) ? removed.length : (removed as any);
+    logger.info(`✓ Cleaned ${count} old email jobs`);
+    return count;
   }
 
   /**

@@ -240,7 +240,7 @@ export async function processRefund(req: Request, res: Response) {
 // Create a new campaign
 export async function createCampaign(req: Request, res: Response) {
   try {
-    if (!req.user?.id) {
+    if (!req.user?.userId) {
       return res.status(401).json({
         error: {
           code: 'UNAUTHORIZED',
@@ -279,7 +279,7 @@ export async function createCampaign(req: Request, res: Response) {
       endDate: endDate ? new Date(endDate) : undefined,
       targetDonors,
       impactStatement,
-      createdBy: req.user.id,
+      createdBy: req.user.userId,
     });
 
     res.status(201).json({
@@ -529,7 +529,7 @@ export async function updateDonorPrefs(req: Request, res: Response) {
 // Add donor note
 export async function addDonorNoteHandler(req: Request, res: Response) {
   try {
-    if (!req.user?.id) {
+    if (!req.user?.userId) {
       return res.status(401).json({
         error: {
           code: 'UNAUTHORIZED',
@@ -554,7 +554,7 @@ export async function addDonorNoteHandler(req: Request, res: Response) {
     const noteId = await donationService.addDonorNote(
       donorId,
       content,
-      req.user.id,
+      req.user.userId,
       noteType || 'internal',
       followUpDate ? new Date(followUpDate) : undefined
     );
@@ -603,7 +603,7 @@ export async function getDonorNotesHandler(req: Request, res: Response) {
 // Generate batch report
 export async function generateBatchReportHandler(req: Request, res: Response) {
   try {
-    if (!req.user?.id) {
+    if (!req.user?.userId) {
       return res.status(401).json({
         error: {
           code: 'UNAUTHORIZED',
@@ -628,7 +628,7 @@ export async function generateBatchReportHandler(req: Request, res: Response) {
       reportType,
       new Date(periodStart),
       new Date(periodEnd),
-      req.user.id
+      req.user.userId
     );
 
     res.status(201).json({

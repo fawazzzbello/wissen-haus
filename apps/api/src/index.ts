@@ -22,6 +22,9 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 // Middleware: Security Headers
 app.use(helmet());
 
+// Middleware: Trust proxy (for Railway and other reverse proxies)
+app.set('trust proxy', 1);
+
 // Middleware: CORS
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',

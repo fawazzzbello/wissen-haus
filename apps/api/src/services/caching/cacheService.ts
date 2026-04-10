@@ -1,4 +1,4 @@
-import { redis } from '@/config/redis';
+import { getRedis } from '@/config/redis';
 import { logger } from '@/utils/logger';
 import { pool } from '@/config/database';
 
@@ -8,6 +8,9 @@ export class CacheService {
    */
   static async get<T>(key: string): Promise<T | null> {
     try {
+      const redis = await getRedis();
+      if (!redis) return null;
+
       const value = await redis.get(key);
       if (value) {
         logger.debug(`✓ Cache hit: ${key}`);
@@ -27,7 +30,10 @@ export class CacheService {
    */
   static async set<T>(key: string, value: T, ttlSeconds: number = 3600): Promise<void> {
     try {
-      await redis.setex(key, ttlSeconds, JSON.stringify(value));
+      const redis = await getRedis();
+      if (!redis) return;
+
+      await redis.setEx(key, ttlSeconds, JSON.stringify(value));
       logger.debug(`✓ Cache set: ${key} (TTL: ${ttlSeconds}s)`);
       await this.recordCacheSize(key, JSON.stringify(value).length, ttlSeconds);
     } catch (error: any) {
@@ -40,6 +46,9 @@ export class CacheService {
    */
   static async delete(key: string): Promise<void> {
     try {
+      const redis = await getRedis();
+      if (!redis) return;
+
       await redis.del(key);
       logger.debug(`✓ Cache deleted: ${key}`);
     } catch (error: any) {
@@ -52,10 +61,13 @@ export class CacheService {
    */
   static async deletePattern(pattern: string): Promise<number> {
     try {
+      const redis = await getRedis();
+      if (!redis) return 0;
+
       const keys = await redis.keys(pattern);
       if (keys.length === 0) return 0;
 
-      await redis.del(...keys);
+      await redis.del(keys);
       logger.debug(`✓ Deleted ${keys.length} cache entries matching ${pattern}`);
       return keys.length;
     } catch (error: any) {
@@ -69,7 +81,10 @@ export class CacheService {
    */
   static async clear(): Promise<void> {
     try {
-      await redis.flushdb();
+      const redis = await getRedis();
+      if (!redis) return;
+
+      await redis.flushDb();
       logger.info('✓ Cache cleared');
     } catch (error: any) {
       logger.warn('Cache clear error:', error.message);
@@ -134,6 +149,9 @@ export class CacheService {
    */
   static async getStats(): Promise<any> {
     try {
+      const redis = await getRedis();
+      if (!redis) return {};
+
       const info = await redis.info('stats');
       const keys = await redis.keys('*');
 
