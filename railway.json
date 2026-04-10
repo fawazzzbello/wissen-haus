@@ -5,7 +5,7 @@
   },
   "deploy": {
     "numReplicas": 1,
-    "startCommand": "npm run build && npm start",
+    "startCommand": "npm run start:api",
     "restartPolicyType": "on_failure",
     "restartPolicyMaxRetries": 10
   }
