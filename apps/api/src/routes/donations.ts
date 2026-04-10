@@ -6,6 +6,18 @@ import {
   getDonation,
   getDonationStatistics,
   processRefund,
+  createCampaign,
+  getCampaignStats,
+  listAllCampaigns,
+  getCampaignDonations,
+  linkDonationToCampaign,
+  createCampaignMilestone,
+  getDonorPrefs,
+  updateDonorPrefs,
+  addDonorNoteHandler,
+  getDonorNotesHandler,
+  generateBatchReportHandler,
+  getBatchReportHandler,
 } from '@/controllers/donationController';
 import { authenticate, adminOnly } from '@/middleware/auth';
 
@@ -26,3 +38,23 @@ donationRouter.get('/', authenticate, adminOnly, listDonations);
 donationRouter.get('/stats', authenticate, adminOnly, getDonationStatistics);
 donationRouter.get('/:id', authenticate, adminOnly, getDonation);
 donationRouter.post('/:id/refund', authenticate, adminOnly, processRefund);
+
+// Campaign Management Routes (Admin only)
+donationRouter.post('/campaigns/create', authenticate, adminOnly, createCampaign);
+donationRouter.get('/campaigns/list', authenticate, adminOnly, listAllCampaigns);
+donationRouter.get('/campaigns/:id/stats', authenticate, adminOnly, getCampaignStats);
+donationRouter.get('/campaigns/:campaignId/donations', authenticate, adminOnly, getCampaignDonations);
+donationRouter.post('/campaigns/link-donation', authenticate, adminOnly, linkDonationToCampaign);
+donationRouter.post('/campaigns/milestones/create', authenticate, adminOnly, createCampaignMilestone);
+
+// Donor Preferences Routes
+donationRouter.get('/donors/:donorId/preferences', authenticate, getDonorPrefs);
+donationRouter.put('/donors/:donorId/preferences', authenticate, updateDonorPrefs);
+
+// Donor Notes Routes (Admin only)
+donationRouter.post('/donors/:donorId/notes', authenticate, adminOnly, addDonorNoteHandler);
+donationRouter.get('/donors/:donorId/notes', authenticate, adminOnly, getDonorNotesHandler);
+
+// Batch Reporting Routes (Admin only)
+donationRouter.post('/reports/batch', authenticate, adminOnly, generateBatchReportHandler);
+donationRouter.get('/reports/:reportId', authenticate, adminOnly, getBatchReportHandler);
