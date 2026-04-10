@@ -85,8 +85,19 @@ export async function login(req: Request, res: Response) {
     });
 
     // Return user and tokens
-    const { refreshToken, ...response } = userWithTokens;
-    res.json(response);
+    const { refreshToken, ...userResponse } = userWithTokens;
+    res.json({
+      user: {
+        id: userResponse.id,
+        email: userResponse.email,
+        firstName: userResponse.firstName,
+        lastName: userResponse.lastName,
+        role: userResponse.role,
+        status: userResponse.status,
+      },
+      accessToken: userResponse.accessToken,
+      expiresIn: userResponse.expiresIn,
+    });
   } catch (error: any) {
     logger.error('Login error:', error);
 
