@@ -27,7 +27,7 @@ To see a world where young people are empowered, self-reliant, and equipped to s
    - **Service Name**: `api`
    - **Root Directory**: `apps/api`
    - **Build Command**: `npm run build -w apps/api`
-   - **Start Command**: `npm run start -w apps/api`
+   - **Start Command**: `npm run start:api` ← **IMPORTANT: Must use start:api for port 5000**
 4. Click "Deploy"
 5. Once deployed, click "Generate Domain" to get your API URL (save it)
 
@@ -44,7 +44,7 @@ To see a world where young people are empowered, self-reliant, and equipped to s
    - **Service Name**: `web`
    - **Root Directory**: `apps/web`
    - **Build Command**: `npm run build -w apps/web`
-   - **Start Command**: `npm run start -w apps/web`
+   - **Start Command**: `npm run start:web` ← **IMPORTANT: Must use start:web for port 3000**
 3. Click "Deploy"
 4. Once deployed, click "Generate Domain" to get your Web URL (save it)
 
@@ -305,6 +305,39 @@ npm run start -w apps/web       # Start web production
    - Copy the "Domains" URL (e.g., `https://wissen-haus-api.railway.app`)
    - Use that as your `API_INTERNAL_URL` (without any path suffix like `/api`)
 4. After fixing, **Redeploy the Web service**
+
+### Issue: Login page loads but login fails with error
+**Symptom**: 
+- Login page accessible at `/login` but form submission fails
+- Error message: "Failed to login" or connection timeout
+- Network requests to `/api/auth/login` return 404
+
+**Root cause**: API service running on wrong port (3000 instead of 5000), or API routes not accessible
+
+**Critical Fix - Start Command**:
+1. Go to Railway dashboard → API Service → Settings → Deploy
+2. Check the **Start Command** field
+3. **MUST be**: `npm run start:api`
+4. **WRONG**: `npm run start -w apps/api` (runs on port 3000)
+5. If wrong, update it and click **Save**
+6. **Redeploy** the API service
+
+**Additional checks**:
+1. Verify API service environment variables:
+   - `FRONTEND_URL=https://your-web-domain.railway.app`
+2. Verify Web service environment variables:
+   - `NEXT_PUBLIC_API_URL=https://your-api-domain.railway.app/api`
+   - `API_INTERNAL_URL=https://your-api-domain.railway.app` (NO `/api` at end)
+3. Check API service logs for:
+   ```
+   ✓ Server running on http://localhost:5000
+   ```
+   If shows port 3000, the Start Command is wrong
+
+**Test the fix**:
+1. After redeploying, try login again
+2. Check browser DevTools → Network tab → find `POST /api/auth/login`
+3. Should return 200 status with user data, not 404
 
 ---
 
