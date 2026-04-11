@@ -24,6 +24,7 @@ export default function AdminLayout({
     }
   }, [user, isLoading, router, isMounted]);
 
+  // Show loading state while checking authentication
   if (!isMounted || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -35,10 +36,12 @@ export default function AdminLayout({
     );
   }
 
+  // If user is not authenticated, return null (will redirect via useEffect)
   if (!user) {
     return null;
   }
 
+  // User is authenticated, render layout with sidebar and content
   return (
     <div className="flex h-screen bg-gray-100">
       <AdminSidebar />

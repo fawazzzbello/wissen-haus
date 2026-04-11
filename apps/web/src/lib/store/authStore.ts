@@ -21,12 +21,16 @@ interface AuthState {
   setHydrated: (hydrated: boolean) => void;
 }
 
+const initialState = {
+  user: null,
+  token: null,
+  isHydrated: false,
+};
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
-      user: null,
-      token: null,
-      isHydrated: false,
+      ...initialState,
 
       setUser: (user) => set({ user }),
 
@@ -44,8 +48,9 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'auth-store',
       onRehydrateStorage: () => (state) => {
+        // Mark as hydrated after loading from storage
         if (state) {
-          state.setHydrated(true);
+          state.isHydrated = true;
         }
       },
     }

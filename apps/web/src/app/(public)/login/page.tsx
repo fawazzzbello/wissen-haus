@@ -23,15 +23,20 @@ export default function AdminLogin() {
       const response = await loginUser(email, password);
 
       // Store tokens and user info
-      setUser({
+      const userData = {
         id: response.user.id,
         email: response.user.email,
         firstName: response.user.firstName,
         lastName: response.user.lastName,
         role: response.user.role,
         status: response.user.status,
-      });
+      };
+
+      setUser(userData);
       setToken(response.accessToken);
+
+      // Give localStorage time to persist
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       // Redirect to admin dashboard
       router.push('/admin/dashboard');
