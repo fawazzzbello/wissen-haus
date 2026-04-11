@@ -9,7 +9,7 @@ import { useState } from 'react';
 const menuItems = [
   {
     label: 'Dashboard',
-    href: '/admin',
+    href: '/admin/dashboard',
     icon: '📊',
   },
   {
@@ -69,7 +69,7 @@ export default function AdminSidebar() {
       >
         {/* Logo */}
         <div className="p-6 border-b border-gray-800">
-          <Link href="/admin" className="flex items-center gap-3">
+          <Link href="/admin/dashboard" className="flex items-center gap-3">
             <div className="text-2xl">🏫</div>
             {isOpen && <span className="text-xl font-bold">Wissen</span>}
           </Link>

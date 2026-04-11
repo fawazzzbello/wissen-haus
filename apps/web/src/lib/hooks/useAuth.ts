@@ -5,10 +5,15 @@ import { useAuthStore } from '@/lib/store/authStore';
 import { getCurrentUser } from '@/lib/api-client';
 
 export function useAuth() {
-  const { user, token, setUser, logout } = useAuthStore();
+  const { user, token, setUser, logout, isHydrated } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Wait for store to be hydrated from localStorage
+    if (!isHydrated) {
+      return;
+    }
+
     // Check if user is already in store
     if (user && token) {
       setIsLoading(false);
@@ -30,7 +35,7 @@ export function useAuth() {
     } else {
       setIsLoading(false);
     }
-  }, [token, user, setUser, logout]);
+  }, [isHydrated, token, user, setUser, logout]);
 
   return {
     user,

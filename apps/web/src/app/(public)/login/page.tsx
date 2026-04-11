@@ -33,8 +33,8 @@ export default function AdminLogin() {
       });
       setToken(response.accessToken);
 
-      // Redirect to dashboard
-      router.push('/dashboard');
+      // Redirect to admin dashboard
+      router.push('/admin/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to login');
       setPassword('');
