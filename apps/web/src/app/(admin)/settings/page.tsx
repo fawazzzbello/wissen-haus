@@ -100,19 +100,24 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="p-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Settings</h1>
+      <div className="p-4 md:p-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">Settings</h1>
         <div className="card">
-          <p className="text-gray-600">Loading settings...</p>
+          <div className="flex justify-center py-8">
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-8 h-8 mb-2 border-4 border-primary-600 border-t-transparent rounded-full spinner"></div>
+              <p className="text-gray-600">Loading settings...</p>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="max-w-4xl">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Settings</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">Settings</h1>
 
         {message && (
           <div className={`mb-6 p-4 rounded-lg ${message.includes('successfully') ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>

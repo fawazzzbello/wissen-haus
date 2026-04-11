@@ -18,6 +18,7 @@ interface NotificationLog {
 export default function NotificationsPage() {
   const [logs, setLogs] = useState<NotificationLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filterType, setFilterType] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
 
@@ -28,6 +29,7 @@ export default function NotificationsPage() {
   const fetchLogs = async () => {
     try {
       setLoading(true);
+      setError(null);
       const api = getApiClient();
 
       const params = new URLSearchParams();
@@ -36,8 +38,9 @@ export default function NotificationsPage() {
 
       const response = await api.get(`/notifications/logs?${params}`);
       setLogs(response.data.logs || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching notification logs:', error);
+      setError(error.message || 'Failed to load notification logs');
     } finally {
       setLoading(false);
     }
@@ -71,23 +74,36 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Notification Logs</h1>
-          <p className="text-gray-600 mt-2">Track all sent notifications and delivery status</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Notification Logs</h1>
+          <p className="text-gray-600 mt-2 text-sm md:text-base">Track all sent notifications and delivery status</p>
         </div>
+
+        {/* Error State */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-800 mb-3">{error}</p>
+            <button
+              onClick={fetchLogs}
+              className="btn-secondary text-sm"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
 
         {/* Filters */}
         <div className="card mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="label">Type</label>
+              <label className="label text-sm">Type</label>
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="input"
+                className="input text-sm"
               >
                 <option value="">All Types</option>
                 <option value="email">Email</option>
@@ -95,11 +111,11 @@ export default function NotificationsPage() {
               </select>
             </div>
             <div>
-              <label className="label">Status</label>
+              <label className="label text-sm">Status</label>
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="input"
+                className="input text-sm"
               >
                 <option value="">All Status</option>
                 <option value="sent">Sent</option>
@@ -109,7 +125,7 @@ export default function NotificationsPage() {
               </select>
             </div>
             <div className="flex items-end">
-              <button onClick={fetchLogs} className="btn-secondary w-full">
+              <button onClick={fetchLogs} className="btn-secondary w-full text-sm">
                 Filter
               </button>
             </div>
@@ -119,33 +135,38 @@ export default function NotificationsPage() {
         {/* Notification Logs Table */}
         <div className="card">
           {loading ? (
-            <p className="text-gray-600">Loading notification logs...</p>
+            <div className="flex justify-center py-8">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-8 h-8 mb-2 border-4 border-primary-600 border-t-transparent rounded-full spinner"></div>
+                <p className="text-gray-600">Loading notification logs...</p>
+              </div>
+            </div>
           ) : logs.length === 0 ? (
-            <p className="text-gray-600">No notifications found</p>
+            <p className="text-gray-600 text-center py-8">No notifications found</p>
           ) : (
             <>
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left py-3 px-4 font-semibold">Type</th>
-                      <th className="text-left py-3 px-4 font-semibold">Recipient</th>
-                      <th className="text-left py-3 px-4 font-semibold">Subject</th>
-                      <th className="text-left py-3 px-4 font-semibold">Status</th>
-                      <th className="text-left py-3 px-4 font-semibold">Provider</th>
-                      <th className="text-left py-3 px-4 font-semibold">Date</th>
+                      <th className="text-left py-3 px-2 md:px-4 font-semibold">Type</th>
+                      <th className="hidden sm:table-cell text-left py-3 px-2 md:px-4 font-semibold">Recipient</th>
+                      <th className="hidden md:table-cell text-left py-3 px-2 md:px-4 font-semibold">Subject</th>
+                      <th className="text-left py-3 px-2 md:px-4 font-semibold">Status</th>
+                      <th className="hidden lg:table-cell text-left py-3 px-2 md:px-4 font-semibold">Provider</th>
+                      <th className="text-left py-3 px-2 md:px-4 font-semibold">Date</th>
                     </tr>
                   </thead>
                   <tbody>
                     {logs.map((log) => (
                       <tr key={log.id} className="border-b hover:bg-gray-50">
-                        <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded text-sm font-medium ${getTypeColor(log.notificationType)}`}>
+                        <td className="py-3 px-2 md:px-4">
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${getTypeColor(log.notificationType)}`}>
                             {log.notificationType.toUpperCase()}
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-sm">{log.recipient}</td>
-                        <td className="py-3 px-4 text-sm">
+                        <td className="hidden sm:table-cell py-3 px-2 md:px-4 text-xs truncate">{log.recipient}</td>
+                        <td className="hidden md:table-cell py-3 px-2 md:px-4 text-xs">
                           {log.subject ? (
                             <span title={log.subject} className="truncate block max-w-xs">
                               {log.subject}
@@ -154,13 +175,13 @@ export default function NotificationsPage() {
                             <span className="text-gray-500">-</span>
                           )}
                         </td>
-                        <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded text-sm font-medium ${getStatusColor(log.status)}`}>
+                        <td className="py-3 px-2 md:px-4">
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(log.status)}`}>
                             {log.status.charAt(0).toUpperCase() + log.status.slice(1)}
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-600">{log.provider || '-'}</td>
-                        <td className="py-3 px-4 text-sm text-gray-600">
+                        <td className="hidden lg:table-cell py-3 px-2 md:px-4 text-xs text-gray-600">{log.provider || '-'}</td>
+                        <td className="py-3 px-2 md:px-4 text-xs text-gray-600">
                           {formatDate(log.sentAt || log.createdAt)}
                         </td>
                       </tr>
@@ -168,7 +189,7 @@ export default function NotificationsPage() {
                   </tbody>
                 </table>
               </div>
-              <p className="text-sm text-gray-500 mt-4">Total: {logs.length} notifications</p>
+              <p className="text-xs text-gray-500 mt-4">Total: {logs.length} notifications</p>
             </>
           )}
         </div>
