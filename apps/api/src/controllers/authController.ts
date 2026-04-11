@@ -77,11 +77,13 @@ export async function login(req: Request, res: Response) {
     const userWithTokens = await loginUser(email, password);
 
     // Set refresh token in httpOnly cookie
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('refreshToken', userWithTokens.refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: isProduction,
+      sameSite: isProduction ? 'lax' : 'lax', // Use 'lax' for custom domain compatibility
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      domain: isProduction ? '.wissenhaus.org' : undefined, // Allow subdomain on production
     });
 
     // Return user and tokens

@@ -31,6 +31,8 @@ const allowedOrigins = [
   'http://localhost:3001',
   'https://www.wissenhaus.org',
   'https://wissenhaus.org',
+  'https://wissenhaus.org/',
+  'https://www.wissenhaus.org/',
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
@@ -41,14 +43,29 @@ app.use(cors({
       return callback(null, true);
     }
 
-    if (allowedOrigins.includes(origin) ||
-        process.env.NODE_ENV === 'development') {
+    // In development, allow all origins
+    if (process.env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+
+    // Check if origin matches allowed origins (with or without trailing slash)
+    const originWithoutTrailingSlash = origin.replace(/\/$/, '');
+    const isAllowed = allowedOrigins.some((allowedOrigin) => {
+      if (!allowedOrigin) return false;
+      const normalizedAllowed = allowedOrigin.replace(/\/$/, '');
+      return normalizedAllowed === originWithoutTrailingSlash;
+    });
+
+    if (isAllowed) {
       callback(null, true);
     } else {
-      callback(new Error('CORS not allowed'));
+      logger.warn(`CORS blocked request from: ${origin}`);
+      callback(new Error(`CORS not allowed for origin: ${origin}`));
     }
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 // Middleware: Webhook handler (raw body) - must come before json parser

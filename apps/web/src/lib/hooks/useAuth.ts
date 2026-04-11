@@ -14,27 +14,32 @@ export function useAuth() {
       return;
     }
 
-    // Check if user is already in store
-    if (user && token) {
-      setIsLoading(false);
-      return;
-    }
-
-    // Try to fetch current user if we have a token
-    if (token && !user) {
-      getCurrentUser()
-        .then((response) => {
-          setUser(response.user);
-        })
-        .catch(() => {
-          logout();
-        })
-        .finally(() => {
+    const initializeAuth = async () => {
+      try {
+        // Check if user is already in store
+        if (user && token) {
           setIsLoading(false);
-        });
-    } else {
-      setIsLoading(false);
-    }
+          return;
+        }
+
+        // Try to fetch current user if we have a token
+        if (token && !user) {
+          const response = await getCurrentUser();
+          if (response.user) {
+            setUser(response.user);
+          } else {
+            logout();
+          }
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        logout();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeAuth();
   }, [isHydrated, token, user, setUser, logout]);
 
   return {

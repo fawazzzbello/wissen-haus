@@ -15,6 +15,7 @@ function getAxiosInstance(): AxiosInstance {
       headers: {
         'Content-Type': 'application/json',
       },
+      withCredentials: true, // Enable sending cookies with requests
     });
 
     // Add request interceptor to include auth token

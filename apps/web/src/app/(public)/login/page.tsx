@@ -22,6 +22,11 @@ export default function AdminLogin() {
     try {
       const response = await loginUser(email, password);
 
+      // Validate response structure
+      if (!response || !response.user || !response.accessToken) {
+        throw new Error('Invalid login response from server');
+      }
+
       // Store tokens and user info
       const userData = {
         id: response.user.id,
@@ -32,16 +37,19 @@ export default function AdminLogin() {
         status: response.user.status,
       };
 
+      // Set auth state
       setUser(userData);
       setToken(response.accessToken);
 
-      // Give localStorage time to persist
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Give localStorage and Zustand persist middleware time to save
+      // This ensures data is available when the admin layout loads
+      await new Promise(resolve => setTimeout(resolve, 200));
 
       // Redirect to admin dashboard
       router.push('/admin/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Failed to login');
+      console.error('Login error:', err);
+      setError(err.message || 'Failed to login. Please try again.');
       setPassword('');
     } finally {
       setIsLoading(false);
