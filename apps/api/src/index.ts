@@ -4,11 +4,11 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import path from 'path';
-import bcrypt from 'bcrypt';
 import { pool, initializeDatabase } from '@/config/database';
 import { setupRoutes } from '@/routes';
 import { errorHandler, requestLogger } from '@/middleware';
 import { logger } from '@/utils/logger';
+import { ensureDatabasePopulated } from '@/db/seed';
 
 // Load environment variables
 dotenv.config({
@@ -117,45 +117,6 @@ app.use((req, res) => {
   });
 });
 
-// Auto-seed default admin user if database is empty
-async function ensureDefaultAdminUser() {
-  try {
-    const client = await pool.connect();
-    try {
-      // Check if users table has any records
-      const result = await client.query('SELECT COUNT(*) FROM users');
-      const userCount = parseInt(result.rows[0].count, 10);
-
-      if (userCount === 0) {
-        logger.info('⏳ Creating default admin user...');
-
-        // Create default admin user
-        const hashedPassword = await bcrypt.hash('admin@123456', 10);
-
-        await client.query(
-          `INSERT INTO users (email, password_hash, first_name, last_name, role, status)
-           VALUES ($1, $2, $3, $4, $5, $6)`,
-          [
-            'admin@wissen-haus.org',
-            hashedPassword,
-            'Admin',
-            'User',
-            'super_admin',
-            'active',
-          ]
-        );
-
-        logger.info('✓ Created default admin user: admin@wissen-haus.org (password: admin@123456)');
-      }
-    } finally {
-      client.release();
-    }
-  } catch (error: any) {
-    // Don't fail startup if seeding fails, just log it
-    logger.warn('⚠ Could not ensure default admin user:', error.message);
-  }
-}
-
 // Initialize database and start server
 async function startServer() {
   let dbReady = false;
@@ -170,8 +131,8 @@ async function startServer() {
     await initializeDatabase();
     logger.info('✓ Database schema initialized');
 
-    // Ensure default admin user exists
-    await ensureDefaultAdminUser();
+    // Ensure database is populated with seed data
+    await ensureDatabasePopulated();
 
     dbReady = true;
   } catch (error: any) {
