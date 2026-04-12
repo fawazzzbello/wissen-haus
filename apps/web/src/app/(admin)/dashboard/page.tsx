@@ -1,5 +1,9 @@
 'use client';
 
+// Ensure this page is always rendered dynamically (not static)
+export const dynamic = 'force-dynamic';
+
+
 import { useAuth } from '@/lib/hooks/useAuth';
 
 export default function AdminDashboard() {

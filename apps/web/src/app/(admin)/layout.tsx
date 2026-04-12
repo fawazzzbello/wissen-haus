@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import AdminSidebar from '@/components/admin/Sidebar';
 
+// Ensure this layout is always rendered dynamically (not static)
+export const dynamic = 'force-dynamic';
+
 export default function AdminLayout({
   children,
 }: {
