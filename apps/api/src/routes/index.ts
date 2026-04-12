@@ -4,6 +4,7 @@ import { authRouter } from './auth';
 import { userRouter } from './users';
 import { donationRouter } from './donations';
 import { contentRouter } from './content';
+import { homepageRouter } from './homepage';
 import { notificationRouter } from './notifications';
 import { contactRouter } from './contact';
 import { aiRouter } from './ai';
@@ -44,6 +45,9 @@ export function setupRoutes(app: Express) {
 
   // Content routes
   app.use('/api/content', contentRouter);
+
+  // Homepage sections routes
+  app.use('/api/homepage', homepageRouter);
 
   // Contact routes
   app.use('/api/contact', contactRouter);

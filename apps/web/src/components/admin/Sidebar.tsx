@@ -13,6 +13,11 @@ const menuItems = [
     icon: '📊',
   },
   {
+    label: 'Homepage Editor',
+    href: '/admin/homepage',
+    icon: '🏠',
+  },
+  {
     label: 'Donations',
     href: '/admin/donations',
     icon: '💝',
