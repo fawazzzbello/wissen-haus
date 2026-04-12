@@ -24,21 +24,17 @@ export default function AdminLayout({
     }
   }, [user, isLoading, router, isMounted]);
 
-  // Show loading state while checking authentication
-  if (!isMounted || isLoading) {
+  // Show loading state while checking authentication or redirecting
+  // This prevents 404 errors during the auth check
+  if (!isMounted || isLoading || !user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 mb-4 border-4 border-primary-600 border-t-transparent rounded-full spinner"></div>
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
     );
-  }
-
-  // If user is not authenticated, return null (will redirect via useEffect)
-  if (!user) {
-    return null;
   }
 
   // User is authenticated, render layout with sidebar and content
