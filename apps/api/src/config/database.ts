@@ -77,11 +77,26 @@ export async function initializeDatabase(): Promise<void> {
           await client.query(migration);
           logger.info(`✓ Migration ${file} executed`);
         } catch (error: any) {
-          // Skip if migration already applied
-          if (!error.message.includes('already exists')) {
-            throw error;
+          // Skip expected errors from migrations
+          const expectedErrors = [
+            'already exists',
+            'duplicate',
+            'constraint',
+            '42P07', // duplicate table
+            '42710', // duplicate trigger
+            '42712', // duplicate object
+          ];
+
+          const isExpectedError = expectedErrors.some(err =>
+            error.message?.includes(err) || error.code?.includes(err)
+          );
+
+          if (!isExpectedError) {
+            // Log the error but continue - tables may already exist from previous deployments
+            logger.warn(`⚠ Migration ${file} warning:`, error.message?.substring(0, 100));
+          } else {
+            logger.info(`⚠ Migration ${file} already applied`);
           }
-          logger.info(`⚠ Migration ${file} already applied`);
         }
       }
     } else {

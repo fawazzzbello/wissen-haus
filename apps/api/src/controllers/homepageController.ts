@@ -34,6 +34,11 @@ export async function getHomepageSections(req: Request, res: Response) {
       client.release();
     }
   } catch (error: any) {
+    // If table doesn't exist (42P01), return empty sections - it will be created on next migration
+    if (error.code === '42P01') {
+      logger.warn('Homepage sections table not yet created - returning empty');
+      return res.json({ sections: [] });
+    }
     logger.error('Get homepage sections error:', error);
     res.status(500).json({ error: 'Failed to fetch homepage sections' });
   }
