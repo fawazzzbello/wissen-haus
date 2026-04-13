@@ -164,11 +164,13 @@ export async function refresh(req: Request, res: Response) {
     const tokens = await refreshTokens(refreshToken);
 
     // Update refresh token in cookie
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: isProduction,
+      sameSite: isProduction ? 'lax' : 'lax', // Use 'lax' for custom domain compatibility
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      domain: isProduction ? '.wissenhaus.org' : undefined, // Allow subdomain on production
     });
 
     res.json({

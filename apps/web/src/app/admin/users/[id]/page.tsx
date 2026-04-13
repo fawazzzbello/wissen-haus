@@ -1,5 +1,8 @@
 'use client';
 
+// Ensure this page is always rendered dynamically
+export const dynamic = 'force-dynamic';
+
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getApiClient } from '@/lib/api-client';
