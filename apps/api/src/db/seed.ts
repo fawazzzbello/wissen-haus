@@ -13,14 +13,14 @@ export async function seedDatabase() {
     const demoPassword = await bcrypt.hash('demo@123456', 10);
 
     await client.query(
-      `INSERT INTO users (email, password, first_name, last_name, role, status, created_at)
+      `INSERT INTO users (email, password_hash, first_name, last_name, role, status, created_at)
        VALUES ($1, $2, $3, $4, $5, $6, NOW())
        ON CONFLICT (email) DO NOTHING`,
       ['admin@wissen-haus.org', adminPassword, 'Admin', 'User', 'super_admin', 'active']
     );
 
     await client.query(
-      `INSERT INTO users (email, password, first_name, last_name, role, status, created_at)
+      `INSERT INTO users (email, password_hash, first_name, last_name, role, status, created_at)
        VALUES ($1, $2, $3, $4, $5, $6, NOW())
        ON CONFLICT (email) DO NOTHING`,
       ['demo@wissen-haus.org', demoPassword, 'Demo', 'User', 'admin', 'active']
@@ -52,20 +52,26 @@ export async function seedDatabase() {
     // 3. Seed Donations
     logger.info('📝 Seeding donations...');
     const donations = [
-      { amount: 50000, type: 'one_time', status: 'completed', donor_email: 'john@example.com' },
-      { amount: 100000, type: 'recurring', status: 'completed', donor_email: 'sarah@example.com' },
-      { amount: 25000, type: 'one_time', status: 'completed', donor_email: 'mike@example.com' },
-      { amount: 75000, type: 'recurring', status: 'completed', donor_email: 'emily@example.com' },
-      { amount: 150000, type: 'one_time', status: 'completed', donor_email: 'james@example.com' },
+      { amount: 500.00, type: 'one_time', status: 'completed', donor_email: 'john@example.com' },
+      { amount: 1000.00, type: 'recurring', status: 'completed', donor_email: 'sarah@example.com' },
+      { amount: 250.00, type: 'one_time', status: 'completed', donor_email: 'mike@example.com' },
+      { amount: 750.00, type: 'recurring', status: 'completed', donor_email: 'emily@example.com' },
+      { amount: 1500.00, type: 'one_time', status: 'completed', donor_email: 'james@example.com' },
     ];
 
     for (const donation of donations) {
-      await client.query(
-        `INSERT INTO donations (amount_cents, donation_type, status, donor_email, created_at)
-         VALUES ($1, $2, $3, $4, NOW())
-         ON CONFLICT DO NOTHING`,
-        [donation.amount, donation.type, donation.status, donation.donor_email]
-      );
+      // Get donor_id from email
+      const donorResult = await client.query('SELECT id FROM donors WHERE email = $1', [donation.donor_email]);
+
+      if (donorResult.rows.length > 0) {
+        const donor_id = donorResult.rows[0].id;
+        await client.query(
+          `INSERT INTO donations (donor_id, amount, donation_type, status, currency, created_at)
+           VALUES ($1, $2, $3, $4, $5, NOW())
+           ON CONFLICT DO NOTHING`,
+          [donor_id, donation.amount, donation.type, donation.status, 'USD']
+        );
+      }
     }
 
     logger.info('✓ Donations seeded');
@@ -144,37 +150,6 @@ export async function seedDatabase() {
     }
 
     logger.info('✓ Homepage sections ensured');
-
-    // 6. Seed Blog Posts
-    logger.info('📝 Seeding blog posts...');
-    const blogPosts = [
-      {
-        title: 'Education Transforms Lives',
-        slug: 'education-transforms-lives',
-        content: 'Read how quality education has transformed the lives of our students...',
-      },
-      {
-        title: 'Student Success Stories',
-        slug: 'student-success-stories',
-        content: 'Inspiring stories from our scholarship recipients...',
-      },
-      {
-        title: 'The Power of Mentorship',
-        slug: 'power-of-mentorship',
-        content: 'Why mentorship is crucial for student development...',
-      },
-    ];
-
-    for (const post of blogPosts) {
-      await client.query(
-        `INSERT INTO blog_posts (title, slug, content_html, is_published, created_at, updated_at)
-         VALUES ($1, $2, $3, true, NOW(), NOW())
-         ON CONFLICT (slug) DO NOTHING`,
-        [post.title, post.slug, `<p>${post.content}</p>`]
-      );
-    }
-
-    logger.info('✓ Blog posts seeded');
 
     logger.info('✅ Database seeding completed successfully!');
   } catch (error: any) {
