@@ -26,28 +26,59 @@ async function ensureHomepageSectionsExist() {
   try {
     const client = await pool.connect();
     try {
+      // First, ensure the table exists
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS homepage_sections (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          section_name VARCHAR(100) NOT NULL UNIQUE,
+          section_type VARCHAR(50) NOT NULL DEFAULT 'body',
+          title VARCHAR(255),
+          subtitle VARCHAR(255),
+          description TEXT,
+          html_content TEXT,
+          image_url VARCHAR(500),
+          background_color VARCHAR(7),
+          text_color VARCHAR(7),
+          button_text VARCHAR(100),
+          button_url VARCHAR(500),
+          is_active BOOLEAN DEFAULT true,
+          display_order INTEGER DEFAULT 1,
+          updated_by UUID REFERENCES users(id) ON DELETE SET NULL,
+          created_at TIMESTAMP DEFAULT NOW(),
+          updated_at TIMESTAMP DEFAULT NOW(),
+          CONSTRAINT valid_section_type CHECK (section_type IN ('hero', 'header', 'body', 'footer', 'cta'))
+        )
+      `);
+
+      // Create indexes
+      await client.query(`CREATE INDEX IF NOT EXISTS idx_homepage_sections_name ON homepage_sections(section_name)`);
+      await client.query(`CREATE INDEX IF NOT EXISTS idx_homepage_sections_active_order ON homepage_sections(is_active, display_order)`);
+
+      // Insert default sections
       const defaultSections = [
-        { name: 'hero', type: 'hero', order: 1 },
-        { name: 'header', type: 'header', order: 2 },
-        { name: 'about', type: 'body', order: 3 },
-        { name: 'impact', type: 'body', order: 4 },
-        { name: 'cta', type: 'cta', order: 5 },
-        { name: 'footer', type: 'footer', order: 6 },
+        { name: 'hero', type: 'hero', title: 'Empowering Future Leaders', subtitle: 'Educational opportunities for underprivileged youth', description: 'Wissen-Haus provides comprehensive educational support and mentorship to help young people reach their full potential.', order: 1 },
+        { name: 'header', type: 'header', title: 'Our Mission', subtitle: 'Education is the key to breaking the cycle of poverty', description: 'We believe that every child deserves access to quality education regardless of their socioeconomic background.', order: 2 },
+        { name: 'about', type: 'body', title: 'About Wissen-Haus', subtitle: 'Building Futures Through Education', description: 'Founded with a vision to democratize education, Wissen-Haus has been transforming lives through personalized learning and mentorship programs. Our impact spans across multiple communities, reaching hundreds of students annually.', order: 3 },
+        { name: 'impact', type: 'body', title: 'Our Impact', subtitle: 'Making a Difference', description: 'Since our inception, we have helped thousands of students achieve their educational goals. Through dedicated mentors and comprehensive programs, we are building a brighter future.', order: 4 },
+        { name: 'cta', type: 'cta', title: 'Join Our Mission', subtitle: 'Help us empower the next generation', description: 'Your contribution can transform a young person\'s life. Together, we can create lasting change.', order: 5 },
+        { name: 'footer', type: 'footer', title: 'Contact & Connect', subtitle: 'Get in touch with us', description: 'Reach out to learn more about our programs or to volunteer with Wissen-Haus.', order: 6 },
       ];
 
       for (const section of defaultSections) {
         await client.query(
-          `INSERT INTO homepage_sections (section_name, section_type, display_order, is_active)
-           VALUES ($1, $2, $3, true)
+          `INSERT INTO homepage_sections (section_name, section_type, title, subtitle, description, is_active, display_order)
+           VALUES ($1, $2, $3, $4, $5, true, $6)
            ON CONFLICT (section_name) DO NOTHING`,
-          [section.name, section.type, section.order]
+          [section.name, section.type, section.title, section.subtitle, section.description, section.order]
         );
       }
+
+      logger.info('✓ Homepage sections table created and populated');
     } finally {
       client.release();
     }
   } catch (error: any) {
-    logger.warn('⚠ Could not ensure homepage sections:', error.message?.substring(0, 100));
+    logger.warn('⚠ Could not ensure homepage sections:', error.message?.substring(0, 150));
   }
 }
 
