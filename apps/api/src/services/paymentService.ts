@@ -338,23 +338,36 @@ export async function getDonations(
   status?: string
 ) {
   try {
-    let query_str = 'SELECT * FROM donations';
+    let query_str = `
+      SELECT
+        d.id,
+        d.amount,
+        d.currency,
+        d.donation_type as "donationType",
+        d.status,
+        d.processed_at as "processedAt",
+        d.created_at as "createdAt",
+        don.email as "donorEmail",
+        COALESCE(don.first_name || ' ' || don.last_name, 'Anonymous') as "donorName"
+      FROM donations d
+      LEFT JOIN donors don ON d.donor_id = don.id
+    `;
     const params: any[] = [];
 
     if (status) {
-      query_str += ' WHERE status = $1';
+      query_str += ' WHERE d.status = $1';
       params.push(status);
     }
 
-    query_str += ' ORDER BY created_at DESC LIMIT $' + (params.length + 1) + ' OFFSET $' + (params.length + 2);
+    query_str += ' ORDER BY d.created_at DESC LIMIT $' + (params.length + 1) + ' OFFSET $' + (params.length + 2);
     params.push(limit, offset);
 
     const result = await query(query_str, params);
 
     // Get total count
-    let countQuery = 'SELECT COUNT(*) FROM donations';
+    let countQuery = 'SELECT COUNT(*) FROM donations d';
     if (status) {
-      countQuery += ' WHERE status = $1';
+      countQuery += ' WHERE d.status = $1';
     }
 
     const countResult = await query(countQuery, status ? [status] : []);
@@ -392,7 +405,15 @@ export async function getDonationStats() {
     if (!result.rows[0]) {
       throw new Error('Failed to fetch donation statistics');
     }
-    return result.rows[0];
+
+    const row = result.rows[0];
+    return {
+      totalDonations: parseInt(row.total_donations) || 0,
+      totalAmount: parseFloat(row.total_amount) || 0,
+      averageAmount: parseFloat(row.average_amount) || 0,
+      uniqueDonors: parseInt(row.unique_donors) || 0,
+      recurringCount: parseInt(row.recurring_count) || 0,
+    };
   } catch (error) {
     logger.error('Error fetching donation stats:', error);
     throw error;

@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic';
 
 
 import { useAuth } from '@/lib/hooks/useAuth';
+import Link from 'next/link';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -76,15 +77,15 @@ export default function AdminDashboard() {
             <div className="card">
               <h3 className="text-base md:text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
               <div className="space-y-2">
-                <button className="w-full btn-primary text-xs md:text-sm">
+                <Link href="/admin/donations" className="block w-full btn-primary text-xs md:text-sm text-center">
                   View All Donations
-                </button>
-                <button className="w-full btn-secondary text-xs md:text-sm">
+                </Link>
+                <Link href="/admin/users" className="block w-full btn-secondary text-xs md:text-sm text-center">
                   Manage Users
-                </button>
-                <button className="w-full btn-secondary text-xs md:text-sm">
+                </Link>
+                <Link href="/admin/content" className="block w-full btn-secondary text-xs md:text-sm text-center">
                   Edit Content
-                </button>
+                </Link>
               </div>
             </div>
 

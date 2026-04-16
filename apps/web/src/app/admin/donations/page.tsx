@@ -66,11 +66,13 @@ export default function DonationsPage() {
     }
   };
 
-  const formatCurrency = (amount: number, currency: string) => {
+  const formatCurrency = (amount: number | null | undefined, currency: string) => {
+    if (!amount) return '$0.00';
+    // Amount is already in dollars (not cents), so don't divide by 100
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency || 'USD',
-    }).format(amount / 100);
+    }).format(amount);
   };
 
   const formatDate = (dateString: string) => {
