@@ -145,8 +145,8 @@ export async function reorderHomepageSections(req: Request, res: Response) {
         `SELECT * FROM homepage_sections ORDER BY display_order ASC`
       );
 
-      const sections = result.rows.map(mapRowToSection);
-      res.json({ sections, message: 'Sections reordered successfully' });
+      const reorderedSections = result.rows.map(mapRowToSection);
+      res.json({ sections: reorderedSections, message: 'Sections reordered successfully' });
     } finally {
       client.release();
     }

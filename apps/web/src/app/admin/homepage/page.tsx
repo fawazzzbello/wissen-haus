@@ -147,7 +147,7 @@ export default function HomepageEditor() {
   };
 
   const handleFieldChange = (field: string, value: any) => {
-    setFormData(prev => ({
+    setFormData((prev: any) => ({
       ...prev,
       [field]: value
     }));
