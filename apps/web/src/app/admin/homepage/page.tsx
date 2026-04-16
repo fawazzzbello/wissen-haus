@@ -182,6 +182,21 @@ export default function HomepageEditor() {
           </div>
         )}
 
+        {/* Debug Info - Remove in production */}
+        {sections.length === 0 && contentPages.length === 0 && !error && !loading && (
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-yellow-800 mb-3">
+              No data loaded. This may happen if the database hasn't been seeded yet.
+            </p>
+            <p className="text-yellow-700 text-sm mb-3">
+              Please ensure you've run the database migrations and seed script:
+            </p>
+            <code className="text-xs bg-yellow-100 p-2 rounded block text-yellow-900">
+              npm run migrate && npm run seed
+            </code>
+          </div>
+        )}
+
         {/* Mode Tabs */}
         <div className="mb-6">
           <div className="flex gap-2 border-b border-gray-200">
