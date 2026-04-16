@@ -7,20 +7,20 @@ import { getApiClient } from '@/lib/api-client';
 
 interface HomepageSection {
   id: string;
-  section_name: string;
-  section_type: string;
+  sectionName: string;
+  sectionType: string;
   title?: string;
   subtitle?: string;
   description?: string;
-  html_content?: string;
-  image_url?: string;
-  background_color?: string;
-  text_color?: string;
-  button_text?: string;
-  button_url?: string;
-  display_order: number;
-  is_active: boolean;
-  updated_at: string;
+  htmlContent?: string;
+  imageUrl?: string;
+  backgroundColor?: string;
+  textColor?: string;
+  buttonText?: string;
+  buttonUrl?: string;
+  displayOrder: number;
+  isActive: boolean;
+  updatedAt: string;
 }
 
 export default function HomepageEditor() {
@@ -66,20 +66,20 @@ export default function HomepageEditor() {
         title: formData.title,
         subtitle: formData.subtitle,
         description: formData.description,
-        htmlContent: formData.html_content,
-        imageUrl: formData.image_url,
-        backgroundColor: formData.background_color,
-        textColor: formData.text_color,
-        buttonText: formData.button_text,
-        buttonUrl: formData.button_url,
-        displayOrder: formData.display_order,
+        htmlContent: formData.htmlContent,
+        imageUrl: formData.imageUrl,
+        backgroundColor: formData.backgroundColor,
+        textColor: formData.textColor,
+        buttonText: formData.buttonText,
+        buttonUrl: formData.buttonUrl,
+        displayOrder: formData.displayOrder,
       };
 
-      const response = await api.put(`/homepage/${selectedSection.section_name}`, payload);
+      const response = await api.put(`/homepage/${selectedSection.sectionName}`, payload);
 
       // Update local state
       const updated = sections.map(s =>
-        s.section_name === selectedSection.section_name ? response.data.section : s
+        s.sectionName === selectedSection.sectionName ? response.data.section : s
       );
       setSections(updated);
       setSelectedSection(response.data.section);
@@ -147,8 +147,8 @@ export default function HomepageEditor() {
                         : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                     }`}
                   >
-                    <p className="font-medium text-sm md:text-base capitalize">{section.section_name}</p>
-                    <p className="text-xs opacity-75">{section.section_type}</p>
+                    <p className="font-medium text-sm md:text-base capitalize">{section.sectionName}</p>
+                    <p className="text-xs opacity-75">{section.sectionType}</p>
                   </button>
                 ))}
               </div>
@@ -160,7 +160,7 @@ export default function HomepageEditor() {
             {selectedSection && (
               <div className="card">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                  Edit: {selectedSection.section_name.toUpperCase()}
+                  Edit: {selectedSection.sectionName.toUpperCase()}
                 </h2>
 
                 <div className="space-y-6">
@@ -204,8 +204,8 @@ export default function HomepageEditor() {
                   <div>
                     <label className="label">HTML Content</label>
                     <textarea
-                      value={formData.html_content || ''}
-                      onChange={(e) => handleFieldChange('html_content', e.target.value)}
+                      value={formData.htmlContent || ''}
+                      onChange={(e) => handleFieldChange('htmlContent', e.target.value)}
                       placeholder="Custom HTML content (optional)"
                       rows={8}
                       className="input resize-none font-mono text-sm"
@@ -220,8 +220,8 @@ export default function HomepageEditor() {
                     <label className="label">Image URL</label>
                     <input
                       type="url"
-                      value={formData.image_url || ''}
-                      onChange={(e) => handleFieldChange('image_url', e.target.value)}
+                      value={formData.imageUrl || ''}
+                      onChange={(e) => handleFieldChange('imageUrl', e.target.value)}
                       placeholder="https://example.com/image.jpg"
                       className="input"
                     />
@@ -234,14 +234,14 @@ export default function HomepageEditor() {
                       <div className="flex gap-2">
                         <input
                           type="color"
-                          value={formData.background_color || '#ffffff'}
-                          onChange={(e) => handleFieldChange('background_color', e.target.value)}
+                          value={formData.backgroundColor || '#ffffff'}
+                          onChange={(e) => handleFieldChange('backgroundColor', e.target.value)}
                           className="w-16 h-10 rounded cursor-pointer"
                         />
                         <input
                           type="text"
-                          value={formData.background_color || '#ffffff'}
-                          onChange={(e) => handleFieldChange('background_color', e.target.value)}
+                          value={formData.backgroundColor || '#ffffff'}
+                          onChange={(e) => handleFieldChange('backgroundColor', e.target.value)}
                           placeholder="#ffffff"
                           className="input flex-1"
                         />
@@ -254,14 +254,14 @@ export default function HomepageEditor() {
                       <div className="flex gap-2">
                         <input
                           type="color"
-                          value={formData.text_color || '#000000'}
-                          onChange={(e) => handleFieldChange('text_color', e.target.value)}
+                          value={formData.textColor || '#000000'}
+                          onChange={(e) => handleFieldChange('textColor', e.target.value)}
                           className="w-16 h-10 rounded cursor-pointer"
                         />
                         <input
                           type="text"
-                          value={formData.text_color || '#000000'}
-                          onChange={(e) => handleFieldChange('text_color', e.target.value)}
+                          value={formData.textColor || '#000000'}
+                          onChange={(e) => handleFieldChange('textColor', e.target.value)}
                           placeholder="#000000"
                           className="input flex-1"
                         />
@@ -275,8 +275,8 @@ export default function HomepageEditor() {
                       <label className="label">Button Text</label>
                       <input
                         type="text"
-                        value={formData.button_text || ''}
-                        onChange={(e) => handleFieldChange('button_text', e.target.value)}
+                        value={formData.buttonText || ''}
+                        onChange={(e) => handleFieldChange('buttonText', e.target.value)}
                         placeholder="e.g., Learn More"
                         className="input"
                       />
@@ -287,8 +287,8 @@ export default function HomepageEditor() {
                       <label className="label">Button URL</label>
                       <input
                         type="url"
-                        value={formData.button_url || ''}
-                        onChange={(e) => handleFieldChange('button_url', e.target.value)}
+                        value={formData.buttonUrl || ''}
+                        onChange={(e) => handleFieldChange('buttonUrl', e.target.value)}
                         placeholder="e.g., /donate"
                         className="input"
                       />
@@ -300,8 +300,8 @@ export default function HomepageEditor() {
                     <label className="label">Display Order</label>
                     <input
                       type="number"
-                      value={formData.display_order || 1}
-                      onChange={(e) => handleFieldChange('display_order', parseInt(e.target.value))}
+                      value={formData.displayOrder || 1}
+                      onChange={(e) => handleFieldChange('displayOrder', parseInt(e.target.value))}
                       min="1"
                       className="input"
                     />

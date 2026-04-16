@@ -29,7 +29,8 @@ export async function getHomepageSections(req: Request, res: Response) {
       const result = await client.query(
         `SELECT * FROM homepage_sections WHERE is_active = true ORDER BY display_order ASC`
       );
-      res.json({ sections: result.rows });
+      const sections = result.rows.map(mapRowToSection);
+      res.json({ sections });
     } finally {
       client.release();
     }
@@ -57,7 +58,8 @@ export async function getHomepageSection(req: Request, res: Response) {
       if (result.rows.length === 0) {
         return res.status(404).json({ error: 'Section not found' });
       }
-      res.json({ section: result.rows[0] });
+      const section = mapRowToSection(result.rows[0]);
+      res.json({ section });
     } finally {
       client.release();
     }
@@ -110,7 +112,8 @@ export async function updateHomepageSection(req: Request, res: Response) {
         [sectionName]
       );
 
-      res.json({ section: result.rows[0], message: 'Section updated successfully' });
+      const section = mapRowToSection(result.rows[0]);
+      res.json({ section, message: 'Section updated successfully' });
     } finally {
       client.release();
     }
@@ -142,7 +145,8 @@ export async function reorderHomepageSections(req: Request, res: Response) {
         `SELECT * FROM homepage_sections ORDER BY display_order ASC`
       );
 
-      res.json({ sections: result.rows, message: 'Sections reordered successfully' });
+      const sections = result.rows.map(mapRowToSection);
+      res.json({ sections, message: 'Sections reordered successfully' });
     } finally {
       client.release();
     }
@@ -150,4 +154,25 @@ export async function reorderHomepageSections(req: Request, res: Response) {
     logger.error('Reorder sections error:', error);
     res.status(500).json({ error: 'Failed to reorder sections' });
   }
+}
+
+function mapRowToSection(row: any): HomepageSection {
+  return {
+    id: row.id,
+    sectionName: row.section_name,
+    sectionType: row.section_type,
+    title: row.title,
+    subtitle: row.subtitle,
+    description: row.description,
+    htmlContent: row.html_content,
+    imageUrl: row.image_url,
+    backgroundColor: row.background_color,
+    textColor: row.text_color,
+    buttonText: row.button_text,
+    buttonUrl: row.button_url,
+    isActive: row.is_active,
+    displayOrder: row.display_order,
+    updatedAt: row.updated_at,
+    updatedBy: row.updated_by,
+  };
 }
