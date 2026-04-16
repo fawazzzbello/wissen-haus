@@ -192,15 +192,106 @@ export async function seedDatabase() {
 
     logger.info('✓ Content pages seeded');
 
-    // 5. Seed Homepage Sections (already done by migration, but ensure they exist)
+    // 5. Seed Homepage Sections with Modern Content
     logger.info('📝 Ensuring homepage sections...');
     const sections = [
-      { name: 'hero', type: 'hero', order: 1 },
-      { name: 'header', type: 'header', order: 2 },
-      { name: 'about', type: 'body', order: 3 },
-      { name: 'impact', type: 'body', order: 4 },
-      { name: 'cta', type: 'cta', order: 5 },
-      { name: 'footer', type: 'footer', order: 6 },
+      {
+        name: 'hero',
+        type: 'hero',
+        order: 1,
+        title: 'Empowering Future Leaders',
+        subtitle: 'Building pathways to success for underprivileged youth',
+        description: 'Through education, mentorship, and opportunities, we transform lives and create lasting change in our communities.',
+        buttonText: '💝 Donate Now',
+        buttonUrl: '/donate',
+      },
+      {
+        name: 'mission',
+        type: 'header',
+        order: 2,
+        title: 'Our Mission',
+        description: 'To empower young people through access to quality education, skills development, mentorship, and opportunities that foster personal growth, leadership, and sustainable success.',
+      },
+      {
+        name: 'stats',
+        type: 'stats',
+        order: 3,
+        title: 'Our Impact',
+        htmlContent: `
+          <div data-stat><span data-number>5,000+</span><span data-label>Students Reached</span></div>
+          <div data-stat><span data-number>500+</span><span data-label>Active Mentors</span></div>
+          <div data-stat><span data-number>95%</span><span data-label>Success Rate</span></div>
+          <div data-stat><span data-number>20+</span><span data-label>Communities</span></div>
+        `,
+      },
+      {
+        name: 'programs',
+        type: 'programs',
+        order: 4,
+        title: 'Our Programs',
+        subtitle: 'Comprehensive educational initiatives designed to transform lives',
+        htmlContent: `
+          <div data-card>
+            <span data-icon>📚</span>
+            <span data-title>Academic Excellence</span>
+            <span data-description>Personalized tutoring and mentorship programs to help students excel in their studies</span>
+          </div>
+          <div data-card>
+            <span data-icon>💼</span>
+            <span data-title>Skills Development</span>
+            <span data-description>Job readiness training and vocational skills to prepare students for the workforce</span>
+          </div>
+          <div data-card>
+            <span data-icon>🎯</span>
+            <span data-title>Leadership Academy</span>
+            <span data-description>Leadership training and personal development programs for emerging leaders</span>
+          </div>
+        `,
+      },
+      {
+        name: 'testimonials',
+        type: 'testimonials',
+        order: 5,
+        title: 'Success Stories',
+        htmlContent: `
+          <div data-testimonial>
+            <span data-quote>Wissen-Haus changed my life. Their mentorship and support helped me get into university and pursue my dreams.</span>
+            <span data-author>Sarah Johnson</span>
+            <span data-role>University Student, Class of 2024</span>
+          </div>
+          <div data-testimonial>
+            <span data-quote>The programs offered here are world-class. I gained skills I never thought I could develop and found mentors who truly care.</span>
+            <span data-author>Michael Chen</span>
+            <span data-role>Program Graduate, Tech Industry</span>
+          </div>
+          <div data-testimonial>
+            <span data-quote>This organization isn't just about education; it's about building confident, capable young leaders ready to change the world.</span>
+            <span data-author>Amara Okafor</span>
+            <span data-role>Community Leader, Alumni</span>
+          </div>
+        `,
+      },
+      {
+        name: 'cta',
+        type: 'cta',
+        order: 6,
+        title: 'Join Our Mission',
+        subtitle: 'Make a difference in the life of a young person',
+        description: 'Your support can transform the life of a young person. Together, we\'re creating opportunities and building futures.',
+        buttonText: '💝 Donate Now',
+        buttonUrl: '/donate',
+        backgroundColor: '#d81b60',
+      },
+      {
+        name: 'footer',
+        type: 'footer',
+        order: 7,
+        title: 'Get in Touch',
+        subtitle: 'Connect with Wissen-Haus',
+        description: 'Have questions or want to learn more about our programs? We\'d love to hear from you!',
+        buttonText: 'Contact Us',
+        buttonUrl: '/contact',
+      },
     ];
 
     // Check if homepage_sections table exists first
@@ -212,13 +303,31 @@ export async function seedDatabase() {
       if (tableCheck.rows[0].exists) {
         for (const section of sections) {
           await client.query(
-            `INSERT INTO homepage_sections (section_name, section_type, display_order, is_active)
-             VALUES ($1, $2, $3, true)
-             ON CONFLICT (section_name) DO NOTHING`,
-            [section.name, section.type, section.order]
+            `INSERT INTO homepage_sections (section_name, section_type, title, subtitle, description, html_content, button_text, button_url, background_color, display_order, is_active)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true)
+             ON CONFLICT (section_name) DO UPDATE SET
+               title = COALESCE($3, title),
+               subtitle = COALESCE($4, subtitle),
+               description = COALESCE($5, description),
+               html_content = COALESCE($6, html_content),
+               button_text = COALESCE($7, button_text),
+               button_url = COALESCE($8, button_url),
+               background_color = COALESCE($9, background_color)`,
+            [
+              section.name,
+              section.type,
+              section.title || null,
+              section.subtitle || null,
+              section.description || null,
+              section.htmlContent || null,
+              section.buttonText || null,
+              section.buttonUrl || null,
+              section.backgroundColor || null,
+              section.order,
+            ]
           );
         }
-        logger.info('✓ Homepage sections ensured');
+        logger.info('✓ Homepage sections ensured with modern content');
       } else {
         logger.warn('⚠ Homepage sections table does not exist yet - will be created by migration');
       }

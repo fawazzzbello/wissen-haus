@@ -274,6 +274,29 @@ export default function HomepageEditor() {
                 </h2>
 
                 <div className="space-y-6">
+
+                  {/* Section Type */}
+                  <div>
+                    <label className="label">Section Type</label>
+                    <select
+                      value={formData.sectionType || 'body'}
+                      onChange={(e) => handleFieldChange('sectionType', e.target.value)}
+                      className="input"
+                    >
+                      <option value="hero">Hero (Full-width banner with overlay)</option>
+                      <option value="header">Header (Section title with content)</option>
+                      <option value="body">Body (Two-column layout)</option>
+                      <option value="cta">CTA (Call-to-action section)</option>
+                      <option value="stats">Stats (Impact statistics dashboard)</option>
+                      <option value="programs">Programs (Services/programs cards)</option>
+                      <option value="testimonials">Testimonials (Success stories)</option>
+                      <option value="custom">Custom (Free-form HTML)</option>
+                      <option value="footer">Footer (Footer section)</option>
+                    </select>
+                    <p className="text-xs text-gray-500 mt-2">
+                      For Stats, Programs, and Testimonials, use structured HTML in the "HTML Content" field.
+                    </p>
+                  </div>
                   {/* Title */}
                   <div>
                     <label className="label">Title</label>
