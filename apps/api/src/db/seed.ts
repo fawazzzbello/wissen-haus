@@ -192,7 +192,7 @@ export async function seedDatabase() {
 
     logger.info('✓ Content pages seeded');
 
-        // 5. Seed Homepage Sections with Modern Content and Structure
+            // 5. Seed Homepage Sections with Modern Content
     logger.info('📝 Ensuring homepage sections...');
     const sections = [
       {
@@ -210,15 +210,15 @@ export async function seedDatabase() {
         type: 'stats-advanced',
         title: 'Our Impact',
         subtitle: 'Making a measurable difference every day',
-        htmlContent: '<div data-stat><span data-number>5,000+</span><span data-label>Students Reached</span><span data-description>Across our programs</span></div><div data-stat><span data-number>500+</span><span data-label>Active Mentors</span><span data-description>Dedicated professionals</span></div><div data-stat><span data-number>95%</span><span data-label>Success Rate</span><span data-description>Program completion</span></div><div data-stat><span data-number>20+</span><span data-label>Communities Served</span><span data-description>Across the region</span></div>',
+        htmlContent: '<div data-stat><span data-number>5,000+</span><span data-label>Students Reached</span></div><div data-stat><span data-number>500+</span><span data-label>Active Mentors</span></div><div data-stat><span data-number>95%</span><span data-label>Success Rate</span></div><div data-stat><span data-number>20+</span><span data-label>Communities Served</span></div>',
         order: 2,
       },
       {
         name: 'programs',
         type: 'programs-grid',
         title: 'Our Programs',
-        subtitle: 'Comprehensive educational initiatives designed to transform lives',
-        htmlContent: '<div data-card><span data-icon>📚</span><span data-title>Academic Excellence Program</span><span data-description>Personalized tutoring, mentorship, and comprehensive academic support to help students excel in their studies and reach their full potential.</span></div><div data-card><span data-icon>💼</span><span data-title>Skills Development Initiative</span><span data-description>Job readiness training, vocational skills development, and career preparation to equip students for the modern workforce.</span></div><div data-card><span data-icon>🎯</span><span data-title>Leadership Academy</span><span data-description>Leadership training, personal development workshops, and civic engagement programs to cultivate the next generation of leaders.</span></div><div data-card><span data-icon>🌟</span><span data-title>Scholarship Fund</span><span data-description>Financial assistance and scholarship opportunities to remove barriers to education and make quality learning accessible to all.</span></div><div data-card><span data-icon>🤝</span><span data-title>Community Mentorship</span><span data-description>One-on-one mentoring relationships connecting students with experienced professionals who guide and inspire their journey.</span></div><div data-card><span data-icon>🎓</span><span data-title>Alumni Network</span><span data-description>Vibrant community of program graduates supporting each other, sharing opportunities, and giving back to help future cohorts.</span></div>',
+        subtitle: 'Comprehensive educational initiatives',
+        htmlContent: '<div data-card><span data-icon>📚</span><span data-title>Academic Excellence</span><span data-description>Personalized tutoring and mentorship</span></div><div data-card><span data-icon>💼</span><span data-title>Skills Development</span><span data-description>Job readiness and vocational training</span></div><div data-card><span data-icon>🎯</span><span data-title>Leadership Academy</span><span data-description>Leadership training and development</span></div><div data-card><span data-icon>🌟</span><span data-title>Scholarship Fund</span><span data-description>Financial assistance and scholarships</span></div><div data-card><span data-icon>🤝</span><span data-title>Community Mentorship</span><span data-description>One-on-one mentoring relationships</span></div><div data-card><span data-icon>🎓</span><span data-title>Alumni Network</span><span data-description>Program graduate community</span></div>',
         order: 3,
       },
       {
@@ -226,7 +226,7 @@ export async function seedDatabase() {
         type: 'testimonials-advanced',
         title: 'Success Stories from Our Community',
         subtitle: 'Real impact from real people',
-        htmlContent: '<div data-testimonial><span data-quote>Wissen-Haus changed my life completely. The mentorship and support I received helped me get into university and pursue my dreams of becoming an engineer. I'm now working at a top tech company!</span><span data-author>Sarah Johnson</span><span data-role>Software Engineer, Tech Industry | Class of 2021</span></div><div data-testimonial><span data-quote>The programs offered here are world-class. I gained skills I never thought I could develop, confidence in myself, and found mentors who genuinely cared about my success. This organization is truly transformative.</span><span data-author>Michael Chen</span><span data-role>Business Analyst, Finance Sector | Program Graduate</span></div><div data-testimonial><span data-quote>This organization is not just about education; it's about building confident, capable young leaders ready to change the world. The support system here is incredible and life-changing.</span><span data-author>Amara Okafor</span><span data-role>Community Leader & Alumni | Class of 2020</span></div>',
+        htmlContent: '<div data-testimonial><span data-quote>Wissen-Haus changed my life. The mentorship helped me get into university and pursue my engineering dreams. I now work at a top tech company!</span><span data-author>Sarah Johnson</span><span data-role>Software Engineer</span></div><div data-testimonial><span data-quote>The programs are world-class. I gained skills I never thought I could develop and found mentors who genuinely cared about my success.</span><span data-author>Michael Chen</span><span data-role>Business Analyst</span></div><div data-testimonial><span data-quote>This organization builds confident leaders ready to change the world. The support system is incredible and life-changing.</span><span data-author>Amara Okafor</span><span data-role>Community Leader & Alumni</span></div>',
         order: 4,
       },
       {
@@ -234,8 +234,7 @@ export async function seedDatabase() {
         type: 'features-list',
         title: 'Why Choose Wissen-Haus?',
         subtitle: 'What sets us apart',
-        description: 'We are committed to providing world-class educational support with a personalized approach to student success.',
-        htmlContent: '<div data-feature><span data-title>Personalized Mentorship</span><span data-description>One-on-one relationships with experienced professionals who understand your goals and guide your journey</span></div><div data-feature><span data-title>Comprehensive Support</span><span data-description>Academic, emotional, and career support covering every aspect of student development</span></div><div data-feature><span data-title>Community Impact</span><span data-description>Programs designed by community members, for community members, ensuring relevance and effectiveness</span></div><div data-feature><span data-title>Proven Results</span><span data-description>95% program completion rate and 5,000+ students successfully supported over the years</span></div><div data-feature><span data-title>Industry Partnerships</span><span data-description>Partnerships with leading companies providing internships, mentorship, and career opportunities</span></div><div data-feature><span data-title>Accessible Education</span><span data-description>Scholarships and financial aid ensuring no student is left behind due to economic barriers</span></div>',
+        description: 'Committed to providing world-class educational support.',
         imageUrl: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop',
         order: 5,
       },
@@ -244,27 +243,25 @@ export async function seedDatabase() {
         type: 'newsletter',
         title: 'Stay Connected',
         subtitle: 'Get the latest updates from our community',
-        description: 'Subscribe to our newsletter to receive stories of impact, program updates, and opportunities to get involved.',
+        description: 'Subscribe to receive impact stories and program updates.',
         order: 6,
       },
       {
         name: 'faq',
         type: 'faq-accordion',
         title: 'Frequently Asked Questions',
-        subtitle: 'Common questions about our programs and organization',
-        htmlContent: '<div data-faq><span data-question>How can I enroll in your programs?</span><span data-answer>Visit our contact page to learn about current enrollment opportunities. Programs are open to eligible youth in our service area. We have rolling admissions and multiple entry points throughout the year.</span></div><div data-faq><span data-question>What programs do you offer?</span><span data-answer>We offer Academic Excellence Programs, Skills Development, Leadership Academy, Scholarship Funds, Community Mentorship, and Alumni Network support.</span></div><div data-faq><span data-question>How are donations used?</span><span data-answer>Donations directly support program operations, mentorship coordination, scholarships, and student resources. 90% of funds go directly to program delivery.</span></div><div data-faq><span data-question>Can I volunteer?</span><span data-answer>Absolutely! We welcome volunteers as mentors, program facilitators, and community partners. Contact us to learn about opportunities.</span></div><div data-faq><span data-question>Is there a cost to participate?</span><span data-answer>No cost to students. Our programs are free and include scholarships for eligible participants. We believe education should be accessible to all.</span></div><div data-faq><span data-question>How can I partner with your organization?</span><span data-answer>We welcome corporate partnerships, sponsorships, and collaborations. Contact our partnerships team to discuss how we can work together.</span></div>',
+        htmlContent: '<div data-faq><span data-question>How can I enroll?</span><span data-answer>Contact us to learn about current enrollment opportunities.</span></div><div data-faq><span data-question>What programs do you offer?</span><span data-answer>We offer Academic Excellence, Skills Development, Leadership Academy, Scholarships, and Mentorship.</span></div><div data-faq><span data-question>How are donations used?</span><span data-answer>90% of funds go directly to program delivery and student support.</span></div>',
         order: 7,
       },
       {
         name: 'cta',
         type: 'cta-banner',
         title: 'Make a Difference Today',
-        subtitle: 'Join us in transforming lives through education and mentorship',
-        description: 'Your support enables us to provide quality education, mentorship, and opportunities to young people in our community. Every donation creates meaningful change.',
+        subtitle: 'Join us in transforming lives',
+        description: 'Your support enables us to provide education and opportunities to young people.',
         buttonText: '💝 Donate Now',
         buttonUrl: '/donate',
         backgroundColor: '#3052d5',
-        textColor: '#ffffff',
         order: 8,
       },
     ];
@@ -277,8 +274,8 @@ export async function seedDatabase() {
       if (tableCheck.rows[0].exists) {
         for (const section of sections) {
           await client.query(
-            `INSERT INTO homepage_sections (section_name, section_type, title, subtitle, description, html_content, button_text, button_url, background_color, text_color, display_order, is_active)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, true)
+            `INSERT INTO homepage_sections (section_name, section_type, title, subtitle, description, html_content, button_text, button_url, background_color, display_order, is_active)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true)
              ON CONFLICT (section_name) DO UPDATE SET
                section_type = COALESCE($2, section_type),
                title = COALESCE($3, title),
@@ -288,7 +285,6 @@ export async function seedDatabase() {
                button_text = COALESCE($7, button_text),
                button_url = COALESCE($8, button_url),
                background_color = COALESCE($9, background_color),
-               text_color = COALESCE($10, text_color),
                updated_at = NOW()`,
             [
               section.name,
@@ -300,20 +296,15 @@ export async function seedDatabase() {
               section.buttonText || null,
               section.buttonUrl || null,
               section.backgroundColor || null,
-              section.textColor || null,
               section.order,
             ]
           );
         }
-        logger.info('✓ Homepage sections seeded with comprehensive modern content');
-      } else {
-        logger.warn('⚠ Homepage sections table does not exist yet - will be created by migration');
+        logger.info('✓ Homepage sections seeded');
       }
     } catch (error: any) {
-      logger.warn('⚠ Error seeding homepage sections:', error.message?.substring(0, 100));
+      logger.warn('⚠ Homepage sections:', error.message?.substring(0, 100));
     }
-
-
 
     logger.info('✅ Database seeding completed successfully!');
   } catch (error: any) {
