@@ -128,37 +128,32 @@ export default function HomepageEditor() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Section List */}
-          <div className="lg:col-span-1">
-            <div className="card sticky top-4">
-              <h2 className="text-lg font-bold text-gray-900 mb-4">Sections</h2>
-              <div className="space-y-2">
-                {sections.map((section) => (
-                  <button
-                    key={section.id}
-                    onClick={() => {
-                      setSelectedSection(section);
-                      setFormData(section);
-                    }}
-                    className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-                      selectedSection?.id === section.id
-                        ? 'bg-primary-600 text-white'
-                        : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                    }`}
-                  >
-                    <p className="font-medium text-sm md:text-base capitalize">{section.sectionName}</p>
-                    <p className="text-xs opacity-75">{section.sectionType}</p>
-                  </button>
-                ))}
-              </div>
+        <div>
+          {/* Tabs */}
+          <div className="mb-6">
+            <div className="flex flex-wrap gap-2 border-b border-gray-200">
+              {sections.map((section) => (
+                <button
+                  key={section.id}
+                  onClick={() => {
+                    setSelectedSection(section);
+                    setFormData(section);
+                  }}
+                  className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                    selectedSection?.id === section.id
+                      ? 'border-primary-600 text-primary-600'
+                      : 'border-transparent text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {section.sectionName.charAt(0).toUpperCase() + section.sectionName.slice(1)}
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Editor */}
-          <div className="lg:col-span-3">
-            {selectedSection && (
-              <div className="card">
+          {selectedSection && (
+            <div className="card">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">
                   Edit: {selectedSection.sectionName.toUpperCase()}
                 </h2>
@@ -331,7 +326,6 @@ export default function HomepageEditor() {
                 </div>
               </div>
             )}
-          </div>
         </div>
       </div>
     </div>
