@@ -27,31 +27,58 @@ export async function getNotificationLogs(req: Request, res: Response) {
     const limit = Math.min(parseInt(req.query.limit as string) || 50, 100);
     const offset = parseInt(req.query.offset as string) || 0;
     const type = req.query.type as string;
+    const status = req.query.status as string;
 
-    let query_str = 'SELECT * FROM notification_logs';
+    let query_str = 'SELECT * FROM notification_logs WHERE 1=1';
     const params: any[] = [];
+    let paramIndex = 1;
 
     if (type) {
-      query_str += ' WHERE notification_type = $1';
+      query_str += ' AND notification_type = $' + paramIndex++;
       params.push(type);
     }
 
-    query_str += ' ORDER BY created_at DESC LIMIT $' + (params.length + 1) + ' OFFSET $' + (params.length + 2);
+    if (status) {
+      query_str += ' AND status = $' + paramIndex++;
+      params.push(status);
+    }
+
+    query_str += ' ORDER BY created_at DESC LIMIT $' + paramIndex + ' OFFSET $' + (paramIndex + 1);
     params.push(limit, offset);
 
     const result = await query(query_str, params);
 
+    // Map snake_case to camelCase
+    const logs = result.rows.map(row => ({
+      id: row.id,
+      notificationType: row.notification_type,
+      recipient: row.recipient,
+      subject: row.subject,
+      status: row.status,
+      provider: row.provider,
+      sentAt: row.sent_at,
+      errorMessage: row.error_message,
+      createdAt: row.created_at,
+    }));
+
     // Get total count
-    let countQuery = 'SELECT COUNT(*) FROM notification_logs';
+    let countQuery = 'SELECT COUNT(*) FROM notification_logs WHERE 1=1';
     if (type) {
-      countQuery += ' WHERE notification_type = $1';
+      countQuery += ' AND notification_type = $1';
+    }
+    if (status) {
+      countQuery += (type ? ' AND' : ' AND') + ' status = $' + (type ? '2' : '1');
     }
 
-    const countResult = await query(countQuery, type ? [type] : []);
+    const countParams = [];
+    if (type) countParams.push(type);
+    if (status) countParams.push(status);
+
+    const countResult = await query(countQuery, countParams);
     const total = parseInt(countResult.rows[0].count);
 
     res.json({
-      logs: result.rows,
+      logs,
       total,
       limit,
       offset,
