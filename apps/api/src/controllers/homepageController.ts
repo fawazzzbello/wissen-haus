@@ -46,7 +46,7 @@ async function ensureHomepageSectionsExist() {
           updated_by UUID REFERENCES users(id) ON DELETE SET NULL,
           created_at TIMESTAMP DEFAULT NOW(),
           updated_at TIMESTAMP DEFAULT NOW(),
-          CONSTRAINT valid_section_type CHECK (section_type IN ('hero', 'header', 'body', 'footer', 'cta', 'stats', 'programs', 'testimonials', 'custom'))
+          CONSTRAINT valid_section_type CHECK (section_type IN ('hero-premium', 'cta-banner', 'stats-advanced', 'donation-tiers', 'programs-grid', 'features-list', 'two-column-advanced', 'team', 'testimonials-advanced', 'events', 'timeline', 'faq-accordion', 'newsletter', 'partners', 'custom'))
         )
       `);
 

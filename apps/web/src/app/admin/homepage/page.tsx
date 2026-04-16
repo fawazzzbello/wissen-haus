@@ -275,7 +275,6 @@ export default function HomepageEditor() {
 
                 <div className="space-y-6">
 
-                  {/* Section Type */}
                   <div>
                     <label className="label">Section Type</label>
                     <select
@@ -296,7 +295,45 @@ export default function HomepageEditor() {
                     <p className="text-xs text-gray-500 mt-2">
                       For Stats, Programs, and Testimonials, use structured HTML in the "HTML Content" field.
                     </p>
+                  {/* Section Type */}
+                  <div>
+                    <label className="label">Section Type</label>
+                    <select
+                      value={formData.sectionType || 'custom'}
+                      onChange={(e) => handleFieldChange('sectionType', e.target.value)}
+                      className="input"
+                    >
+                      <optgroup label="🎯 Hero & Landing">
+                        <option value="hero-premium">Hero Premium (Full-screen banner)</option>
+                        <option value="cta-banner">CTA Banner (Call-to-action)</option>
+                      </optgroup>
+                      <optgroup label="📊 Statistics & Data">
+                        <option value="stats-advanced">Stats Advanced (Impact metrics)</option>
+                        <option value="donation-tiers">Donation Tiers (Pricing cards)</option>
+                      </optgroup>
+                      <optgroup label="📋 Content">
+                        <option value="programs-grid">Programs Grid (Service cards)</option>
+                        <option value="features-list">Features List (With checkmarks)</option>
+                        <option value="two-column-advanced">Two Column Advanced (Image+text)</option>
+                      </optgroup>
+                      <optgroup label="👥 People & Community">
+                        <option value="team">Team Section (Profiles)</option>
+                        <option value="testimonials-advanced">Testimonials Advanced (Stories)</option>
+                      </optgroup>
+                      <optgroup label="📅 Events & Info">
+                        <option value="events">Events (Listings)</option>
+                        <option value="timeline">Timeline (Milestones)</option>
+                        <option value="faq-accordion">FAQ Accordion (Q&A)</option>
+                      </optgroup>
+                      <optgroup label="🔗 Utilities">
+                        <option value="newsletter">Newsletter (Signup)</option>
+                        <option value="partners">Partners (Logos)</option>
+                        <option value="custom">Custom (Free HTML)</option>
+                      </optgroup>
+                    </select>
+                    <p className="text-xs text-gray-500 mt-2">See docs for HTML format requirements.</p>
                   </div>
+
                   {/* Title */}
                   <div>
                     <label className="label">Title</label>
