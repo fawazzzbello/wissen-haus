@@ -80,9 +80,16 @@ export async function seedDatabase() {
     logger.info('📝 Seeding content pages...');
     const contentPages = [
       {
-        slug: 'about',
-        title: 'About Wissen-Haus',
-        content: `<h2>Our Story</h2>
+        slug: 'home',
+        title: 'Home',
+        content: `<h2>Welcome to Wissen-Haus</h2>
+<p>Empowering young people through education, skills development, and mentorship.</p>
+<p><a href="/donate">Donate now</a> to support our mission.</p>`,
+      },
+      {
+        slug: 'about-us',
+        title: 'About Us',
+        content: `<h2>About Wissen-Haus</h2>
 <p>Wissen-Haus was founded with a vision to democratize education and provide opportunities for underprivileged youth. Our mission is to empower the next generation of leaders through quality education and mentorship.</p>
 <h2>Our Values</h2>
 <ul>
@@ -93,28 +100,84 @@ export async function seedDatabase() {
 </ul>`,
       },
       {
-        slug: 'programs',
-        title: 'Our Programs',
-        content: `<h2>Educational Programs</h2>
-<h3>Academic Excellence Program</h3>
-<p>Comprehensive tutoring and mentorship for students of all levels.</p>
-<h3>Skills Development</h3>
-<p>Training in technical and soft skills for career advancement.</p>
-<h3>Leadership Initiative</h3>
-<p>Developing tomorrow's leaders through intensive workshops and mentoring.</p>`,
+        slug: 'blog',
+        title: 'Blog',
+        content: `<h2>Latest Updates</h2>
+<p>Stay tuned for inspiring stories, educational tips, and updates about our programs.</p>
+<p>Check back soon for new articles!</p>`,
       },
       {
-        slug: 'impact',
-        title: 'Our Impact',
-        content: `<h2>Making a Difference</h2>
-<p>Since our inception, we have:</p>
+        slug: 'donate',
+        title: 'Donate',
+        content: `<h2>Make a Difference</h2>
+<p>Your donation directly impacts the lives of young people in our community. Whether you donate once or become a monthly supporter, every contribution helps us provide quality education and mentorship.</p>
+<p><a href="/donate">Donate now</a></p>`,
+      },
+      {
+        slug: 'contact',
+        title: 'Contact',
+        content: `<h2>Get in Touch</h2>
+<p>Have questions or want to learn more about our programs? We'd love to hear from you!</p>
+<p><a href="/contact">Send us a message</a></p>`,
+      },
+      {
+        slug: 'legal',
+        title: 'Legal',
+        content: `<h2>Legal Information</h2>
+<p>Wissen-Haus Empowerment Foundation is registered as a non-profit organization.</p>
+<p>For legal inquiries, please contact our office.</p>`,
+      },
+      {
+        slug: 'privacy-policy',
+        title: 'Privacy Policy',
+        content: `<h2>Privacy Policy</h2>
+<p>Your privacy is important to us. This policy explains how we collect, use, and protect your information.</p>
+<h3>Information We Collect</h3>
+<p>We collect information you provide directly, such as when you donate, subscribe to our newsletter, or contact us.</p>
+<h3>How We Use Your Information</h3>
+<p>We use your information to process donations, send updates, and improve our services.</p>
+<h3>Data Protection</h3>
+<p>We take security seriously and implement appropriate safeguards to protect your data.</p>`,
+      },
+      {
+        slug: 'terms-of-service',
+        title: 'Terms of Service',
+        content: `<h2>Terms of Service</h2>
+<p>Welcome to Wissen-Haus. These terms govern your use of our website and services.</p>
+<h3>Acceptance of Terms</h3>
+<p>By using our website, you agree to these terms and conditions.</p>
+<h3>Intellectual Property</h3>
+<p>All content on this site is owned by or licensed to Wissen-Haus.</p>
+<h3>Limitation of Liability</h3>
+<p>We strive to provide accurate information, but make no warranties regarding the content.</p>`,
+      },
+      {
+        slug: 'faq',
+        title: 'FAQ',
+        content: `<h2>Frequently Asked Questions</h2>
+<h3>How can I donate?</h3>
+<p>You can donate through our website using our secure payment system.</p>
+<h3>What programs do you offer?</h3>
+<p>We offer academic tutoring, skills development, and mentorship programs.</p>
+<h3>How are donations used?</h3>
+<p>Donations go directly to supporting our educational programs and helping young people in our community.</p>
+<h3>Can I volunteer?</h3>
+<p>Yes! We welcome volunteers. Please contact us to learn about opportunities.</p>`,
+      },
+      {
+        slug: 'quick-links',
+        title: 'Quick Links',
+        content: `<h2>Quick Links</h2>
 <ul>
-<li>Helped 5,000+ students achieve their educational goals</li>
-<li>Provided 10,000+ hours of tutoring</li>
-<li>Trained 1,000+ students in technical skills</li>
-<li>Supported 500+ students into higher education</li>
-</ul>
-<p>Your contribution makes these achievements possible.</p>`,
+<li><a href="/">Home</a></li>
+<li><a href="/about-us">About Us</a></li>
+<li><a href="/blog">Blog</a></li>
+<li><a href="/donate">Donate</a></li>
+<li><a href="/contact">Contact</a></li>
+<li><a href="/faq">FAQ</a></li>
+<li><a href="/privacy-policy">Privacy Policy</a></li>
+<li><a href="/terms-of-service">Terms of Service</a></li>
+</ul>`,
       },
     ];
 
