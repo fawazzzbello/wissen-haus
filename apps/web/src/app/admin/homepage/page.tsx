@@ -223,31 +223,37 @@ export default function HomepageEditor() {
         {/* Sections Editor */}
         {editMode === 'sections' && (
           <div>
-            {/* Section Tabs */}
-            <div className="mb-6">
-              <div className="flex flex-wrap gap-2 border-b border-gray-200">
-                {sections.map((section) => (
-                  <button
-                    key={section.id}
-                    onClick={() => {
-                      setSelectedSection(section);
-                      setFormData(section);
-                    }}
-                    className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
-                      selectedSection?.id === section.id
-                        ? 'border-primary-600 text-primary-600'
-                        : 'border-transparent text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    {section.sectionName.charAt(0).toUpperCase() + section.sectionName.slice(1)}
-                  </button>
-                ))}
+            {sections.length === 0 ? (
+              <div className="card p-6 text-center">
+                <p className="text-gray-600">No homepage sections available</p>
               </div>
-            </div>
+            ) : (
+              <>
+                {/* Section Tabs */}
+                <div className="mb-6">
+                  <div className="flex flex-wrap gap-2 border-b border-gray-200">
+                    {sections.map((section) => (
+                      <button
+                        key={section.id}
+                        onClick={() => {
+                          setSelectedSection(section);
+                          setFormData(section);
+                        }}
+                        className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                          selectedSection?.id === section.id
+                            ? 'border-primary-600 text-primary-600'
+                            : 'border-transparent text-gray-600 hover:text-gray-900'
+                        }`}
+                      >
+                        {section.sectionName.charAt(0).toUpperCase() + section.sectionName.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-            {/* Section Editor */}
-            {selectedSection && (
-              <div className="card">
+                {/* Section Editor */}
+                {selectedSection && (
+                  <div className="card">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">
                   Edit: {selectedSection.sectionName.toUpperCase()}
                 </h2>
@@ -419,6 +425,8 @@ export default function HomepageEditor() {
                   </div>
                 </div>
               </div>
+            )}
+              </>
             )}
           </div>
         )}
