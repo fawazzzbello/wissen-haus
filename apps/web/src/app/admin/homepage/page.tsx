@@ -23,32 +23,52 @@ interface HomepageSection {
   updatedAt: string;
 }
 
+interface ContentPage {
+  id: string;
+  slug: string;
+  title: string;
+  contentHtml: string;
+  metaDescription?: string;
+  metaKeywords?: string;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function HomepageEditor() {
   const [sections, setSections] = useState<HomepageSection[]>([]);
+  const [contentPages, setContentPages] = useState<ContentPage[]>([]);
   const [selectedSection, setSelectedSection] = useState<HomepageSection | null>(null);
+  const [selectedPage, setSelectedPage] = useState<ContentPage | null>(null);
+  const [editMode, setEditMode] = useState<'sections' | 'pages'>('sections');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<Partial<HomepageSection>>({});
+  const [formData, setFormData] = useState<any>({});
 
   useEffect(() => {
-    fetchSections();
+    fetchData();
   }, []);
 
-  const fetchSections = async () => {
+  const fetchData = async () => {
     try {
       setLoading(true);
       setError(null);
       const api = getApiClient();
-      const response = await api.get('/homepage');
-      setSections(response.data.sections || []);
-      if (response.data.sections?.length > 0) {
-        setSelectedSection(response.data.sections[0]);
-        setFormData(response.data.sections[0]);
+      const [sectionsRes, pagesRes] = await Promise.all([
+        api.get('/homepage'),
+        api.get('/content/admin/pages'),
+      ]);
+      setSections(sectionsRes.data.sections || []);
+      setContentPages(pagesRes.data.pages || []);
+
+      if (sectionsRes.data.sections?.length > 0) {
+        setSelectedSection(sectionsRes.data.sections[0]);
+        setFormData(sectionsRes.data.sections[0]);
       }
     } catch (error: any) {
-      console.error('Error fetching sections:', error);
-      setError(error.message || 'Failed to load homepage sections');
+      console.error('Error fetching data:', error);
+      setError(error.message || 'Failed to load data');
     } finally {
       setLoading(false);
     }
@@ -92,6 +112,40 @@ export default function HomepageEditor() {
     }
   };
 
+  const handleSavePage = async () => {
+    if (!selectedPage) return;
+
+    try {
+      setSaving(true);
+      setError(null);
+      const api = getApiClient();
+
+      const payload = {
+        title: formData.title,
+        slug: formData.slug,
+        contentHtml: formData.contentHtml,
+        metaDescription: formData.metaDescription,
+        metaKeywords: formData.metaKeywords,
+        isPublished: formData.isPublished,
+      };
+
+      const response = await api.put(`/content/admin/pages/${selectedPage.id}`, payload);
+
+      // Update local state
+      const updated = contentPages.map(p =>
+        p.id === selectedPage.id ? response.data.page : p
+      );
+      setContentPages(updated);
+      setSelectedPage(response.data.page);
+      setFormData(response.data.page);
+    } catch (error: any) {
+      console.error('Error saving page:', error);
+      setError(error.message || 'Failed to save page');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
@@ -104,7 +158,7 @@ export default function HomepageEditor() {
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-8 h-8 mb-2 border-4 border-primary-600 border-t-transparent rounded-full spinner"></div>
-          <p className="text-gray-600">Loading homepage sections...</p>
+          <p className="text-gray-600">Loading homepage editor...</p>
         </div>
       </div>
     );
@@ -116,44 +170,84 @@ export default function HomepageEditor() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Homepage Editor</h1>
-          <p className="text-gray-600 mt-2">Edit homepage sections (hero, header, body, footer)</p>
+          <p className="text-gray-600 mt-2">Edit homepage sections and content pages</p>
         </div>
 
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-800 mb-3">{error}</p>
-            <button onClick={fetchSections} className="btn-secondary text-sm">
+            <button onClick={fetchData} className="btn-secondary text-sm">
               Retry
             </button>
           </div>
         )}
 
-        <div>
-          {/* Tabs */}
-          <div className="mb-6">
-            <div className="flex flex-wrap gap-2 border-b border-gray-200">
-              {sections.map((section) => (
-                <button
-                  key={section.id}
-                  onClick={() => {
-                    setSelectedSection(section);
-                    setFormData(section);
-                  }}
-                  className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
-                    selectedSection?.id === section.id
-                      ? 'border-primary-600 text-primary-600'
-                      : 'border-transparent text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  {section.sectionName.charAt(0).toUpperCase() + section.sectionName.slice(1)}
-                </button>
-              ))}
-            </div>
+        {/* Mode Tabs */}
+        <div className="mb-6">
+          <div className="flex gap-2 border-b border-gray-200">
+            <button
+              onClick={() => {
+                setEditMode('sections');
+                if (sections.length > 0) {
+                  setSelectedSection(sections[0]);
+                  setFormData(sections[0]);
+                }
+              }}
+              className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                editMode === 'sections'
+                  ? 'border-primary-600 text-primary-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Homepage Sections
+            </button>
+            <button
+              onClick={() => {
+                setEditMode('pages');
+                if (contentPages.length > 0) {
+                  setSelectedPage(contentPages[0]);
+                  setFormData(contentPages[0]);
+                }
+              }}
+              className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                editMode === 'pages'
+                  ? 'border-primary-600 text-primary-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Content Pages
+            </button>
           </div>
+        </div>
 
-          {/* Editor */}
-          {selectedSection && (
-            <div className="card">
+        {/* Sections Editor */}
+        {editMode === 'sections' && (
+          <div>
+            {/* Section Tabs */}
+            <div className="mb-6">
+              <div className="flex flex-wrap gap-2 border-b border-gray-200">
+                {sections.map((section) => (
+                  <button
+                    key={section.id}
+                    onClick={() => {
+                      setSelectedSection(section);
+                      setFormData(section);
+                    }}
+                    className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                      selectedSection?.id === section.id
+                        ? 'border-primary-600 text-primary-600'
+                        : 'border-transparent text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    {section.sectionName.charAt(0).toUpperCase() + section.sectionName.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Section Editor */}
+            {selectedSection && (
+              <div className="card">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">
                   Edit: {selectedSection.sectionName.toUpperCase()}
                 </h2>
@@ -326,7 +420,146 @@ export default function HomepageEditor() {
                 </div>
               </div>
             )}
-        </div>
+          </div>
+        )}
+
+        {/* Pages Editor */}
+        {editMode === 'pages' && (
+          <div>
+            {/* Page Tabs */}
+            <div className="mb-6">
+              <div className="flex flex-wrap gap-2 border-b border-gray-200 pb-2">
+                {contentPages.length === 0 ? (
+                  <p className="text-gray-600">No content pages found</p>
+                ) : (
+                  contentPages.map((page) => (
+                    <button
+                      key={page.id}
+                      onClick={() => {
+                        setSelectedPage(page);
+                        setFormData(page);
+                      }}
+                      className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                        selectedPage?.id === page.id
+                          ? 'border-primary-600 text-primary-600'
+                          : 'border-transparent text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      {page.title}
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Page Editor */}
+            {selectedPage && (
+              <div className="card">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  Edit: {selectedPage.title}
+                </h2>
+
+                <div className="space-y-6">
+                  {/* Title */}
+                  <div>
+                    <label className="label">Title *</label>
+                    <input
+                      type="text"
+                      value={formData.title || ''}
+                      onChange={(e) => handleFieldChange('title', e.target.value)}
+                      placeholder="Page title"
+                      className="input"
+                      required
+                    />
+                  </div>
+
+                  {/* Slug */}
+                  <div>
+                    <label className="label">Slug *</label>
+                    <input
+                      type="text"
+                      value={formData.slug || ''}
+                      onChange={(e) => handleFieldChange('slug', e.target.value)}
+                      placeholder="page-slug"
+                      className="input"
+                      required
+                    />
+                    <p className="text-xs text-gray-500 mt-1">URL-friendly identifier (lowercase, hyphens only)</p>
+                  </div>
+
+                  {/* Meta Description */}
+                  <div>
+                    <label className="label">Meta Description</label>
+                    <textarea
+                      value={formData.metaDescription || ''}
+                      onChange={(e) => handleFieldChange('metaDescription', e.target.value)}
+                      placeholder="SEO meta description (160 chars max)"
+                      rows={2}
+                      className="input resize-none"
+                    />
+                  </div>
+
+                  {/* Meta Keywords */}
+                  <div>
+                    <label className="label">Meta Keywords</label>
+                    <input
+                      type="text"
+                      value={formData.metaKeywords || ''}
+                      onChange={(e) => handleFieldChange('metaKeywords', e.target.value)}
+                      placeholder="keyword1, keyword2, keyword3"
+                      className="input"
+                    />
+                  </div>
+
+                  {/* Content HTML */}
+                  <div>
+                    <label className="label">Content (HTML) *</label>
+                    <textarea
+                      value={formData.contentHtml || ''}
+                      onChange={(e) => handleFieldChange('contentHtml', e.target.value)}
+                      placeholder="<h2>Title</h2><p>Content here...</p>"
+                      rows={12}
+                      className="input font-mono text-sm resize-none"
+                      required
+                    />
+                  </div>
+
+                  {/* Published Status */}
+                  <div>
+                    <label className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={formData.isPublished || false}
+                        onChange={(e) => handleFieldChange('isPublished', e.target.checked)}
+                        className="w-4 h-4"
+                      />
+                      <span>Publish this page</span>
+                    </label>
+                  </div>
+
+                  {/* Save Button */}
+                  <div className="flex gap-3 pt-6 border-t">
+                    <button
+                      onClick={handleSavePage}
+                      disabled={saving}
+                      className="btn-primary disabled:opacity-50"
+                    >
+                      {saving ? 'Saving...' : 'Save Changes'}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setFormData(selectedPage);
+                      }}
+                      className="btn-secondary"
+                    >
+                      Discard Changes
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
