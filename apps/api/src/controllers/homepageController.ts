@@ -21,9 +21,42 @@ export interface HomepageSection {
   updatedBy?: string;
 }
 
+// Initialize default homepage sections if they don't exist
+async function ensureHomepageSectionsExist() {
+  try {
+    const client = await pool.connect();
+    try {
+      const defaultSections = [
+        { name: 'hero', type: 'hero', order: 1 },
+        { name: 'header', type: 'header', order: 2 },
+        { name: 'about', type: 'body', order: 3 },
+        { name: 'impact', type: 'body', order: 4 },
+        { name: 'cta', type: 'cta', order: 5 },
+        { name: 'footer', type: 'footer', order: 6 },
+      ];
+
+      for (const section of defaultSections) {
+        await client.query(
+          `INSERT INTO homepage_sections (section_name, section_type, display_order, is_active)
+           VALUES ($1, $2, $3, true)
+           ON CONFLICT (section_name) DO NOTHING`,
+          [section.name, section.type, section.order]
+        );
+      }
+    } finally {
+      client.release();
+    }
+  } catch (error: any) {
+    logger.warn('⚠ Could not ensure homepage sections:', error.message?.substring(0, 100));
+  }
+}
+
 // Get all homepage sections
 export async function getHomepageSections(req: Request, res: Response) {
   try {
+    // Ensure sections exist before fetching
+    await ensureHomepageSectionsExist();
+
     const client = await pool.connect();
     try {
       const result = await client.query(

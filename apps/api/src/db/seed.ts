@@ -203,16 +203,28 @@ export async function seedDatabase() {
       { name: 'footer', type: 'footer', order: 6 },
     ];
 
-    for (const section of sections) {
-      await client.query(
-        `INSERT INTO homepage_sections (section_name, section_type, display_order, is_active)
-         VALUES ($1, $2, $3, true)
-         ON CONFLICT (section_name) DO NOTHING`,
-        [section.name, section.type, section.order]
+    // Check if homepage_sections table exists first
+    try {
+      const tableCheck = await client.query(
+        `SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'homepage_sections')`
       );
-    }
 
-    logger.info('✓ Homepage sections ensured');
+      if (tableCheck.rows[0].exists) {
+        for (const section of sections) {
+          await client.query(
+            `INSERT INTO homepage_sections (section_name, section_type, display_order, is_active)
+             VALUES ($1, $2, $3, true)
+             ON CONFLICT (section_name) DO NOTHING`,
+            [section.name, section.type, section.order]
+          );
+        }
+        logger.info('✓ Homepage sections ensured');
+      } else {
+        logger.warn('⚠ Homepage sections table does not exist yet - will be created by migration');
+      }
+    } catch (error: any) {
+      logger.warn('⚠ Error checking/creating homepage sections:', error.message?.substring(0, 100));
+    }
 
     logger.info('✅ Database seeding completed successfully!');
   } catch (error: any) {
