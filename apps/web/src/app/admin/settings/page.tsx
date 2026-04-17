@@ -110,6 +110,15 @@ const SETTING_GROUPS = [
       { key: 'phone_number', label: 'Phone Number', type: 'tel' },
     ],
   },
+  {
+    name: 'Social Media',
+    icon: '🔗',
+    fields: [
+      { key: 'social_twitter', label: 'Twitter URL', type: 'url' },
+      { key: 'social_facebook', label: 'Facebook URL', type: 'url' },
+      { key: 'social_linkedin', label: 'LinkedIn URL', type: 'url' },
+    ],
+  },
 ];
 
 export default function SettingsPage() {
