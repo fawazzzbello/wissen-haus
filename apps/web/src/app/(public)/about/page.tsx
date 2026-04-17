@@ -13,8 +13,6 @@ export default function AboutPage() {
 
   useEffect(() => {
     fetchContent();
-    const interval = setInterval(fetchContent, 5000);
-    return () => clearInterval(interval);
   }, []);
 
   const fetchContent = async () => {

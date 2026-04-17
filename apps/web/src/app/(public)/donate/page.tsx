@@ -14,8 +14,6 @@ export default function DonatePage() {
 
   useEffect(() => {
     fetchContent();
-    const interval = setInterval(fetchContent, 5000);
-    return () => clearInterval(interval);
   }, []);
 
   const fetchContent = async () => {

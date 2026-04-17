@@ -24,9 +24,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchContent();
-    // Refresh every 5 seconds to catch admin changes
-    const interval = setInterval(fetchContent, 5000);
-    return () => clearInterval(interval);
+    
   }, []);
 
   const fetchContent = async () => {

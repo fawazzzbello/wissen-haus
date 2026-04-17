@@ -32,15 +32,24 @@ export default function DonationsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterType, setFilterType] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({ donorName: '', donorEmail: '', amount: '', donationType: 'one_time' });
   const [creating, setCreating] = useState(false);
 
+  // Debounce search input (500ms delay)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   useEffect(() => {
     fetchData();
-  }, [search, filterStatus, filterType]);
+  }, [debouncedSearch, filterStatus, filterType]);
 
   const fetchData = async () => {
     try {
@@ -50,7 +59,7 @@ export default function DonationsPage() {
 
       // Fetch donations
       const params = new URLSearchParams();
-      if (search) params.append('search', search);
+      if (debouncedSearch) params.append('search', debouncedSearch);
       if (filterStatus) params.append('status', filterStatus);
       if (filterType) params.append('type', filterType);
 
