@@ -12,6 +12,14 @@ import {
 import { query } from '@/config/database';
 import { logger } from '@/utils/logger';
 
+// Helper function to determine valid data type for settings
+function getDataType(value: any): string {
+  if (typeof value === 'boolean') return 'boolean';
+  if (typeof value === 'number') return 'number';
+  if (typeof value === 'object') return 'json';
+  return 'string';
+}
+
 // Get notification logs
 export async function getNotificationLogs(req: Request, res: Response) {
   try {
@@ -251,12 +259,15 @@ export async function updateEmailSettings(req: Request, res: Response) {
 
     // Update each setting
     for (const [key, value] of Object.entries(settings)) {
+      const dataType = getDataType(value);
+      const storedValue = dataType === 'json' ? JSON.stringify(value) : String(value);
+
       await query(
         `INSERT INTO settings (setting_key, setting_value, data_type, updated_by)
          VALUES ($1, $2, $3, $4)
          ON CONFLICT (setting_key) DO UPDATE
          SET setting_value = $2, updated_by = $4, updated_at = CURRENT_TIMESTAMP`,
-        [key, String(value), typeof value, req.user.userId]
+        [key, storedValue, dataType, req.user.userId]
       );
     }
 
@@ -327,12 +338,15 @@ export async function updateSmsSettings(req: Request, res: Response) {
 
     // Update each setting
     for (const [key, value] of Object.entries(settings)) {
+      const dataType = getDataType(value);
+      const storedValue = dataType === 'json' ? JSON.stringify(value) : String(value);
+
       await query(
         `INSERT INTO settings (setting_key, setting_value, data_type, updated_by)
          VALUES ($1, $2, $3, $4)
          ON CONFLICT (setting_key) DO UPDATE
          SET setting_value = $2, updated_by = $4, updated_at = CURRENT_TIMESTAMP`,
-        [key, String(value), typeof value, req.user.userId]
+        [key, storedValue, dataType, req.user.userId]
       );
     }
 
