@@ -8,8 +8,18 @@ interface PageContent {
   [key: string]: string;
 }
 
+interface ImpactStats {
+  totalRaised: number;
+  uniqueDonors: number;
+  stat1: { value: string; label: string };
+  stat2: { value: string; label: string };
+  stat3: { value: string; label: string };
+  stat4: { value: string; label: string };
+}
+
 export default function Home() {
   const [content, setContent] = useState<PageContent>({});
+  const [impact, setImpact] = useState<ImpactStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,8 +32,13 @@ export default function Home() {
   const fetchContent = async () => {
     try {
       const api = getApiClient();
-      const response = await api.get('/settings');
-      setContent(response.data.settings || {});
+      const [settingsRes, impactRes] = await Promise.all([
+        api.get('/settings'),
+        api.get('/donations/impact-stats'),
+      ]);
+
+      setContent(settingsRes.data.settings || {});
+      setImpact(impactRes.data);
     } catch (error) {
       console.error('Error fetching content:', error);
     } finally {
@@ -52,14 +67,14 @@ export default function Home() {
   const visionTitle = content.vision_title || 'Our Vision';
   const visionDescription = content.vision_description || 'A world where every young person, regardless of background, has access to world-class education and the support to achieve their full potential.';
 
-  const stat1Value = content.stat1_value || '5,000+';
-  const stat1Label = content.stat1_label || 'Students Reached';
-  const stat2Value = content.stat2_value || '500+';
-  const stat2Label = content.stat2_label || 'Active Mentors';
-  const stat3Value = content.stat3_value || '95%';
-  const stat3Label = content.stat3_label || 'Success Rate';
-  const stat4Value = content.stat4_value || '20+';
-  const stat4Label = content.stat4_label || 'Communities';
+  const stat1Value = impact?.stat1.value || '5,000+';
+  const stat1Label = impact?.stat1.label || 'Students Reached';
+  const stat2Value = impact?.stat2.value || '500+';
+  const stat2Label = impact?.stat2.label || 'Active Mentors';
+  const stat3Value = impact?.stat3.value || '95%';
+  const stat3Label = impact?.stat3.label || 'Success Rate';
+  const stat4Value = impact?.stat4.value || '20+';
+  const stat4Label = impact?.stat4.label || 'Communities';
 
   const program1Title = content.program1_title || 'Academic Excellence';
   const program1Desc = content.program1_desc || 'Personalized tutoring and mentorship in core subjects';
