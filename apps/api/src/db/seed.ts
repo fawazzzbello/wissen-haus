@@ -2,6 +2,64 @@ import { pool } from '@/config/database';
 import { logger } from '@/utils/logger';
 import bcrypt from 'bcrypt';
 
+async function createHomepageSectionsTable(client: any) {
+  try {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS homepage_sections (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        section_name VARCHAR(100) NOT NULL UNIQUE,
+        section_type VARCHAR(50) NOT NULL DEFAULT 'custom',
+        title VARCHAR(255),
+        subtitle VARCHAR(255),
+        description TEXT,
+        html_content TEXT,
+        image_url VARCHAR(500),
+        background_color VARCHAR(7),
+        text_color VARCHAR(7),
+        button_text VARCHAR(100),
+        button_url VARCHAR(500),
+        is_active BOOLEAN DEFAULT true,
+        display_order INTEGER DEFAULT 1,
+        updated_by UUID REFERENCES users(id) ON DELETE SET NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        CONSTRAINT valid_section_type CHECK (section_type IN (
+          'hero-premium', 'stats-advanced', 'programs-grid', 'features-list',
+          'team', 'testimonials-advanced', 'newsletter', 'faq-accordion',
+          'partners', 'events', 'donation-tiers', 'timeline',
+          'two-column-advanced', 'cta-banner', 'custom'
+        ))
+      );
+      CREATE INDEX IF NOT EXISTS idx_homepage_sections_name ON homepage_sections(section_name);
+      CREATE INDEX IF NOT EXISTS idx_homepage_sections_active_order ON homepage_sections(is_active, display_order);
+    `);
+    logger.info('✓ Homepage sections table created');
+  } catch (error: any) {
+    logger.warn('⚠ Homepage sections table:', error.message?.substring(0, 100));
+  }
+}
+
+async function createSiteSettingsTable(client: any) {
+  try {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS site_settings (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        setting_key VARCHAR(100) NOT NULL UNIQUE,
+        setting_value TEXT,
+        setting_type VARCHAR(50) DEFAULT 'string',
+        description TEXT,
+        updated_by UUID REFERENCES users(id) ON DELETE SET NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_site_settings_key ON site_settings(setting_key);
+    `);
+    logger.info('✓ Site settings table created');
+  } catch (error: any) {
+    logger.warn('⚠ Site settings table:', error.message?.substring(0, 100));
+  }
+}
+
 export async function seedDatabase() {
   const client = await pool.connect();
   try {
@@ -60,9 +118,7 @@ export async function seedDatabase() {
     ];
 
     for (const donation of donations) {
-      // Get donor_id from email
       const donorResult = await client.query('SELECT id FROM donors WHERE email = $1', [donation.donor_email]);
-
       if (donorResult.rows.length > 0) {
         const donor_id = donorResult.rows[0].id;
         await client.query(
@@ -117,7 +173,7 @@ export async function seedDatabase() {
         slug: 'contact',
         title: 'Contact',
         content: `<h2>Get in Touch</h2>
-<p>Have questions or want to learn more about our programs? We'd love to hear from you!</p>
+<p>Have questions or want to learn more about our programs? We would love to hear from you!</p>
 <p><a href="/contact">Send us a message</a></p>`,
       },
       {
@@ -192,8 +248,10 @@ export async function seedDatabase() {
 
     logger.info('✓ Content pages seeded');
 
-            // 5. Seed Homepage Sections with Modern Content
-    logger.info('📝 Ensuring homepage sections...');
+    // 5. Create and Seed Homepage Sections
+    logger.info('📝 Setting up homepage sections...');
+    await createHomepageSectionsTable(client);
+
     const sections = [
       {
         name: 'hero',
@@ -232,7 +290,7 @@ export async function seedDatabase() {
       {
         name: 'features',
         type: 'features-list',
-        title: 'Why Choose Wissen-Haus?',
+        title: 'Why Choose Wissen-Haus',
         subtitle: 'What sets us apart',
         description: 'Committed to providing world-class educational support.',
         imageUrl: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop',
@@ -266,45 +324,72 @@ export async function seedDatabase() {
       },
     ];
 
-    try {
-      const tableCheck = await client.query(
-        `SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'homepage_sections')`
+    for (const section of sections) {
+      await client.query(
+        `INSERT INTO homepage_sections (section_name, section_type, title, subtitle, description, html_content, button_text, button_url, background_color, display_order, is_active)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true)
+         ON CONFLICT (section_name) DO UPDATE SET
+           section_type = EXCLUDED.section_type,
+           title = EXCLUDED.title,
+           subtitle = EXCLUDED.subtitle,
+           description = EXCLUDED.description,
+           html_content = EXCLUDED.html_content,
+           button_text = EXCLUDED.button_text,
+           button_url = EXCLUDED.button_url,
+           background_color = EXCLUDED.background_color,
+           display_order = EXCLUDED.display_order,
+           updated_at = NOW()`,
+        [
+          section.name,
+          section.type,
+          section.title || null,
+          section.subtitle || null,
+          section.description || null,
+          section.htmlContent || null,
+          section.buttonText || null,
+          section.buttonUrl || null,
+          section.backgroundColor || null,
+          section.order,
+        ]
       );
-
-      if (tableCheck.rows[0].exists) {
-        for (const section of sections) {
-          await client.query(
-            `INSERT INTO homepage_sections (section_name, section_type, title, subtitle, description, html_content, button_text, button_url, background_color, display_order, is_active)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true)
-             ON CONFLICT (section_name) DO UPDATE SET
-               section_type = COALESCE($2, section_type),
-               title = COALESCE($3, title),
-               subtitle = COALESCE($4, subtitle),
-               description = COALESCE($5, description),
-               html_content = COALESCE($6, html_content),
-               button_text = COALESCE($7, button_text),
-               button_url = COALESCE($8, button_url),
-               background_color = COALESCE($9, background_color),
-               updated_at = NOW()`,
-            [
-              section.name,
-              section.type,
-              section.title || null,
-              section.subtitle || null,
-              section.description || null,
-              section.htmlContent || null,
-              section.buttonText || null,
-              section.buttonUrl || null,
-              section.backgroundColor || null,
-              section.order,
-            ]
-          );
-        }
-        logger.info('✓ Homepage sections seeded');
-      }
-    } catch (error: any) {
-      logger.warn('⚠ Homepage sections:', error.message?.substring(0, 100));
     }
+
+    logger.info('✓ Homepage sections seeded');
+
+    // 6. Create and Seed Site Settings
+    logger.info('📝 Setting up site settings...');
+    await createSiteSettingsTable(client);
+
+    const settings = [
+      { key: 'site_name', value: 'Wissen-Haus' },
+      { key: 'site_tagline', value: 'Empowering Future Leaders Through Education' },
+      { key: 'logo_url', value: '/images/logo.png' },
+      { key: 'favicon_url', value: '/images/favicon.ico' },
+      { key: 'primary_color', value: '#3052d5' },
+      { key: 'secondary_color', value: '#d81b60' },
+      { key: 'hero_image_url', value: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920&h=1080&fit=crop' },
+      { key: 'contact_email', value: 'hello@wissen-haus.org' },
+      { key: 'phone_number', value: '+1 (555) 123-4567' },
+      { key: 'social_twitter', value: 'https://twitter.com/wissen_haus' },
+      { key: 'social_facebook', value: 'https://facebook.com/wissen-haus' },
+      { key: 'social_linkedin', value: 'https://linkedin.com/company/wissen-haus' },
+      { key: 'social_instagram', value: 'https://instagram.com/wissen_haus' },
+      { key: 'google_analytics_id', value: '' },
+      { key: 'meta_description', value: 'Empowering underprivileged youth through education, skills development, and mentorship programs' },
+      { key: 'meta_keywords', value: 'education, mentorship, charity, nonprofit, youth development' },
+    ];
+
+    for (const setting of settings) {
+      await client.query(
+        `INSERT INTO site_settings (setting_key, setting_value)
+         VALUES ($1, $2)
+         ON CONFLICT (setting_key) DO UPDATE SET
+           setting_value = EXCLUDED.setting_value`,
+        [setting.key, setting.value]
+      );
+    }
+
+    logger.info('✓ Site settings seeded');
 
     logger.info('✅ Database seeding completed successfully!');
   } catch (error: any) {
@@ -315,10 +400,8 @@ export async function seedDatabase() {
   }
 }
 
-// Run seeding on startup if needed
 export async function ensureDatabasePopulated() {
   try {
-    // Check if we already have data
     const result = await pool.query('SELECT COUNT(*) as count FROM users');
     const userCount = parseInt(result.rows[0].count);
 

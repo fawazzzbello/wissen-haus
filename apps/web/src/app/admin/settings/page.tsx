@@ -7,6 +7,10 @@ export const dynamic = 'force-dynamic';
 import { useEffect, useState } from 'react';
 import { getApiClient } from '@/lib/api-client';
 
+interface BrandingSettings {
+  [key: string]: string;
+}
+
 interface EmailSettings {
   fromEmail: string;
   fromName: string;
@@ -19,6 +23,7 @@ interface SmsSettings {
 }
 
 export default function SettingsPage() {
+  const [brandingSettings, setBrandingSettings] = useState<BrandingSettings>({});
   const [emailSettings, setEmailSettings] = useState<EmailSettings>({
     fromEmail: '',
     fromName: '',
@@ -33,6 +38,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [changedBranding, setChangedBranding] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchSettings();
@@ -43,19 +49,29 @@ export default function SettingsPage() {
       setLoading(true);
       const api = getApiClient();
 
-      const [emailRes, smsRes] = await Promise.all([
+      const [emailRes, smsRes, brandingRes] = await Promise.all([
         api.get('/notifications/email/settings'),
         api.get('/notifications/sms/settings'),
+        api.get('/settings'),
       ]);
 
       setEmailSettings(emailRes.data);
       setSmsSettings(smsRes.data);
+      setBrandingSettings(brandingRes.data.settings || {});
     } catch (error) {
       console.error('Error fetching settings:', error);
       setMessage('Failed to load settings');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleBrandingChange = (key: string, value: string) => {
+    setBrandingSettings((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+    setChangedBranding((prev) => new Set(prev).add(key));
   };
 
   const handleEmailChange = (field: keyof EmailSettings, value: any) => {
@@ -70,6 +86,31 @@ export default function SettingsPage() {
       ...prev,
       [field]: value,
     }));
+  };
+
+  const saveBrandingSettings = async () => {
+    if (changedBranding.size === 0) {
+      setMessage('No changes to save');
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const api = getApiClient();
+      const updates: Record<string, string> = {};
+      changedBranding.forEach(key => {
+        updates[key] = brandingSettings[key] || '';
+      });
+      await api.post('/settings/admin/bulk', updates);
+      setMessage('Branding settings saved successfully');
+      setChangedBranding(new Set());
+      setTimeout(() => setMessage(''), 3000);
+    } catch (error) {
+      console.error('Error saving branding settings:', error);
+      setMessage('Failed to save branding settings');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const saveEmailSettings = async () => {
@@ -130,6 +171,172 @@ export default function SettingsPage() {
             </p>
           </div>
         )}
+
+        {/* Branding Settings */}
+        <div className="card mb-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Site Branding & Logo</h2>
+
+          <div className="space-y-4">
+            <div>
+              <label className="label">Site Name</label>
+              <input
+                type="text"
+                value={brandingSettings.site_name || ''}
+                onChange={(e) => handleBrandingChange('site_name', e.target.value)}
+                placeholder="Wissen-Haus"
+                className="input"
+              />
+            </div>
+
+            <div>
+              <label className="label">Site Tagline</label>
+              <input
+                type="text"
+                value={brandingSettings.site_tagline || ''}
+                onChange={(e) => handleBrandingChange('site_tagline', e.target.value)}
+                placeholder="Empowering Future Leaders Through Education"
+                className="input"
+              />
+            </div>
+
+            <div>
+              <label className="label">Logo URL</label>
+              <input
+                type="url"
+                value={brandingSettings.logo_url || ''}
+                onChange={(e) => handleBrandingChange('logo_url', e.target.value)}
+                placeholder="https://example.com/logo.png"
+                className="input"
+              />
+              {brandingSettings.logo_url && (
+                <div className="mt-2 p-3 bg-gray-50 rounded border border-gray-200">
+                  <p className="text-xs text-gray-600 mb-2">Logo Preview:</p>
+                  <img
+                    src={brandingSettings.logo_url}
+                    alt="Logo"
+                    className="max-h-16"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="label">Favicon URL</label>
+              <input
+                type="url"
+                value={brandingSettings.favicon_url || ''}
+                onChange={(e) => handleBrandingChange('favicon_url', e.target.value)}
+                placeholder="https://example.com/favicon.ico"
+                className="input"
+              />
+              {brandingSettings.favicon_url && (
+                <div className="mt-2 p-3 bg-gray-50 rounded border border-gray-200">
+                  <p className="text-xs text-gray-600 mb-2">Favicon Preview:</p>
+                  <img
+                    src={brandingSettings.favicon_url}
+                    alt="Favicon"
+                    className="w-6 h-6"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="label">Primary Color</label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    value={brandingSettings.primary_color || '#3052d5'}
+                    onChange={(e) => handleBrandingChange('primary_color', e.target.value)}
+                    className="h-10 w-16 rounded border border-gray-300 cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={brandingSettings.primary_color || ''}
+                    onChange={(e) => handleBrandingChange('primary_color', e.target.value)}
+                    placeholder="#3052d5"
+                    className="flex-1 input"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="label">Secondary Color</label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    value={brandingSettings.secondary_color || '#d81b60'}
+                    onChange={(e) => handleBrandingChange('secondary_color', e.target.value)}
+                    className="h-10 w-16 rounded border border-gray-300 cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={brandingSettings.secondary_color || ''}
+                    onChange={(e) => handleBrandingChange('secondary_color', e.target.value)}
+                    placeholder="#d81b60"
+                    className="flex-1 input"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <button
+                onClick={saveBrandingSettings}
+                disabled={saving || changedBranding.size === 0}
+                className="btn-primary disabled:opacity-50"
+              >
+                {saving ? 'Saving...' : 'Save Branding Settings'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Contact Information */}
+        <div className="card mb-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Contact Information</h2>
+
+          <div className="space-y-4">
+            <div>
+              <label className="label">Contact Email</label>
+              <input
+                type="email"
+                value={brandingSettings.contact_email || ''}
+                onChange={(e) => handleBrandingChange('contact_email', e.target.value)}
+                placeholder="hello@wissen-haus.org"
+                className="input"
+              />
+            </div>
+
+            <div>
+              <label className="label">Phone Number</label>
+              <input
+                type="tel"
+                value={brandingSettings.phone_number || ''}
+                onChange={(e) => handleBrandingChange('phone_number', e.target.value)}
+                placeholder="+1 (555) 123-4567"
+                className="input"
+              />
+            </div>
+
+            <div>
+              <button
+                onClick={saveBrandingSettings}
+                disabled={saving || changedBranding.size === 0}
+                className="btn-primary disabled:opacity-50"
+              >
+                {saving ? 'Saving...' : 'Save Contact Information'}
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* Email Settings */}
         <div className="card mb-6">

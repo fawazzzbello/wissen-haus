@@ -10,6 +10,7 @@ import { contactRouter } from './contact';
 import { aiRouter } from './ai';
 import { paymentRouter } from './payments';
 import { emailRouter } from './emails';
+import { settingsRouter } from './settings';
 
 export function setupRoutes(app: Express) {
   // Root endpoint - API info
@@ -63,4 +64,7 @@ export function setupRoutes(app: Express) {
 
   // Email and automation routes
   app.use('/api/emails', emailRouter);
+
+  // Site settings routes
+  app.use('/api/settings', settingsRouter);
 }
