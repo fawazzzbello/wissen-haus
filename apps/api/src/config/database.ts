@@ -5,10 +5,17 @@ import path from 'path';
 
 // Parse DATABASE_URL (used by Railway) or fall back to individual env vars (used locally)
 const getDatabaseConfig = () => {
+  const baseConfig = {
+    max: parseInt(process.env.DB_POOL_MAX || '10'), // Max connections
+    min: parseInt(process.env.DB_POOL_MIN || '2'),  // Min connections
+    idleTimeoutMillis: 30000,                       // Close idle connections after 30s
+    connectionTimeoutMillis: 10000,                 // Timeout after 10s waiting for connection
+  };
+
   if (process.env.DATABASE_URL) {
     // Railway provides DATABASE_URL in format: postgres://user:password@host:port/database
     logger.info('🔗 Using DATABASE_URL configuration (Railway environment)');
-    return { connectionString: process.env.DATABASE_URL };
+    return { connectionString: process.env.DATABASE_URL, ...baseConfig };
   } else {
     // Local development uses individual variables
     logger.info('🔗 Using individual DB_* configuration (Local development)');
@@ -18,11 +25,17 @@ const getDatabaseConfig = () => {
       database: process.env.DB_NAME || 'wissen_haus_db',
       user: process.env.DB_USER || 'postgres',
       password: process.env.DB_PASSWORD || 'postgres',
+      ...baseConfig,
     };
   }
 };
 
 const pool = new Pool(getDatabaseConfig());
+
+// Log pool status periodically
+setInterval(() => {
+  logger.debug(`Database pool status: ${pool.totalCount} total, ${pool.idleCount} idle, ${pool.waitingCount} waiting`);
+}, 60000);
 
 pool.on('error', (err) => {
   logger.error('❌ Unexpected error on idle client:', err.message);

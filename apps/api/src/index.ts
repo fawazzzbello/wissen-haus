@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import compression from 'compression';
 import dotenv from 'dotenv';
 import path from 'path';
 import { pool, initializeDatabase } from '@/config/database';
@@ -21,6 +22,12 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Middleware: Security Headers
 app.use(helmet());
+
+// Middleware: Response Compression (gzip)
+app.use(compression({
+  level: 6, // Balance between speed and compression ratio
+  threshold: 1024, // Only compress responses larger than 1KB
+}));
 
 // Middleware: Trust proxy (for Railway and other reverse proxies)
 app.set('trust proxy', 1);
@@ -85,6 +92,25 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Middleware: Request Logging
 app.use(requestLogger);
+
+// Middleware: Cache Headers for GET endpoints
+app.use((req, res, next) => {
+  // Only cache GET requests
+  if (req.method === 'GET') {
+    // Public endpoints (no authentication required): cache for 5 minutes
+    if (req.path.includes('/impact-stats') || req.path.includes('/settings')) {
+      res.set('Cache-Control', 'public, max-age=300'); // 5 minutes
+    }
+    // Private endpoints (require authentication): no-cache, private
+    else {
+      res.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    }
+  } else {
+    // Don't cache non-GET requests
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  }
+  next();
+});
 
 // Middleware: Rate Limiting
 const limiter = rateLimit({
