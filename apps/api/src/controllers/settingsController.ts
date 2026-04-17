@@ -65,10 +65,13 @@ export async function bulkUpdateSettings(req: Request, res: Response) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const updates = req.body; // { key: value, ... }
+    const { settings } = req.body;
+    if (!settings || typeof settings !== 'object') {
+      return res.status(400).json({ error: 'Invalid request format' });
+    }
 
     const results = [];
-    for (const [key, value] of Object.entries(updates)) {
+    for (const [key, value] of Object.entries(settings)) {
       const success = await updateSetting(key, String(value), req.user.userId);
       results.push({ key, success });
     }

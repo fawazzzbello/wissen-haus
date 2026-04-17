@@ -5,180 +5,200 @@ export const dynamic = 'force-dynamic';
 import { useEffect, useState } from 'react';
 import { getApiClient } from '@/lib/api-client';
 
-interface HomepageSection {
-  id: string;
-  sectionName: string;
-  sectionType: string;
-  title?: string;
-  subtitle?: string;
-  description?: string;
-  htmlContent?: string;
-  imageUrl?: string;
-  backgroundColor?: string;
-  textColor?: string;
-  buttonText?: string;
-  buttonUrl?: string;
-  displayOrder: number;
-  isActive: boolean;
-  updatedAt: string;
+interface FieldConfig {
+  key: string;
+  label: string;
+  type: 'text' | 'textarea' | 'number';
+  rows?: number;
 }
 
-interface ContentPage {
+interface FieldGroup {
   id: string;
-  slug: string;
   title: string;
-  contentHtml: string;
-  metaDescription?: string;
-  metaKeywords?: string;
-  isPublished: boolean;
-  createdAt: string;
-  updatedAt: string;
+  description: string;
+  fields: FieldConfig[];
 }
 
-const SECTION_TYPES = [
-  { group: '🎯 Hero & Landing', options: [
-    { value: 'hero-premium', label: 'Hero Premium — Full-screen banner with animations' },
-    { value: 'cta-banner', label: 'CTA Banner — Call-to-action with background' },
-  ]},
-  { group: '📊 Statistics & Data', options: [
-    { value: 'stats-advanced', label: 'Stats Advanced — Impact metrics dashboard' },
-    { value: 'donation-tiers', label: 'Donation Tiers — Pricing / tier cards' },
-  ]},
-  { group: '📋 Content', options: [
-    { value: 'programs-grid', label: 'Programs Grid — Service cards with icons' },
-    { value: 'features-list', label: 'Features List — Checkmark feature list' },
-    { value: 'two-column-advanced', label: 'Two Column Advanced — Image + text' },
-  ]},
-  { group: '👥 People & Community', options: [
-    { value: 'team', label: 'Team — Team member profiles' },
-    { value: 'testimonials-advanced', label: 'Testimonials — Success stories with ratings' },
-  ]},
-  { group: '📅 Events & Information', options: [
-    { value: 'events', label: 'Events — Event listings with dates' },
-    { value: 'timeline', label: 'Timeline — Historical milestones' },
-    { value: 'faq-accordion', label: 'FAQ Accordion — Expandable Q&A' },
-  ]},
-  { group: '🔗 Utilities', options: [
-    { value: 'newsletter', label: 'Newsletter — Email signup form' },
-    { value: 'partners', label: 'Partners — Sponsor / partner logos' },
-    { value: 'custom', label: 'Custom — Free-form HTML' },
-  ]},
+const FIELD_GROUPS: FieldGroup[] = [
+  {
+    id: 'hero',
+    title: '🦸 Hero Section',
+    description: 'Main landing section with title, subtitle, and CTA',
+    fields: [
+      { key: 'hero_title', label: 'Title', type: 'text' },
+      { key: 'hero_subtitle', label: 'Subtitle', type: 'text' },
+      { key: 'hero_description', label: 'Description', type: 'textarea', rows: 3 },
+      { key: 'hero_button_text', label: 'Button Text', type: 'text' },
+    ],
+  },
+  {
+    id: 'mission_vision',
+    title: '🎯 Mission & Vision',
+    description: 'Organization mission and vision statements',
+    fields: [
+      { key: 'mission_title', label: 'Mission Title', type: 'text' },
+      { key: 'mission_description', label: 'Mission Description', type: 'textarea', rows: 3 },
+      { key: 'vision_title', label: 'Vision Title', type: 'text' },
+      { key: 'vision_description', label: 'Vision Description', type: 'textarea', rows: 3 },
+    ],
+  },
+  {
+    id: 'impact_stats',
+    title: '📊 Impact Statistics',
+    description: 'Organization impact metrics and statistics',
+    fields: [
+      { key: 'stat1_value', label: 'Stat 1 Value', type: 'text' },
+      { key: 'stat1_label', label: 'Stat 1 Label', type: 'text' },
+      { key: 'stat2_value', label: 'Stat 2 Value', type: 'text' },
+      { key: 'stat2_label', label: 'Stat 2 Label', type: 'text' },
+      { key: 'stat3_value', label: 'Stat 3 Value', type: 'text' },
+      { key: 'stat3_label', label: 'Stat 3 Label', type: 'text' },
+      { key: 'stat4_value', label: 'Stat 4 Value', type: 'text' },
+      { key: 'stat4_label', label: 'Stat 4 Label', type: 'text' },
+    ],
+  },
+  {
+    id: 'programs_1_3',
+    title: '📚 Programs Section 1-3',
+    description: 'First three program offerings',
+    fields: [
+      { key: 'program1_title', label: 'Program 1 Title', type: 'text' },
+      { key: 'program1_desc', label: 'Program 1 Description', type: 'textarea', rows: 2 },
+      { key: 'program2_title', label: 'Program 2 Title', type: 'text' },
+      { key: 'program2_desc', label: 'Program 2 Description', type: 'textarea', rows: 2 },
+      { key: 'program3_title', label: 'Program 3 Title', type: 'text' },
+      { key: 'program3_desc', label: 'Program 3 Description', type: 'textarea', rows: 2 },
+    ],
+  },
+  {
+    id: 'programs_4_6',
+    title: '💼 Programs Section 4-6',
+    description: 'Last three program offerings',
+    fields: [
+      { key: 'program4_title', label: 'Program 4 Title', type: 'text' },
+      { key: 'program4_desc', label: 'Program 4 Description', type: 'textarea', rows: 2 },
+      { key: 'program5_title', label: 'Program 5 Title', type: 'text' },
+      { key: 'program5_desc', label: 'Program 5 Description', type: 'textarea', rows: 2 },
+      { key: 'program6_title', label: 'Program 6 Title', type: 'text' },
+      { key: 'program6_desc', label: 'Program 6 Description', type: 'textarea', rows: 2 },
+    ],
+  },
+  {
+    id: 'testimonials',
+    title: '⭐ Success Stories & Testimonials',
+    description: 'Student and alumni testimonials with quotes and details',
+    fields: [
+      { key: 'testimonial1_quote', label: 'Testimonial 1 Quote', type: 'textarea', rows: 2 },
+      { key: 'testimonial1_author', label: 'Testimonial 1 Author', type: 'text' },
+      { key: 'testimonial1_role', label: 'Testimonial 1 Role', type: 'text' },
+      { key: 'testimonial2_quote', label: 'Testimonial 2 Quote', type: 'textarea', rows: 2 },
+      { key: 'testimonial2_author', label: 'Testimonial 2 Author', type: 'text' },
+      { key: 'testimonial2_role', label: 'Testimonial 2 Role', type: 'text' },
+      { key: 'testimonial3_quote', label: 'Testimonial 3 Quote', type: 'textarea', rows: 2 },
+      { key: 'testimonial3_author', label: 'Testimonial 3 Author', type: 'text' },
+      { key: 'testimonial3_role', label: 'Testimonial 3 Role', type: 'text' },
+    ],
+  },
+  {
+    id: 'cta',
+    title: '🎁 Call to Action',
+    description: 'Final section encouraging donations and involvement',
+    fields: [
+      { key: 'cta_title', label: 'CTA Title', type: 'text' },
+      { key: 'cta_description', label: 'CTA Description', type: 'textarea', rows: 3 },
+      { key: 'cta_button_text', label: 'CTA Button Text', type: 'text' },
+    ],
+  },
 ];
 
-export default function HomepageEditor() {
-  const [sections, setSections] = useState<HomepageSection[]>([]);
-  const [contentPages, setContentPages] = useState<ContentPage[]>([]);
-  const [selectedSection, setSelectedSection] = useState<HomepageSection | null>(null);
-  const [selectedPage, setSelectedPage] = useState<ContentPage | null>(null);
-  const [editMode, setEditMode] = useState<'sections' | 'pages'>('sections');
+export default function FrontpageEditor() {
+  const [content, setContent] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [formData, setFormData] = useState<any>({});
+  const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
+  const [expandedGroup, setExpandedGroup] = useState<string>('hero');
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   useEffect(() => {
-    fetchData();
+    fetchContent();
   }, []);
 
-  const fetchData = async () => {
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  const fetchContent = async () => {
     try {
       setLoading(true);
       setError(null);
       const api = getApiClient();
-      const [sectionsRes, pagesRes] = await Promise.all([
-        api.get('/homepage'),
-        api.get('/content/admin/pages'),
-      ]);
-      setSections(sectionsRes.data.sections || []);
-      setContentPages(pagesRes.data.pages || []);
-
-      if (sectionsRes.data.sections?.length > 0) {
-        setSelectedSection(sectionsRes.data.sections[0]);
-        setFormData(sectionsRes.data.sections[0]);
-      }
-    } catch (error: any) {
-      console.error('Error fetching data:', error);
-      setError(error.message || 'Failed to load data');
+      const res = await api.get('/settings');
+      setContent(res.data.settings || {});
+      setChangedFields(new Set());
+      setLastSaved(new Date());
+    } catch (err: any) {
+      console.error('Error fetching content:', err);
+      setError(err.message || 'Failed to load homepage content');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSaveSection = async () => {
-    if (!selectedSection) return;
+  const handleChange = (key: string, value: string) => {
+    setContent((prev) => ({ ...prev, [key]: value }));
+    setChangedFields((prev) => new Set(prev).add(key));
+  };
+
+  const handleSave = async () => {
+    if (changedFields.size === 0) return;
+
     try {
       setSaving(true);
       setError(null);
       const api = getApiClient();
-      const payload = {
-        title: formData.title,
-        subtitle: formData.subtitle,
-        description: formData.description,
-        htmlContent: formData.htmlContent,
-        imageUrl: formData.imageUrl,
-        backgroundColor: formData.backgroundColor,
-        textColor: formData.textColor,
-        buttonText: formData.buttonText,
-        buttonUrl: formData.buttonUrl,
-        displayOrder: formData.displayOrder,
-        sectionType: formData.sectionType,
-      };
-      const response = await api.put(`/homepage/${selectedSection.sectionName}`, payload);
-      const updated = sections.map(s =>
-        s.sectionName === selectedSection.sectionName ? response.data.section : s
-      );
-      setSections(updated);
-      setSelectedSection(response.data.section);
-      setFormData(response.data.section);
-      setSuccess('Section saved successfully!');
-      setTimeout(() => setSuccess(null), 3000);
-    } catch (error: any) {
-      setError(error.message || 'Failed to save section');
+
+      const settingsToUpdate: Record<string, any> = {};
+      changedFields.forEach((key) => {
+        settingsToUpdate[key] = content[key] || '';
+      });
+
+      await api.post('/settings/admin/bulk', { settings: settingsToUpdate });
+
+      setSuccess(`✓ Saved ${changedFields.size} field${changedFields.size > 1 ? 's' : ''}`);
+      setChangedFields(new Set());
+      setLastSaved(new Date());
+    } catch (err: any) {
+      console.error('Error saving content:', err);
+      setError(err.message || 'Failed to save changes');
     } finally {
       setSaving(false);
     }
   };
 
-  const handleSavePage = async () => {
-    if (!selectedPage) return;
-    try {
-      setSaving(true);
-      setError(null);
-      const api = getApiClient();
-      const payload = {
-        title: formData.title,
-        slug: formData.slug,
-        contentHtml: formData.contentHtml,
-        metaDescription: formData.metaDescription,
-        metaKeywords: formData.metaKeywords,
-        isPublished: formData.isPublished,
-      };
-      const response = await api.put(`/content/admin/pages/${selectedPage.id}`, payload);
-      const updated = contentPages.map(p =>
-        p.id === selectedPage.id ? response.data.page : p
-      );
-      setContentPages(updated);
-      setSelectedPage(response.data.page);
-      setFormData(response.data.page);
-      setSuccess('Page saved successfully!');
-      setTimeout(() => setSuccess(null), 3000);
-    } catch (error: any) {
-      setError(error.message || 'Failed to save page');
-    } finally {
-      setSaving(false);
+  const handleReset = () => {
+    if (changedFields.size === 0) return;
+    if (confirm(`Discard ${changedFields.size} unsaved change${changedFields.size > 1 ? 's' : ''}?`)) {
+      fetchContent();
     }
-  };
-
-  const handleFieldChange = (field: string, value: any) => {
-    setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-8 h-8 mb-2 border-4 border-primary-600 border-t-transparent rounded-full spinner"></div>
+          <div className="inline-flex items-center justify-center w-8 h-8 mb-2 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
           <p className="text-gray-600">Loading homepage editor...</p>
         </div>
       </div>
@@ -186,399 +206,168 @@ export default function HomepageEditor() {
   }
 
   return (
-    <div className="p-4 md:p-8">
-      <div className="max-w-7xl">
+    <div className="p-4 md:p-8 pb-32">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Homepage Editor</h1>
-          <p className="text-gray-600 mt-2">Edit homepage sections and content pages</p>
+          <h1 className="text-3xl font-bold text-gray-900">Homepage Editor</h1>
+          <p className="text-gray-600 mt-2">Customize all content on your public homepage</p>
         </div>
+
+        {/* Sticky Unsaved Changes Bar */}
+        {changedFields.size > 0 && (
+          <div className="fixed bottom-0 left-0 right-0 bg-blue-50 border-t border-blue-200 shadow-lg z-40">
+            <div className="max-w-4xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="inline-flex items-center justify-center w-6 h-6 bg-blue-600 text-white rounded-full text-sm font-semibold animate-pulse">
+                  {changedFields.size}
+                </div>
+                <span className="text-sm font-medium text-blue-900">
+                  {changedFields.size} unsaved change{changedFields.size > 1 ? 's' : ''}
+                </span>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleReset}
+                  className="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                >
+                  Discard
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="px-6 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                >
+                  {saving ? 'Saving...' : `Save (${changedFields.size})`}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Alerts */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex justify-between items-start">
-            <p className="text-red-800">{error}</p>
-            <button onClick={fetchData} className="btn-secondary text-sm ml-4 flex-shrink-0">Retry</button>
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start justify-between">
+            <p className="text-red-800 text-sm">{error}</p>
+            <button onClick={() => setError(null)} className="text-red-600 hover:text-red-700">✕</button>
           </div>
         )}
         {success && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-green-800 font-medium">✓ {success}</p>
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start justify-between">
+            <p className="text-green-800 text-sm font-medium">{success}</p>
+            <button onClick={() => setSuccess(null)} className="text-green-600 hover:text-green-700">✕</button>
           </div>
         )}
 
-        {/* Mode Tabs */}
-        <div className="mb-6">
-          <div className="flex gap-2 border-b border-gray-200">
-            <button
-              onClick={() => {
-                setEditMode('sections');
-                if (sections.length > 0) { setSelectedSection(sections[0]); setFormData(sections[0]); }
-              }}
-              className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
-                editMode === 'sections' ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Homepage Sections
-            </button>
-            <button
-              onClick={() => {
-                setEditMode('pages');
-                if (contentPages.length > 0) { setSelectedPage(contentPages[0]); setFormData(contentPages[0]); }
-              }}
-              className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
-                editMode === 'pages' ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Content Pages
-            </button>
-          </div>
+        {/* Info Box */}
+        <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-900">
+            <strong>💡 Tip:</strong> Changes are synced to your homepage in real-time (every 5 seconds). Use the sticky bar below to save your edits.
+          </p>
         </div>
 
-        {/* Sections Editor */}
-        {editMode === 'sections' && (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Section List */}
-            <div className="lg:col-span-1">
-              <div className="card p-0 overflow-hidden">
-                <div className="p-4 bg-gray-50 border-b font-semibold text-gray-700 text-sm">Sections</div>
-                {sections.length === 0 ? (
-                  <p className="p-4 text-gray-600 text-sm">No sections available.</p>
-                ) : (
-                  <div className="divide-y">
-                    {sections.map((section) => (
-                      <button
-                        key={section.id}
-                        onClick={() => { setSelectedSection(section); setFormData(section); }}
-                        className={`w-full text-left px-4 py-3 text-sm transition-colors ${
-                          selectedSection?.id === section.id
-                            ? 'bg-primary-50 text-primary-700 font-semibold border-l-2 border-primary-600'
-                            : 'hover:bg-gray-50 text-gray-700'
-                        }`}
-                      >
-                        <div className="font-medium capitalize">{section.sectionName}</div>
-                        <div className="text-xs text-gray-500 mt-0.5">{section.sectionType}</div>
-                      </button>
-                    ))}
+        {/* Field Groups */}
+        <div className="space-y-6 mb-8">
+          {FIELD_GROUPS.map((group) => {
+            const groupChanges = Array.from(changedFields).filter((key) =>
+              group.fields.some((f) => f.key === key)
+            ).length;
+            const isExpanded = expandedGroup === group.id;
+
+            return (
+              <div key={group.id} className="bg-white rounded-lg border border-gray-200 shadow-sm">
+                {/* Group Header */}
+                <button
+                  onClick={() => setExpandedGroup(isExpanded ? '' : group.id)}
+                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition"
+                >
+                  <div className="flex-1 text-left">
+                    <h2 className="text-lg font-bold text-gray-900">{group.title}</h2>
+                    <p className="text-sm text-gray-600 mt-1">{group.description}</p>
+                  </div>
+                  <div className="flex items-center gap-4 ml-4">
+                    {groupChanges > 0 && (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">
+                        <span className="inline-block w-2 h-2 bg-yellow-600 rounded-full animate-pulse"></span>
+                        {groupChanges} changed
+                      </span>
+                    )}
+                    <span className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`}>▼</span>
+                  </div>
+                </button>
+
+                {/* Group Content */}
+                {isExpanded && (
+                  <div className="border-t border-gray-200 px-6 py-5 bg-gray-50">
+                    <div className="grid grid-cols-1 gap-5">
+                      {group.fields.map((field) => {
+                        const isChanged = changedFields.has(field.key);
+                        return (
+                          <div key={field.key} className="relative">
+                            {isChanged && (
+                              <div className="absolute -left-4 top-0 bottom-0 border-l-4 border-green-500"></div>
+                            )}
+                            <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                              {field.label}
+                              {isChanged && (
+                                <span className="inline-flex items-center justify-center w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+                              )}
+                            </label>
+                            {field.type === 'textarea' ? (
+                              <textarea
+                                value={content[field.key] || ''}
+                                onChange={(e) => handleChange(field.key, e.target.value)}
+                                rows={field.rows || 3}
+                                className={`w-full px-3 py-2 border-2 rounded-lg focus:outline-none focus:border-green-500 resize-none transition ${
+                                  isChanged ? 'border-green-500 bg-green-50' : 'border-gray-300'
+                                }`}
+                                placeholder={`Enter ${field.label.toLowerCase()}...`}
+                              />
+                            ) : (
+                              <input
+                                type={field.type}
+                                value={content[field.key] || ''}
+                                onChange={(e) => handleChange(field.key, e.target.value)}
+                                className={`w-full px-3 py-2 border-2 rounded-lg focus:outline-none focus:border-green-500 transition ${
+                                  isChanged ? 'border-green-500 bg-green-50' : 'border-gray-300'
+                                }`}
+                                placeholder={`Enter ${field.label.toLowerCase()}...`}
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>
-            </div>
+            );
+          })}
+        </div>
 
-            {/* Section Editor */}
-            <div className="lg:col-span-3">
-              {selectedSection ? (
-                <div className="card">
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h2 className="text-xl font-bold text-gray-900 capitalize">{selectedSection.sectionName}</h2>
-                      <p className="text-sm text-gray-500 mt-1">Section type: <span className="font-medium text-primary-600">{formData.sectionType}</span></p>
-                    </div>
-                    <div className="flex gap-2">
-                      <button onClick={() => setFormData(selectedSection)} className="btn-secondary text-sm">Discard</button>
-                      <button onClick={handleSaveSection} disabled={saving} className="btn-primary text-sm disabled:opacity-50">
-                        {saving ? 'Saving…' : 'Save Changes'}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-5">
-                    {/* Section Type */}
-                    <div>
-                      <label className="label">Section Type</label>
-                      <select
-                        value={formData.sectionType || 'custom'}
-                        onChange={(e) => handleFieldChange('sectionType', e.target.value)}
-                        className="input"
-                      >
-                        {SECTION_TYPES.map(group => (
-                          <optgroup key={group.group} label={group.group}>
-                            {group.options.map(opt => (
-                              <option key={opt.value} value={opt.value}>{opt.label}</option>
-                            ))}
-                          </optgroup>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Title */}
-                    <div>
-                      <label className="label">Title</label>
-                      <input
-                        type="text"
-                        value={formData.title || ''}
-                        onChange={(e) => handleFieldChange('title', e.target.value)}
-                        placeholder="Section title"
-                        className="input"
-                      />
-                    </div>
-
-                    {/* Subtitle */}
-                    <div>
-                      <label className="label">Subtitle</label>
-                      <input
-                        type="text"
-                        value={formData.subtitle || ''}
-                        onChange={(e) => handleFieldChange('subtitle', e.target.value)}
-                        placeholder="Section subtitle"
-                        className="input"
-                      />
-                    </div>
-
-                    {/* Description */}
-                    <div>
-                      <label className="label">Description</label>
-                      <textarea
-                        value={formData.description || ''}
-                        onChange={(e) => handleFieldChange('description', e.target.value)}
-                        placeholder="Section description"
-                        rows={4}
-                        className="input resize-none"
-                      />
-                    </div>
-
-                    {/* HTML Content */}
-                    <div>
-                      <label className="label">
-                        HTML Content
-                        <span className="ml-2 text-xs font-normal text-gray-500">
-                          {['stats-advanced','programs-grid','testimonials-advanced','team','events','timeline','faq-accordion','donation-tiers','partners'].includes(formData.sectionType)
-                            ? '— use structured data-* attributes (see guide)'
-                            : '— optional custom HTML'}
-                        </span>
-                      </label>
-                      <textarea
-                        value={formData.htmlContent || ''}
-                        onChange={(e) => handleFieldChange('htmlContent', e.target.value)}
-                        placeholder="HTML content..."
-                        rows={10}
-                        className="input resize-y font-mono text-xs"
-                      />
-                    </div>
-
-                    {/* Image URL */}
-                    <div>
-                      <label className="label">Image URL</label>
-                      <input
-                        type="url"
-                        value={formData.imageUrl || ''}
-                        onChange={(e) => handleFieldChange('imageUrl', e.target.value)}
-                        placeholder="https://example.com/image.jpg"
-                        className="input"
-                      />
-                      {formData.imageUrl && (
-                        <img src={formData.imageUrl} alt="Preview" className="mt-2 h-24 rounded object-cover" />
-                      )}
-                    </div>
-
-                    {/* Colors */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="label">Background Color</label>
-                        <div className="flex gap-2">
-                          <input
-                            type="color"
-                            value={formData.backgroundColor || '#ffffff'}
-                            onChange={(e) => handleFieldChange('backgroundColor', e.target.value)}
-                            className="w-10 h-10 rounded cursor-pointer border border-gray-200"
-                          />
-                          <input
-                            type="text"
-                            value={formData.backgroundColor || '#ffffff'}
-                            onChange={(e) => handleFieldChange('backgroundColor', e.target.value)}
-                            placeholder="#ffffff"
-                            className="input flex-1"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="label">Text Color</label>
-                        <div className="flex gap-2">
-                          <input
-                            type="color"
-                            value={formData.textColor || '#000000'}
-                            onChange={(e) => handleFieldChange('textColor', e.target.value)}
-                            className="w-10 h-10 rounded cursor-pointer border border-gray-200"
-                          />
-                          <input
-                            type="text"
-                            value={formData.textColor || '#000000'}
-                            onChange={(e) => handleFieldChange('textColor', e.target.value)}
-                            placeholder="#000000"
-                            className="input flex-1"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Button */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="label">Button Text</label>
-                        <input
-                          type="text"
-                          value={formData.buttonText || ''}
-                          onChange={(e) => handleFieldChange('buttonText', e.target.value)}
-                          placeholder="e.g. Donate Now"
-                          className="input"
-                        />
-                      </div>
-                      <div>
-                        <label className="label">Button URL</label>
-                        <input
-                          type="text"
-                          value={formData.buttonUrl || ''}
-                          onChange={(e) => handleFieldChange('buttonUrl', e.target.value)}
-                          placeholder="/donate"
-                          className="input"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Display Order */}
-                    <div>
-                      <label className="label">Display Order</label>
-                      <input
-                        type="number"
-                        value={formData.displayOrder || 1}
-                        onChange={(e) => handleFieldChange('displayOrder', parseInt(e.target.value))}
-                        min="1"
-                        className="input w-32"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="card text-center py-16 text-gray-500">Select a section to edit</div>
-              )}
-            </div>
+        {/* Statistics Footer */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div>
+            <p className="text-xs text-gray-600 font-semibold">Total Fields</p>
+            <p className="text-2xl font-bold text-gray-900 mt-1">
+              {FIELD_GROUPS.reduce((sum, g) => sum + g.fields.length, 0)}
+            </p>
           </div>
-        )}
-
-        {/* Pages Editor */}
-        {editMode === 'pages' && (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Page List */}
-            <div className="lg:col-span-1">
-              <div className="card p-0 overflow-hidden">
-                <div className="p-4 bg-gray-50 border-b font-semibold text-gray-700 text-sm">Pages</div>
-                {contentPages.length === 0 ? (
-                  <p className="p-4 text-gray-600 text-sm">No pages found.</p>
-                ) : (
-                  <div className="divide-y">
-                    {contentPages.map((page) => (
-                      <button
-                        key={page.id}
-                        onClick={() => { setSelectedPage(page); setFormData(page); }}
-                        className={`w-full text-left px-4 py-3 text-sm transition-colors ${
-                          selectedPage?.id === page.id
-                            ? 'bg-primary-50 text-primary-700 font-semibold border-l-2 border-primary-600'
-                            : 'hover:bg-gray-50 text-gray-700'
-                        }`}
-                      >
-                        <div className="font-medium">{page.title}</div>
-                        <div className="text-xs text-gray-500 mt-0.5">/{page.slug}</div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Page Editor */}
-            <div className="lg:col-span-3">
-              {selectedPage ? (
-                <div className="card">
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h2 className="text-xl font-bold text-gray-900">{selectedPage.title}</h2>
-                      <p className="text-sm text-gray-500 mt-1">/{selectedPage.slug}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <button onClick={() => setFormData(selectedPage)} className="btn-secondary text-sm">Discard</button>
-                      <button onClick={handleSavePage} disabled={saving} className="btn-primary text-sm disabled:opacity-50">
-                        {saving ? 'Saving…' : 'Save Changes'}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-5">
-                    <div>
-                      <label className="label">Title *</label>
-                      <input
-                        type="text"
-                        value={formData.title || ''}
-                        onChange={(e) => handleFieldChange('title', e.target.value)}
-                        className="input"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="label">Slug *</label>
-                      <input
-                        type="text"
-                        value={formData.slug || ''}
-                        onChange={(e) => handleFieldChange('slug', e.target.value)}
-                        placeholder="page-slug"
-                        className="input"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Accessible at /{formData.slug}</p>
-                    </div>
-
-                    <div>
-                      <label className="label">Meta Description</label>
-                      <textarea
-                        value={formData.metaDescription || ''}
-                        onChange={(e) => handleFieldChange('metaDescription', e.target.value)}
-                        placeholder="SEO meta description"
-                        rows={2}
-                        className="input resize-none"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="label">Meta Keywords</label>
-                      <input
-                        type="text"
-                        value={formData.metaKeywords || ''}
-                        onChange={(e) => handleFieldChange('metaKeywords', e.target.value)}
-                        placeholder="keyword1, keyword2"
-                        className="input"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="label">Content (HTML) *</label>
-                      <textarea
-                        value={formData.contentHtml || ''}
-                        onChange={(e) => handleFieldChange('contentHtml', e.target.value)}
-                        placeholder="<h2>Title</h2><p>Content...</p>"
-                        rows={14}
-                        className="input font-mono text-xs resize-y"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="flex items-center gap-3 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={formData.isPublished || false}
-                          onChange={(e) => handleFieldChange('isPublished', e.target.checked)}
-                          className="w-4 h-4"
-                        />
-                        <span className="font-medium text-gray-700">Publish this page</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="card text-center py-16 text-gray-500">Select a page to edit</div>
-              )}
-            </div>
+          <div>
+            <p className="text-xs text-gray-600 font-semibold">Edited</p>
+            <p className="text-2xl font-bold text-green-600 mt-1">{changedFields.size}</p>
           </div>
-        )}
+          <div>
+            <p className="text-xs text-gray-600 font-semibold">Groups</p>
+            <p className="text-2xl font-bold text-gray-900 mt-1">{FIELD_GROUPS.length}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-600 font-semibold">Last Saved</p>
+            <p className="text-sm font-semibold text-gray-900 mt-1">
+              {lastSaved ? lastSaved.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '—'}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
