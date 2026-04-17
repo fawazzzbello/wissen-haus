@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { getApiClient } from '@/lib/api-client';
 
 interface BlogPost {
   id: string;
@@ -10,6 +12,10 @@ interface BlogPost {
   date: string;
   category: string;
   image?: string;
+}
+
+interface PageContent {
+  [key: string]: string;
 }
 
 const SAMPLE_POSTS: BlogPost[] = [
@@ -52,6 +58,27 @@ const SAMPLE_POSTS: BlogPost[] = [
 ];
 
 export default function BlogPage() {
+  const [content, setContent] = useState<PageContent>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchContent();
+    const interval = setInterval(fetchContent, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchContent = async () => {
+    try {
+      const api = getApiClient();
+      const response = await api.get('/settings');
+      setContent(response.data.settings || {});
+    } catch (error) {
+      console.error('Error fetching content:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -60,76 +87,104 @@ export default function BlogPage() {
     });
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 mb-4 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-300">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-12">
-        <div className="container max-w-6xl px-4">
-          <h1 className="text-4xl font-bold mb-4">Our Blog</h1>
-          <p className="text-lg text-primary-100">
-            Stories, insights, and updates from Wissen-Haus
+    <div>
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-green-600 to-red-600 text-white py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-5xl font-bold mb-6">{content.blog_title || 'Our Blog'}</h1>
+          <p className="text-xl opacity-90 max-w-3xl">
+            {content.blog_subtitle || 'Stories, insights, and updates from Wissen-Haus'}
           </p>
         </div>
-      </div>
+      </section>
 
       {/* Blog Posts */}
-      <div className="container max-w-6xl px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {SAMPLE_POSTS.map((post) => (
-            <Link key={post.id} href={`/blog/${post.id}`}>
-              <article className="card h-full hover:shadow-lg transition-shadow cursor-pointer">
-                {post.image && (
-                  <div className="w-full h-48 bg-gradient-to-br from-primary-600 to-primary-800 rounded-t-lg mb-4"></div>
-                )}
-
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-primary-600 bg-primary-50 px-2 py-1 rounded">
-                      {post.category}
-                    </span>
-                    <span className="text-xs text-gray-500">{formatDate(post.date)}</span>
+      <section className="py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            {SAMPLE_POSTS.map((post) => (
+              <Link key={post.id} href={`/blog/${post.id}`}>
+                <article className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 h-full border-t-4 border-green-600 hover:border-red-600">
+                  <div className="w-full h-48 bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-5xl">
+                    📚
                   </div>
 
-                  <h2 className="text-xl font-bold text-gray-900 line-clamp-2">{post.title}</h2>
+                  <div className="p-6 space-y-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                        {post.category}
+                      </span>
+                      <span className="text-xs text-gray-500">{formatDate(post.date)}</span>
+                    </div>
 
-                  <p className="text-gray-600 line-clamp-3">{post.excerpt}</p>
+                    <h2 className="text-xl font-bold text-gray-900 line-clamp-2 hover:text-green-600 transition-colors">
+                      {post.title}
+                    </h2>
 
-                  <div className="flex items-center justify-between pt-4 border-t">
-                    <span className="text-sm text-gray-500">By {post.author}</span>
-                    <span className="text-primary-600 font-semibold text-sm hover:underline">
-                      Read More →
-                    </span>
+                    <p className="text-gray-600 line-clamp-3 leading-relaxed">{post.excerpt}</p>
+
+                    <div className="flex items-center justify-between pt-4 border-t">
+                      <span className="text-sm text-gray-500">By {post.author}</span>
+                      <span className="text-green-600 font-bold text-sm hover:text-red-600 transition-colors">
+                        Read More →
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </article>
-            </Link>
-          ))}
-        </div>
+                </article>
+              </Link>
+            ))}
+          </div>
 
-        {/* Subscribe Section */}
-        <div className="mt-16 card bg-gradient-to-r from-primary-600 to-primary-800 text-white">
-          <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold mb-4">Stay Updated</h2>
-            <p className="mb-6 text-primary-100">
-              Subscribe to our newsletter to get the latest stories and updates from Wissen-Haus.
-            </p>
+          {/* Newsletter Section */}
+          <div className="bg-gradient-to-r from-green-600 to-red-600 rounded-2xl p-12 text-white">
+            <div className="text-center max-w-2xl mx-auto">
+              <h2 className="text-4xl font-bold mb-4">📬 Stay Updated</h2>
+              <p className="text-lg mb-8 opacity-90">
+                {content.blog_newsletter_text || 'Subscribe to our newsletter to get the latest stories and updates from Wissen-Haus.'}
+              </p>
 
-            <form className="flex gap-2">
-              <input
-                type="email"
-                placeholder="your@email.com"
-                className="flex-1 px-4 py-2 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-300"
-              />
-              <button
-                type="submit"
-                className="px-6 py-2 bg-white text-primary-600 font-semibold rounded-lg hover:bg-primary-50 transition"
-              >
-                Subscribe
-              </button>
-            </form>
+              <form className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="email"
+                  placeholder="your@email.com"
+                  className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-300"
+                />
+                <button
+                  type="submit"
+                  className="px-8 py-3 bg-white text-green-600 font-bold rounded-lg hover:bg-gray-100 transition-colors duration-300 whitespace-nowrap"
+                >
+                  Subscribe
+                </button>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="bg-gray-50 py-16 px-4 mt-8">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-4 text-gray-900">Inspired by Our Stories?</h2>
+          <p className="text-lg text-gray-600 mb-8">
+            Join our community and help us create more inspiring stories of transformation.
+          </p>
+          <a href="/donate" className="px-8 py-3 bg-gradient-to-r from-green-600 to-red-600 text-white font-bold rounded-lg hover:shadow-lg transition-all duration-300">
+            💝 Make a Difference
+          </a>
+        </div>
+      </section>
     </div>
   );
 }
