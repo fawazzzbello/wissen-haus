@@ -1,42 +1,31 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { getApiClient } from '@/lib/api-client';
+import Link from 'next/link';
 
-interface HomepageSection {
-  id: string;
-  sectionName: string;
-  sectionType: string;
-  title?: string;
-  subtitle?: string;
-  description?: string;
-  htmlContent?: string;
-  imageUrl?: string;
-  backgroundColor?: string;
-  textColor?: string;
-  buttonText?: string;
-  buttonUrl?: string;
-  displayOrder: number;
-  isActive: boolean;
+interface PageContent {
+  [key: string]: string;
 }
 
 export default function Home() {
-  const [sections, setSections] = useState<HomepageSection[]>([]);
+  const [content, setContent] = useState<PageContent>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchSections();
+    fetchContent();
+    // Refresh every 5 seconds to catch admin changes
+    const interval = setInterval(fetchContent, 5000);
+    return () => clearInterval(interval);
   }, []);
 
-  const fetchSections = async () => {
+  const fetchContent = async () => {
     try {
       const api = getApiClient();
-      const response = await api.get('/homepage');
-      setSections(response.data.sections || []);
+      const response = await api.get('/settings');
+      setContent(response.data.settings || {});
     } catch (error) {
-      console.error('Error fetching homepage sections:', error);
-      setSections([]);
+      console.error('Error fetching content:', error);
     } finally {
       setLoading(false);
     }
@@ -44,942 +33,290 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-8 h-8 mb-2 border-4 border-primary-600 border-t-transparent rounded-full spinner"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className="inline-flex items-center justify-center w-12 h-12 mb-4 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-300">Loading...</p>
         </div>
       </div>
     );
   }
 
-  if (sections.length === 0) {
-    return <FallbackHome />;
-  }
+  const heroTitle = content.hero_title || 'Empowering Young People Through Education';
+  const heroSubtitle = content.hero_subtitle || 'Building the Future Leaders of Tomorrow';
+  const heroDescription = content.hero_description || 'We provide comprehensive education, mentorship, and skills development to underprivileged youth, creating pathways to success and transforming communities.';
+  const heroButtonText = content.hero_button_text || '💚 Start Your Journey';
+
+  const missionTitle = content.mission_title || 'Our Mission';
+  const missionDescription = content.mission_description || 'To democratize quality education and create sustainable opportunities for underprivileged youth through innovative programs, dedicated mentorship, and community partnerships.';
+  const visionTitle = content.vision_title || 'Our Vision';
+  const visionDescription = content.vision_description || 'A world where every young person, regardless of background, has access to world-class education and the support to achieve their full potential.';
+
+  const stat1Value = content.stat1_value || '5,000+';
+  const stat1Label = content.stat1_label || 'Students Reached';
+  const stat2Value = content.stat2_value || '500+';
+  const stat2Label = content.stat2_label || 'Active Mentors';
+  const stat3Value = content.stat3_value || '95%';
+  const stat3Label = content.stat3_label || 'Success Rate';
+  const stat4Value = content.stat4_value || '20+';
+  const stat4Label = content.stat4_label || 'Communities';
+
+  const program1Title = content.program1_title || 'Academic Excellence';
+  const program1Desc = content.program1_desc || 'Personalized tutoring and mentorship in core subjects';
+  const program2Title = content.program2_title || 'Skills Development';
+  const program2Desc = content.program2_desc || 'Job-ready skills and vocational training';
+  const program3Title = content.program3_title || 'Leadership Academy';
+  const program3Desc = content.program3_desc || 'Leadership training and personal development';
+  const program4Title = content.program4_title || 'Scholarships';
+  const program4Desc = content.program4_desc || 'Financial assistance for higher education';
+  const program5Title = content.program5_title || 'Mentorship';
+  const program5Desc = content.program5_desc || 'One-on-one relationships with professional mentors';
+  const program6Title = content.program6_title || 'Alumni Network';
+  const program6Desc = content.program6_desc || 'Lifelong support and career advancement';
+
+  const testimonial1Quote = content.testimonial1_quote || 'Wissen-Haus transformed my life. The mentorship helped me get into my dream university.';
+  const testimonial1Author = content.testimonial1_author || 'Sarah Johnson';
+  const testimonial1Role = content.testimonial1_role || 'Software Engineer';
+
+  const testimonial2Quote = content.testimonial2_quote || 'The programs here are world-class. I gained skills I never thought I could develop.';
+  const testimonial2Author = content.testimonial2_author || 'Michael Chen';
+  const testimonial2Role = content.testimonial2_role || 'Business Analyst';
+
+  const testimonial3Quote = content.testimonial3_quote || 'This organization builds confident leaders. Incredible support system!';
+  const testimonial3Author = content.testimonial3_author || 'Amara Okafor';
+  const testimonial3Role = content.testimonial3_role || 'Community Leader';
+
+  const ctaTitle = content.cta_title || 'Make a Real Impact Today';
+  const ctaDescription = content.cta_description || 'Your support directly impacts young lives. Join us in creating pathways to success.';
+  const ctaButtonText = content.cta_button_text || '💚 Donate Now';
 
   return (
-    <>
-      {sections.map((section) => (
-        <HomepageSectionRenderer key={section.id} section={section} />
-      ))}
-    </>
-  );
-}
+    <div className="bg-white">
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-white to-red-50 overflow-hidden">
+        {/* Animated background shapes */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-red-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-green-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
 
-interface SectionProps {
-  section: HomepageSection;
-}
-
-function HomepageSectionRenderer({ section }: SectionProps) {
-  const sectionStyle: React.CSSProperties = {
-    backgroundColor: section.backgroundColor || '#ffffff',
-    color: section.textColor || '#000000',
-  };
-
-  return (
-    <section style={sectionStyle} className="w-full">
-      <div className="container max-w-7xl mx-auto px-4">
-        {/* Hero Premium */}
-        {section.sectionType === 'hero-premium' && (
-          <HeroPremiumSection section={section} />
-        )}
-
-        {/* Stats Advanced */}
-        {section.sectionType === 'stats-advanced' && (
-          <StatsAdvancedSection section={section} />
-        )}
-
-        {/* Programs Grid */}
-        {section.sectionType === 'programs-grid' && (
-          <ProgramsGridSection section={section} />
-        )}
-
-        {/* Features List */}
-        {section.sectionType === 'features-list' && (
-          <FeaturesListSection section={section} />
-        )}
-
-        {/* Team Section */}
-        {section.sectionType === 'team' && (
-          <TeamSection section={section} />
-        )}
-
-        {/* Testimonials Carousel */}
-        {section.sectionType === 'testimonials-advanced' && (
-          <TestimonialsAdvancedSection section={section} />
-        )}
-
-        {/* Newsletter */}
-        {section.sectionType === 'newsletter' && (
-          <NewsletterSection section={section} />
-        )}
-
-        {/* FAQ Accordion */}
-        {section.sectionType === 'faq-accordion' && (
-          <FAQAccordionSection section={section} />
-        )}
-
-        {/* Partners */}
-        {section.sectionType === 'partners' && (
-          <PartnersSection section={section} />
-        )}
-
-        {/* Event Highlights */}
-        {section.sectionType === 'events' && (
-          <EventsSection section={section} />
-        )}
-
-        {/* Donation Tiers */}
-        {section.sectionType === 'donation-tiers' && (
-          <DonationTiersSection section={section} />
-        )}
-
-        {/* Timeline */}
-        {section.sectionType === 'timeline' && (
-          <TimelineSection section={section} />
-        )}
-
-        {/* Two Column Advanced */}
-        {section.sectionType === 'two-column-advanced' && (
-          <TwoColumnAdvancedSection section={section} />
-        )}
-
-        {/* CTA Banner */}
-        {section.sectionType === 'cta-banner' && (
-          <CTABannerSection section={section} />
-        )}
-
-        {/* Custom HTML */}
-        {section.sectionType === 'custom' && section.htmlContent && (
-          <div className="prose prose-lg max-w-none py-12 md:py-20" dangerouslySetInnerHTML={{ __html: section.htmlContent }} />
-        )}
-      </div>
-    </section>
-  );
-}
-
-// Premium Hero with animated stats
-function HeroPremiumSection({ section }: SectionProps) {
-  return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden py-20 md:py-0">
-      {/* Background Image */}
-      {section.imageUrl && (
-        <div className="absolute inset-0 z-0">
-          <img
-            src={section.imageUrl}
-            alt={section.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
-        </div>
-      )}
-      
-      {/* Animated Background Shapes */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      </div>
-
-      <div className="relative z-10 max-w-5xl mx-auto text-center text-white px-4">
-        {section.title && (
-          <h1 className="text-6xl md:text-7xl lg:text-8xl font-black mb-6 leading-tight tracking-tighter">
-            {section.title}
+        <div className="container mx-auto px-4 z-10 text-center">
+          <div className="mb-6">
+            <span className="inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+              ✨ Transforming Lives Through Education
+            </span>
+          </div>
+          <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-green-600 via-red-600 to-green-600 bg-clip-text text-transparent">
+            {heroTitle}
           </h1>
-        )}
-        
-        {section.subtitle && (
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8 opacity-95 leading-relaxed">
-            {section.subtitle}
-          </h2>
-        )}
-        
-        {section.description && (
-          <p className="text-lg md:text-xl mb-12 opacity-85 leading-relaxed max-w-2xl mx-auto">
-            {section.description}
+          <p className="text-2xl md:text-3xl text-gray-600 mb-4 font-semibold">
+            {heroSubtitle}
           </p>
-        )}
-
-        {section.htmlContent && (
-          <div className="mb-12 text-white/90" dangerouslySetInnerHTML={{ __html: section.htmlContent }} />
-        )}
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          {section.buttonText && section.buttonUrl && (
+          <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            {heroDescription}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href={section.buttonUrl}
-              className="btn-primary px-10 py-4 text-lg font-bold hover:scale-105 transition-transform shadow-2xl"
+              href="/donate"
+              className="px-8 py-4 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg font-bold text-lg hover:from-green-700 hover:to-green-800 transition-all duration-300 shadow-lg hover:shadow-xl"
             >
-              {section.buttonText}
+              {heroButtonText}
             </Link>
-          )}
-          <Link
-            href="/contact"
-            className="px-10 py-4 text-lg font-bold border-2 border-white text-white hover:bg-white/10 transition rounded-lg"
-          >
-            Learn More
-          </Link>
-        </div>
-      </div>
-
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 animate-bounce">
-        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
-      </div>
-    </div>
-  );
-}
-
-// Advanced Stats with animations
-function StatsAdvancedSection({ section }: SectionProps) {
-  const stats = parseAdvancedStats(section.htmlContent || '');
-
-  return (
-    <div className="py-16 md:py-24 bg-gradient-to-br from-slate-900 via-primary-900 to-slate-900 text-white relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary-500 rounded-full blur-3xl"></div>
-      </div>
-      
-      <div className="relative z-10">
-        {section.title && <h2 className="text-5xl md:text-6xl font-black text-center mb-4">{section.title}</h2>}
-        {section.subtitle && <p className="text-xl text-center text-gray-300 mb-16">{section.subtitle}</p>}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {stats.length > 0
-            ? stats.map((stat, idx) => (
-                <div key={idx} className="group relative">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-primary-600 to-blue-600 rounded-2xl opacity-0 group-hover:opacity-100 transition blur"></div>
-                  <div className="relative bg-slate-900 rounded-2xl p-8 text-center hover:translate-y-[-4px] transition">
-                    <div className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-blue-400 mb-3">
-                      {stat.number}
-                    </div>
-                    <p className="text-lg font-semibold text-gray-300">{stat.label}</p>
-                    {stat.description && <p className="text-sm text-gray-400 mt-2">{stat.description}</p>}
-                  </div>
-                </div>
-              ))
-            : section.htmlContent && (
-                <div className="col-span-full prose prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: section.htmlContent }} />
-              )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Programs Grid with hover effects
-function ProgramsGridSection({ section }: SectionProps) {
-  const programs = parsePrograms(section.htmlContent || '');
-
-  return (
-    <div className="py-16 md:py-24">
-      {section.title && <h2 className="text-5xl md:text-6xl font-black text-center mb-4">{section.title}</h2>}
-      {section.subtitle && <p className="text-xl text-center text-gray-600 mb-16 max-w-2xl mx-auto">{section.subtitle}</p>}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {programs.length > 0
-          ? programs.map((program, idx) => (
-              <div
-                key={idx}
-                className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:translate-y-[-8px]"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary-600 to-blue-600 opacity-0 group-hover:opacity-5 transition"></div>
-                <div className="relative p-8 md:p-10">
-                  <div className="text-6xl mb-4 transform group-hover:scale-110 transition duration-300">
-                    {program.icon}
-                  </div>
-                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{program.title}</h3>
-                  <p className="text-gray-600 mb-6 leading-relaxed">{program.description}</p>
-                  {program.link && (
-                    <Link href={program.link} className="inline-flex items-center text-primary-600 font-bold hover:gap-2 transition-all">
-                      Learn More
-                      <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                  )}
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-600 to-blue-600 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform"></div>
-              </div>
-            ))
-          : section.htmlContent && (
-              <div className="col-span-full prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: section.htmlContent }} />
-            )}
-      </div>
-    </div>
-  );
-}
-
-// Features List with checkmarks
-function FeaturesListSection({ section }: SectionProps) {
-  const features = parseFeatures(section.htmlContent || '');
-
-  return (
-    <div className="py-16 md:py-24 bg-gradient-to-b from-gray-50 to-white">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div>
-          {section.title && <h2 className="text-5xl font-black mb-6 text-gray-900">{section.title}</h2>}
-          {section.subtitle && <p className="text-xl text-gray-600 mb-8">{section.subtitle}</p>}
-          {section.description && <p className="text-lg text-gray-700 mb-8 leading-relaxed">{section.description}</p>}
-
-          <div className="space-y-4">
-            {features.length > 0
-              ? features.map((feature, idx) => (
-                  <div key={idx} className="flex gap-4 items-start group">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-primary-600 to-blue-600 flex items-center justify-center mt-1 group-hover:scale-110 transition">
-                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-bold text-gray-900">{feature.title}</h4>
-                      <p className="text-gray-600 mt-1">{feature.description}</p>
-                    </div>
-                  </div>
-                ))
-              : section.htmlContent && (
-                  <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: section.htmlContent }} />
-                )}
-          </div>
-        </div>
-
-        {section.imageUrl && (
-          <div className="relative">
-            <div className="absolute -inset-4 bg-gradient-to-r from-primary-600 to-blue-600 rounded-2xl opacity-20 blur-xl"></div>
-            <img
-              src={section.imageUrl}
-              alt={section.title}
-              className="relative rounded-2xl shadow-2xl object-cover w-full"
-            />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// Team Section
-function TeamSection({ section }: SectionProps) {
-  const members = parseTeamMembers(section.htmlContent || '');
-
-  return (
-    <div className="py-16 md:py-24">
-      {section.title && <h2 className="text-5xl md:text-6xl font-black text-center mb-4">{section.title}</h2>}
-      {section.subtitle && <p className="text-xl text-center text-gray-600 mb-16 max-w-2xl mx-auto">{section.subtitle}</p>}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {members.length > 0
-          ? members.map((member, idx) => (
-              <div key={idx} className="group text-center">
-                <div className="relative mb-6 overflow-hidden rounded-2xl">
-                  {member.image ? (
-                    <img src={member.image} alt={member.name} className="w-full aspect-square object-cover group-hover:scale-105 transition duration-300" />
-                  ) : (
-                    <div className="w-full aspect-square bg-gradient-to-br from-primary-400 to-blue-400 flex items-center justify-center text-white text-5xl font-bold">
-                      {member.name.charAt(0)}
-                    </div>
-                  )}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">{member.name}</h3>
-                <p className="text-primary-600 font-semibold mt-1">{member.role}</p>
-                {member.bio && <p className="text-gray-600 text-sm mt-3">{member.bio}</p>}
-              </div>
-            ))
-          : section.htmlContent && (
-              <div className="col-span-full prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: section.htmlContent }} />
-            )}
-      </div>
-    </div>
-  );
-}
-
-// Advanced Testimonials
-function TestimonialsAdvancedSection({ section }: SectionProps) {
-  const testimonials = parseTestimonials(section.htmlContent || '');
-
-  return (
-    <div className="py-16 md:py-24 bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-500 rounded-full blur-3xl"></div>
-      </div>
-
-      <div className="relative z-10">
-        {section.title && <h2 className="text-5xl md:text-6xl font-black text-center mb-16">{section.title}</h2>}
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.length > 0
-            ? testimonials.map((testimonial, idx) => (
-                <div key={idx} className="bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl p-8 border border-slate-600">
-                  <div className="text-yellow-400 text-xl mb-4">★★★★★</div>
-                  <p className="text-xl italic mb-6 leading-relaxed">"{testimonial.quote}"</p>
-                  <div className="flex items-center gap-4">
-                    {testimonial.image ? (
-                      <img src={testimonial.image} alt={testimonial.author} className="w-12 h-12 rounded-full object-cover" />
-                    ) : (
-                      <div className="w-12 h-12 rounded-full bg-primary-600 flex items-center justify-center text-white font-bold">
-                        {testimonial.author.charAt(0)}
-                      </div>
-                    )}
-                    <div>
-                      <p className="font-bold text-lg">{testimonial.author}</p>
-                      <p className="text-sm text-gray-300">{testimonial.role}</p>
-                    </div>
-                  </div>
-                </div>
-              ))
-            : section.htmlContent && (
-                <div className="col-span-full prose prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: section.htmlContent }} />
-              )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Newsletter Signup
-function NewsletterSection({ section }: SectionProps) {
-  const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      setSubscribed(true);
-      setTimeout(() => {
-        setEmail('');
-        setSubscribed(false);
-      }, 3000);
-    }
-  };
-
-  return (
-    <div className="py-16 md:py-24 bg-gradient-to-r from-primary-600 to-blue-600 text-white relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute -top-40 -left-40 w-80 h-80 bg-white rounded-full blur-3xl"></div>
-      </div>
-
-      <div className="relative z-10 max-w-2xl mx-auto text-center">
-        {section.title && <h2 className="text-4xl md:text-5xl font-black mb-4">{section.title}</h2>}
-        {section.subtitle && <p className="text-xl mb-8 opacity-95">{section.subtitle}</p>}
-        {section.description && <p className="text-lg mb-8 opacity-90 leading-relaxed">{section.description}</p>}
-
-        {subscribed ? (
-          <div className="bg-white/20 border border-white/40 rounded-lg p-4 text-center">
-            <p className="font-bold text-lg">✓ Thank you for subscribing!</p>
-          </div>
-        ) : (
-          <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="flex-1 px-6 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-4 focus:ring-white/50"
-            />
-            <button
-              type="submit"
-              className="px-8 py-3 bg-white text-primary-600 font-bold rounded-lg hover:bg-gray-100 transition"
+            <Link
+              href="#programs"
+              className="px-8 py-4 border-2 border-red-600 text-red-600 rounded-lg font-bold text-lg hover:bg-red-50 transition-all duration-300"
             >
-              Subscribe
-            </button>
-          </form>
-        )}
-      </div>
-    </div>
-  );
-}
+              Learn More
+            </Link>
+          </div>
+        </div>
+      </section>
 
-// FAQ Accordion
-function FAQAccordionSection({ section }: SectionProps) {
-  const faqs = parseFAQs(section.htmlContent || '');
-  const [openIdx, setOpenIdx] = useState<number | null>(0);
+      {/* Mission & Vision Section */}
+      <section className="py-20 px-4 bg-white">
+        <div className="container mx-auto">
+          <div className="grid md:grid-cols-2 gap-12">
+            {/* Mission */}
+            <div className="p-8 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border-2 border-green-200">
+              <div className="text-5xl mb-4">🎯</div>
+              <h2 className="text-3xl font-bold text-green-800 mb-4">{missionTitle}</h2>
+              <p className="text-gray-700 text-lg leading-relaxed">
+                {missionDescription}
+              </p>
+            </div>
 
-  return (
-    <div className="py-16 md:py-24">
-      {section.title && <h2 className="text-5xl font-black text-center mb-16">{section.title}</h2>}
+            {/* Vision */}
+            <div className="p-8 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl border-2 border-red-200">
+              <div className="text-5xl mb-4">🚀</div>
+              <h2 className="text-3xl font-bold text-red-800 mb-4">{visionTitle}</h2>
+              <p className="text-gray-700 text-lg leading-relaxed">
+                {visionDescription}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <div className="max-w-3xl mx-auto space-y-4">
-        {faqs.length > 0
-          ? faqs.map((faq, idx) => (
-              <div key={idx} className="border-2 border-gray-200 rounded-xl overflow-hidden hover:border-primary-600 transition">
-                <button
-                  onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
-                  className="w-full px-6 py-4 text-left font-bold text-lg text-gray-900 hover:bg-gray-50 transition flex justify-between items-center"
-                >
-                  {faq.question}
-                  <svg
-                    className={`w-6 h-6 transform transition ${openIdx === idx ? 'rotate-180' : ''}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                  </svg>
-                </button>
-                {openIdx === idx && (
-                  <div className="px-6 py-4 bg-gray-50 border-t-2 border-gray-200 text-gray-700 leading-relaxed">
-                    {faq.answer}
-                  </div>
-                )}
-              </div>
-            ))
-          : section.htmlContent && (
-              <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: section.htmlContent }} />
-            )}
-      </div>
-    </div>
-  );
-}
-
-// Partners Section
-function PartnersSection({ section }: SectionProps) {
-  const partners = parsePartners(section.htmlContent || '');
-
-  return (
-    <div className="py-16 md:py-24 bg-gray-50">
-      {section.title && <h2 className="text-5xl font-black text-center mb-16">{section.title}</h2>}
-
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 items-center">
-        {partners.length > 0
-          ? partners.map((partner, idx) => (
-              <div key={idx} className="flex items-center justify-center p-4 bg-white rounded-xl hover:shadow-lg transition">
-                {partner.logo ? (
-                  <img src={partner.logo} alt={partner.name} className="max-w-full h-16 object-contain" />
-                ) : (
-                  <p className="font-bold text-gray-700 text-center">{partner.name}</p>
-                )}
-              </div>
-            ))
-          : section.htmlContent && (
-              <div className="col-span-full prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: section.htmlContent }} />
-            )}
-      </div>
-    </div>
-  );
-}
-
-// Events Section
-function EventsSection({ section }: SectionProps) {
-  const events = parseEvents(section.htmlContent || '');
-
-  return (
-    <div className="py-16 md:py-24">
-      {section.title && <h2 className="text-5xl font-black text-center mb-16">{section.title}</h2>}
-
-      <div className="space-y-6 max-w-3xl mx-auto">
-        {events.length > 0
-          ? events.map((event, idx) => (
-              <div key={idx} className="flex gap-6 p-6 bg-gradient-to-r from-primary-50 to-blue-50 rounded-xl border-l-4 border-primary-600 hover:shadow-lg transition">
-                <div className="flex-shrink-0 text-center bg-primary-600 text-white rounded-lg p-4 min-w-max">
-                  <p className="text-2xl font-black">{event.day}</p>
-                  <p className="font-bold text-sm">{event.month}</p>
+      {/* Impact Stats */}
+      <section className="py-20 px-4 bg-gradient-to-r from-green-900 to-red-900 text-white">
+        <div className="container mx-auto">
+          <h2 className="text-4xl font-bold text-center mb-16">Our Impact</h2>
+          <div className="grid md:grid-cols-4 gap-8">
+            {[
+              { value: stat1Value, label: stat1Label },
+              { value: stat2Value, label: stat2Label },
+              { value: stat3Value, label: stat3Label },
+              { value: stat4Value, label: stat4Label },
+            ].map((stat, idx) => (
+              <div key={idx} className="text-center p-6 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20">
+                <div className="text-5xl font-bold mb-2 bg-gradient-to-r from-green-300 to-red-300 bg-clip-text text-transparent">
+                  {stat.value}
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900">{event.title}</h3>
-                  <p className="text-primary-600 font-semibold mt-1">{event.location}</p>
-                  <p className="text-gray-700 mt-2">{event.description}</p>
-                </div>
-              </div>
-            ))
-          : section.htmlContent && (
-              <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: section.htmlContent }} />
-            )}
-      </div>
-    </div>
-  );
-}
-
-// Donation Tiers
-function DonationTiersSection({ section }: SectionProps) {
-  const tiers = parseDonationTiers(section.htmlContent || '');
-
-  return (
-    <div className="py-16 md:py-24 bg-gradient-to-b from-gray-50 to-white">
-      {section.title && <h2 className="text-5xl font-black text-center mb-16">{section.title}</h2>}
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        {tiers.length > 0
-          ? tiers.map((tier, idx) => (
-              <div
-                key={idx}
-                className={`rounded-2xl p-8 transition transform hover:scale-105 ${
-                  tier.featured
-                    ? 'bg-gradient-to-br from-primary-600 to-blue-600 text-white shadow-2xl relative'
-                    : 'bg-white border-2 border-gray-200 text-gray-900'
-                }`}
-              >
-                {tier.featured && <div className="absolute top-4 right-4 bg-yellow-400 text-gray-900 px-3 py-1 rounded-full text-sm font-bold">Most Popular</div>}
-                <h3 className="text-3xl font-black mb-2">{tier.name}</h3>
-                <p className={`text-4xl font-black mb-4 ${tier.featured ? '' : 'text-primary-600'}`}>${tier.amount}</p>
-                <p className={`mb-6 ${tier.featured ? 'opacity-90' : 'text-gray-600'}`}>{tier.description}</p>
-                <ul className="space-y-3 mb-8">
-                  {tier.benefits.map((benefit, bidx) => (
-                    <li key={bidx} className="flex gap-3 items-start">
-                      <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      <span>{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/donate"
-                  className={`block w-full text-center py-3 rounded-lg font-bold transition ${
-                    tier.featured ? 'bg-white text-primary-600 hover:bg-gray-100' : 'bg-primary-600 text-white hover:bg-primary-700'
-                  }`}
-                >
-                  Donate {tier.amount}
-                </Link>
-              </div>
-            ))
-          : section.htmlContent && (
-              <div className="col-span-full prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: section.htmlContent }} />
-            )}
-      </div>
-    </div>
-  );
-}
-
-// Timeline Section
-function TimelineSection({ section }: SectionProps) {
-  const events = parseTimeline(section.htmlContent || '');
-
-  return (
-    <div className="py-16 md:py-24">
-      {section.title && <h2 className="text-5xl font-black text-center mb-16">{section.title}</h2>}
-
-      <div className="max-w-3xl mx-auto">
-        <div className="relative">
-          {/* Timeline line */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-primary-600 to-blue-600"></div>
-
-          {/* Events */}
-          <div className="space-y-8">
-            {events.map((event, idx) => (
-              <div key={idx} className={`flex gap-8 ${idx % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
-                <div className="w-1/2">
-                  <div className={`${idx % 2 === 0 ? 'text-right' : 'text-left'}`}>
-                    <h3 className="text-xl font-bold text-gray-900">{event.title}</h3>
-                    <p className="text-primary-600 font-bold mt-1">{event.year}</p>
-                    <p className="text-gray-700 mt-2">{event.description}</p>
-                  </div>
-                </div>
-                <div className="w-auto flex justify-center">
-                  <div className="w-4 h-4 rounded-full bg-primary-600 border-4 border-white shadow-lg relative z-10"></div>
-                </div>
-                <div className="w-1/2"></div>
+                <div className="text-lg text-gray-200">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
+      </section>
 
-// Two Column Advanced
-function TwoColumnAdvancedSection({ section }: SectionProps) {
-  return (
-    <div className="py-16 md:py-24">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        {section.imageUrl && (
-          <div className="order-2 lg:order-1 relative group">
-            <div className="absolute -inset-4 bg-gradient-to-r from-primary-600 to-blue-600 rounded-2xl opacity-20 group-hover:opacity-40 blur-xl transition"></div>
-            <img
-              src={section.imageUrl}
-              alt={section.title}
-              className="relative rounded-2xl shadow-2xl w-full object-cover"
-            />
+      {/* Programs Section */}
+      <section id="programs" className="py-20 px-4 bg-gray-50">
+        <div className="container mx-auto">
+          <h2 className="text-4xl font-bold text-center mb-4">Our Programs</h2>
+          <p className="text-center text-gray-600 text-lg mb-16 max-w-2xl mx-auto">
+            Comprehensive educational initiatives designed to empower young people
+          </p>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              { title: program1Title, desc: program1Desc, icon: '📚', color: 'green' },
+              { title: program2Title, desc: program2Desc, icon: '💼', color: 'red' },
+              { title: program3Title, desc: program3Desc, icon: '🎯', color: 'green' },
+              { title: program4Title, desc: program4Desc, icon: '🎓', color: 'red' },
+              { title: program5Title, desc: program5Desc, icon: '🤝', color: 'green' },
+              { title: program6Title, desc: program6Desc, icon: '⭐', color: 'red' },
+            ].map((program, idx) => (
+              <div
+                key={idx}
+                className={`p-8 rounded-xl border-2 transition-all duration-300 hover:shadow-lg ${
+                  program.color === 'green'
+                    ? 'bg-green-50 border-green-200 hover:border-green-400'
+                    : 'bg-red-50 border-red-200 hover:border-red-400'
+                }`}
+              >
+                <div className="text-4xl mb-4">{program.icon}</div>
+                <h3 className={`text-2xl font-bold mb-3 ${program.color === 'green' ? 'text-green-800' : 'text-red-800'}`}>
+                  {program.title}
+                </h3>
+                <p className="text-gray-700">{program.desc}</p>
+              </div>
+            ))}
           </div>
-        )}
-        <div className={section.imageUrl ? 'order-1 lg:order-2' : ''}>
-          {section.title && <h2 className="text-5xl font-black mb-6">{section.title}</h2>}
-          {section.subtitle && <p className="text-2xl font-bold text-primary-600 mb-6">{section.subtitle}</p>}
-          {section.description && <p className="text-lg text-gray-700 leading-relaxed mb-8">{section.description}</p>}
-          {section.htmlContent && (
-            <div className="prose prose-lg mb-8" dangerouslySetInnerHTML={{ __html: section.htmlContent }} />
-          )}
-          {section.buttonText && section.buttonUrl && (
-            <Link href={section.buttonUrl} className="btn-primary inline-block px-8 py-4 text-lg font-bold">
-              {section.buttonText}
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-20 px-4 bg-white">
+        <div className="container mx-auto">
+          <h2 className="text-4xl font-bold text-center mb-4">Success Stories</h2>
+          <p className="text-center text-gray-600 text-lg mb-16 max-w-2xl mx-auto">
+            Hear from students whose lives have been transformed
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { quote: testimonial1Quote, author: testimonial1Author, role: testimonial1Role, color: 'green' },
+              { quote: testimonial2Quote, author: testimonial2Author, role: testimonial2Role, color: 'red' },
+              { quote: testimonial3Quote, author: testimonial3Author, role: testimonial3Role, color: 'green' },
+            ].map((testimonial, idx) => (
+              <div
+                key={idx}
+                className={`p-8 rounded-xl border-l-4 bg-gradient-to-br ${
+                  testimonial.color === 'green'
+                    ? 'border-green-500 from-green-50 to-white'
+                    : 'border-red-500 from-red-50 to-white'
+                }`}
+              >
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className={testimonial.color === 'green' ? 'text-green-500' : 'text-red-500'}>
+                      ⭐
+                    </span>
+                  ))}
+                </div>
+                <p className="text-gray-700 text-lg mb-6 italic">"{testimonial.quote}"</p>
+                <div>
+                  <p className="font-bold text-gray-900">{testimonial.author}</p>
+                  <p className={`text-sm ${testimonial.color === 'green' ? 'text-green-600' : 'text-red-600'}`}>
+                    {testimonial.role}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-20 px-4 bg-gradient-to-r from-green-600 via-green-700 to-red-600">
+        <div className="container mx-auto text-center text-white">
+          <h2 className="text-5xl font-bold mb-6">{ctaTitle}</h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+            {ctaDescription}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/donate"
+              className="px-8 py-4 bg-white text-green-700 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg"
+            >
+              {ctaButtonText}
             </Link>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// CTA Banner
-function CTABannerSection({ section }: SectionProps) {
-  return (
-    <div className="py-16 md:py-24 relative overflow-hidden">
-      {section.imageUrl && (
-        <div className="absolute inset-0 z-0">
-          <img
-            src={section.imageUrl}
-            alt={section.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/50"></div>
-        </div>
-      )}
-
-      <div className="relative z-10 max-w-4xl mx-auto text-center text-white">
-        {section.title && <h2 className="text-5xl md:text-6xl font-black mb-6">{section.title}</h2>}
-        {section.subtitle && <p className="text-2xl font-bold mb-6">{section.subtitle}</p>}
-        {section.description && <p className="text-xl mb-10 opacity-90 leading-relaxed max-w-2xl mx-auto">{section.description}</p>}
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          {section.buttonText && section.buttonUrl && (
-            <Link href={section.buttonUrl} className="btn-primary px-10 py-4 text-lg font-bold hover:scale-105 transition">
-              {section.buttonText}
+            <Link
+              href="/contact"
+              className="px-8 py-4 border-2 border-white text-white rounded-lg font-bold text-lg hover:bg-white/10 transition-all duration-300"
+            >
+              Get Involved
             </Link>
-          )}
-          <Link href="/contact" className="px-10 py-4 text-lg font-bold border-2 border-white hover:bg-white/20 transition rounded-lg">
-            Contact Us
-          </Link>
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-gray-300 py-16 px-4">
+        <div className="container mx-auto">
+          <div className="grid md:grid-cols-4 gap-8 mb-12">
+            <div>
+              <h3 className="text-white font-bold text-lg mb-4">About Us</h3>
+              <p className="text-sm">
+                Wissen-Haus Empowerment Foundation is dedicated to transforming lives through education.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-white font-bold text-lg mb-4">Programs</h3>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="#" className="hover:text-green-400">Academic Excellence</Link></li>
+                <li><Link href="#" className="hover:text-green-400">Skills Development</Link></li>
+                <li><Link href="#" className="hover:text-green-400">Leadership</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-white font-bold text-lg mb-4">Quick Links</h3>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/about" className="hover:text-green-400">About</Link></li>
+                <li><Link href="/contact" className="hover:text-green-400">Contact</Link></li>
+                <li><Link href="/donate" className="hover:text-green-400">Donate</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-white font-bold text-lg mb-4">Contact</h3>
+              <p className="text-sm mb-2">📧 {content.contact_email || 'hello@wissen-haus.org'}</p>
+              <p className="text-sm">📱 {content.phone_number || '+1 (555) 123-4567'}</p>
+            </div>
+          </div>
+          <div className="border-t border-gray-700 pt-8 text-center text-sm">
+            <p>&copy; 2026 Wissen-Haus Empowerment Foundation. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
-  );
-}
-
-// Parsing functions
-function parseAdvancedStats(html: string) {
-  try {
-    const regex = /<div[^>]*data-stat[^>]*>[\s\S]*?<\/div>/g;
-    const matches = html.match(regex) || [];
-    return matches.map(match => {
-      const numberMatch = match.match(/<span[^>]*data-number[^>]*>([^<]+)<\/span>/);
-      const labelMatch = match.match(/<span[^>]*data-label[^>]*>([^<]+)<\/span>/);
-      const descMatch = match.match(/<span[^>]*data-description[^>]*>([^<]+)<\/span>/);
-      return {
-        number: numberMatch ? numberMatch[1] : '0',
-        label: labelMatch ? labelMatch[1] : 'Stat',
-        description: descMatch ? descMatch[1] : '',
-      };
-    });
-  } catch {
-    return [];
-  }
-}
-
-function parsePrograms(html: string) {
-  try {
-    const regex = /<div[^>]*data-card[^>]*>[\s\S]*?<\/div>/g;
-    const matches = html.match(regex) || [];
-    return matches.map(match => ({
-      icon: match.match(/<span[^>]*data-icon[^>]*>([^<]+)<\/span>/)?.[1] || '📦',
-      title: match.match(/<span[^>]*data-title[^>]*>([^<]+)<\/span>/)?.[1] || 'Program',
-      description: match.match(/<span[^>]*data-description[^>]*>([^<]+)<\/span>/)?.[1] || '',
-      link: match.match(/<span[^>]*data-link[^>]*href="([^"]+)"/)?.[1] || '',
-    }));
-  } catch {
-    return [];
-  }
-}
-
-function parseFeatures(html: string) {
-  try {
-    const regex = /<div[^>]*data-feature[^>]*>[\s\S]*?<\/div>/g;
-    const matches = html.match(regex) || [];
-    return matches.map(match => ({
-      title: match.match(/<span[^>]*data-title[^>]*>([^<]+)<\/span>/)?.[1] || 'Feature',
-      description: match.match(/<span[^>]*data-description[^>]*>([^<]+)<\/span>/)?.[1] || '',
-    }));
-  } catch {
-    return [];
-  }
-}
-
-function parseTeamMembers(html: string) {
-  try {
-    const regex = /<div[^>]*data-member[^>]*>[\s\S]*?<\/div>/g;
-    const matches = html.match(regex) || [];
-    return matches.map(match => ({
-      name: match.match(/<span[^>]*data-name[^>]*>([^<]+)<\/span>/)?.[1] || 'Team Member',
-      role: match.match(/<span[^>]*data-role[^>]*>([^<]+)<\/span>/)?.[1] || 'Role',
-      bio: match.match(/<span[^>]*data-bio[^>]*>([^<]+)<\/span>/)?.[1] || '',
-      image: match.match(/<img[^>]*src="([^"]+)"/)?.[1] || '',
-    }));
-  } catch {
-    return [];
-  }
-}
-
-function parseTestimonials(html: string) {
-  try {
-    const regex = /<div[^>]*data-testimonial[^>]*>[\s\S]*?<\/div>/g;
-    const matches = html.match(regex) || [];
-    return matches.map(match => ({
-      quote: match.match(/<span[^>]*data-quote[^>]*>([^<]+)<\/span>/)?.[1] || 'Great experience',
-      author: match.match(/<span[^>]*data-author[^>]*>([^<]+)<\/span>/)?.[1] || 'Anonymous',
-      role: match.match(/<span[^>]*data-role[^>]*>([^<]+)<\/span>/)?.[1] || '',
-      image: match.match(/<img[^>]*src="([^"]+)"/)?.[1] || '',
-    }));
-  } catch {
-    return [];
-  }
-}
-
-function parseFAQs(html: string) {
-  try {
-    const regex = /<div[^>]*data-faq[^>]*>[\s\S]*?<\/div>/g;
-    const matches = html.match(regex) || [];
-    return matches.map(match => ({
-      question: match.match(/<span[^>]*data-question[^>]*>([^<]+)<\/span>/)?.[1] || 'Question?',
-      answer: match.match(/<span[^>]*data-answer[^>]*>([^<]+)<\/span>/)?.[1] || 'Answer',
-    }));
-  } catch {
-    return [];
-  }
-}
-
-function parsePartners(html: string) {
-  try {
-    const regex = /<div[^>]*data-partner[^>]*>[\s\S]*?<\/div>/g;
-    const matches = html.match(regex) || [];
-    return matches.map(match => ({
-      name: match.match(/<span[^>]*data-name[^>]*>([^<]+)<\/span>/)?.[1] || 'Partner',
-      logo: match.match(/<img[^>]*src="([^"]+)"/)?.[1] || '',
-    }));
-  } catch {
-    return [];
-  }
-}
-
-function parseEvents(html: string) {
-  try {
-    const regex = /<div[^>]*data-event[^>]*>[\s\S]*?<\/div>/g;
-    const matches = html.match(regex) || [];
-    return matches.map(match => ({
-      title: match.match(/<span[^>]*data-title[^>]*>([^<]+)<\/span>/)?.[1] || 'Event',
-      day: match.match(/<span[^>]*data-day[^>]*>([^<]+)<\/span>/)?.[1] || '01',
-      month: match.match(/<span[^>]*data-month[^>]*>([^<]+)<\/span>/)?.[1] || 'Jan',
-      location: match.match(/<span[^>]*data-location[^>]*>([^<]+)<\/span>/)?.[1] || 'Location',
-      description: match.match(/<span[^>]*data-description[^>]*>([^<]+)<\/span>/)?.[1] || '',
-    }));
-  } catch {
-    return [];
-  }
-}
-
-function parseDonationTiers(html: string) {
-  try {
-    const regex = /<div[^>]*data-tier[^>]*>[\s\S]*?<\/div>/g;
-    const matches = html.match(regex) || [];
-    return matches.map(match => ({
-      name: match.match(/<span[^>]*data-name[^>]*>([^<]+)<\/span>/)?.[1] || 'Tier',
-      amount: match.match(/<span[^>]*data-amount[^>]*>([^<]+)<\/span>/)?.[1] || '0',
-      description: match.match(/<span[^>]*data-description[^>]*>([^<]+)<\/span>/)?.[1] || '',
-      benefits: Array.from(match.matchAll(/<span[^>]*data-benefit[^>]*>([^<]+)<\/span>/g)).map(m => m[1]),
-      featured: match.includes('data-featured'),
-    }));
-  } catch {
-    return [];
-  }
-}
-
-function parseTimeline(html: string) {
-  try {
-    const regex = /<div[^>]*data-timeline-event[^>]*>[\s\S]*?<\/div>/g;
-    const matches = html.match(regex) || [];
-    return matches.map(match => ({
-      title: match.match(/<span[^>]*data-title[^>]*>([^<]+)<\/span>/)?.[1] || 'Event',
-      year: match.match(/<span[^>]*data-year[^>]*>([^<]+)<\/span>/)?.[1] || '2024',
-      description: match.match(/<span[^>]*data-description[^>]*>([^<]+)<\/span>/)?.[1] || '',
-    }));
-  } catch {
-    return [];
-  }
-}
-
-// Fallback Home Component
-function FallbackHome() {
-  return (
-    <>
-      <HeroPremiumSection section={{
-        id: '1',
-        sectionName: 'hero',
-        sectionType: 'hero-premium',
-        title: 'Empowering Future Leaders',
-        subtitle: 'Building pathways to success for underprivileged youth',
-        description: 'Through education, mentorship, and opportunities, we transform lives and create lasting change in our communities.',
-        buttonText: '💝 Donate Now',
-        buttonUrl: '/donate',
-        displayOrder: 1,
-        isActive: true,
-      }} />
-
-      <StatsAdvancedSection section={{
-        id: '2',
-        sectionName: 'stats',
-        sectionType: 'stats-advanced',
-        title: 'Our Impact',
-        subtitle: 'Making a difference every day',
-        htmlContent: `
-          <div data-stat><span data-number>5,000+</span><span data-label>Students Reached</span><span data-description>Across multiple programs</span></div>
-          <div data-stat><span data-number>500+</span><span data-label>Active Mentors</span><span data-description>Dedicated professionals</span></div>
-          <div data-stat><span data-number>95%</span><span data-label>Success Rate</span><span data-description>Program completion</span></div>
-          <div data-stat><span data-number>20+</span><span data-label>Communities</span><span data-description>Across the region</span></div>
-        `,
-        displayOrder: 2,
-        isActive: true,
-      }} />
-
-      <ProgramsGridSection section={{
-        id: '3',
-        sectionName: 'programs',
-        sectionType: 'programs-grid',
-        title: 'Our Programs',
-        subtitle: 'Comprehensive educational initiatives designed to transform lives',
-        htmlContent: `
-          <div data-card>
-            <span data-icon>📚</span>
-            <span data-title>Academic Excellence</span>
-            <span data-description>Personalized tutoring, mentorship, and academic support programs</span>
-          </div>
-          <div data-card>
-            <span data-icon>💼</span>
-            <span data-title>Skills Development</span>
-            <span data-description>Job readiness training, vocational skills, and career preparation</span>
-          </div>
-          <div data-card>
-            <span data-icon>🎯</span>
-            <span data-title>Leadership Academy</span>
-            <span data-description>Leadership training, personal development, and civic engagement</span>
-          </div>
-        `,
-        displayOrder: 3,
-        isActive: true,
-      }} />
-
-      <NewsletterSection section={{
-        id: '4',
-        sectionName: 'newsletter',
-        sectionType: 'newsletter',
-        title: 'Stay Updated',
-        subtitle: 'Get the latest news and updates from Wissen-Haus',
-        description: 'Subscribe to our newsletter to stay informed about our programs, events, and impact stories.',
-        displayOrder: 4,
-        isActive: true,
-      }} />
-
-      <CTABannerSection section={{
-        id: '5',
-        sectionName: 'cta',
-        sectionType: 'cta-banner',
-        title: 'Make a Difference Today',
-        subtitle: 'Join us in transforming lives through education and mentorship',
-        description: 'Your support enables us to provide quality education, mentorship, and opportunities to young people in our community.',
-        buttonText: '💝 Donate Now',
-        buttonUrl: '/donate',
-        displayOrder: 5,
-        isActive: true,
-      }} />
-    </>
   );
 }

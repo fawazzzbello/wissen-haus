@@ -361,22 +361,76 @@ export async function seedDatabase() {
     await createSiteSettingsTable(client);
 
     const settings = [
-      { key: 'site_name', value: 'Wissen-Haus' },
+      // Branding
+      { key: 'site_name', value: 'Wissen-Haus Empowerment Foundation' },
       { key: 'site_tagline', value: 'Empowering Future Leaders Through Education' },
       { key: 'logo_url', value: '/images/logo.png' },
       { key: 'favicon_url', value: '/images/favicon.ico' },
-      { key: 'primary_color', value: '#3052d5' },
-      { key: 'secondary_color', value: '#d81b60' },
-      { key: 'hero_image_url', value: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920&h=1080&fit=crop' },
+
+      // Hero Section
+      { key: 'hero_title', value: 'Empowering Young People Through Education' },
+      { key: 'hero_subtitle', value: 'Building the Future Leaders of Tomorrow' },
+      { key: 'hero_description', value: 'We provide comprehensive education, mentorship, and skills development to underprivileged youth, creating pathways to success and transforming communities.' },
+      { key: 'hero_button_text', value: '💚 Start Your Journey' },
+
+      // Mission & Vision
+      { key: 'mission_title', value: 'Our Mission' },
+      { key: 'mission_description', value: 'To democratize quality education and create sustainable opportunities for underprivileged youth through innovative programs, dedicated mentorship, and community partnerships.' },
+      { key: 'vision_title', value: 'Our Vision' },
+      { key: 'vision_description', value: 'A world where every young person, regardless of background, has access to world-class education and the support to achieve their full potential.' },
+
+      // Impact Statistics
+      { key: 'stat1_value', value: '5,000+' },
+      { key: 'stat1_label', value: 'Students Reached' },
+      { key: 'stat2_value', value: '500+' },
+      { key: 'stat2_label', value: 'Active Mentors' },
+      { key: 'stat3_value', value: '95%' },
+      { key: 'stat3_label', value: 'Success Rate' },
+      { key: 'stat4_value', value: '20+' },
+      { key: 'stat4_label', value: 'Communities' },
+
+      // Programs
+      { key: 'program1_title', value: 'Academic Excellence' },
+      { key: 'program1_desc', value: 'Personalized tutoring and mentorship in core subjects' },
+      { key: 'program2_title', value: 'Skills Development' },
+      { key: 'program2_desc', value: 'Job-ready skills and vocational training' },
+      { key: 'program3_title', value: 'Leadership Academy' },
+      { key: 'program3_desc', value: 'Leadership training and personal development' },
+      { key: 'program4_title', value: 'Scholarships & Financial Aid' },
+      { key: 'program4_desc', value: 'Financial assistance for higher education' },
+      { key: 'program5_title', value: 'Professional Mentorship' },
+      { key: 'program5_desc', value: 'One-on-one relationships with industry professionals' },
+      { key: 'program6_title', value: 'Alumni Network & Career Support' },
+      { key: 'program6_desc', value: 'Lifelong support and career advancement opportunities' },
+
+      // Testimonials
+      { key: 'testimonial1_quote', value: 'Wissen-Haus transformed my life. The mentorship helped me get into my dream university and pursue my passion for engineering.' },
+      { key: 'testimonial1_author', value: 'Sarah Johnson' },
+      { key: 'testimonial1_role', value: 'Software Engineer' },
+      { key: 'testimonial2_quote', value: 'The programs here are world-class. I gained skills I never thought I could develop and mentors who genuinely cared.' },
+      { key: 'testimonial2_author', value: 'Michael Chen' },
+      { key: 'testimonial2_role', value: 'Business Analyst' },
+      { key: 'testimonial3_quote', value: 'This organization builds confident leaders ready to change the world. The support system is incredible!' },
+      { key: 'testimonial3_author', value: 'Amara Okafor' },
+      { key: 'testimonial3_role', value: 'Community Leader' },
+
+      // Call to Action
+      { key: 'cta_title', value: 'Make a Real Impact Today' },
+      { key: 'cta_description', value: 'Your support directly impacts young lives. Join us in creating pathways to success and transforming communities.' },
+      { key: 'cta_button_text', value: '💚 Donate Now' },
+
+      // Contact Information
       { key: 'contact_email', value: 'hello@wissen-haus.org' },
       { key: 'phone_number', value: '+1 (555) 123-4567' },
       { key: 'social_twitter', value: 'https://twitter.com/wissen_haus' },
       { key: 'social_facebook', value: 'https://facebook.com/wissen-haus' },
       { key: 'social_linkedin', value: 'https://linkedin.com/company/wissen-haus' },
       { key: 'social_instagram', value: 'https://instagram.com/wissen_haus' },
+
+      // SEO & Analytics
+      { key: 'meta_description', value: 'Wissen-Haus Empowerment Foundation - Empowering underprivileged youth through education, mentorship, and skills development' },
+      { key: 'meta_keywords', value: 'education, mentorship, charity, nonprofit, youth development, scholarships' },
       { key: 'google_analytics_id', value: '' },
-      { key: 'meta_description', value: 'Empowering underprivileged youth through education, skills development, and mentorship programs' },
-      { key: 'meta_keywords', value: 'education, mentorship, charity, nonprofit, youth development' },
     ];
 
     for (const setting of settings) {
