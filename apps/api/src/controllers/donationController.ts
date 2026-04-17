@@ -683,6 +683,67 @@ export async function getBatchReportHandler(req: Request, res: Response) {
   }
 }
 
+// Create manual donation (admin only)
+export async function createManualDonation(req: Request, res: Response) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+      });
+    }
+
+    const { donorName, donorEmail, amount, donationType = 'one_time' } = req.body;
+
+    // Validate
+    if (!donorName || !donorEmail || !amount || amount <= 0) {
+      return res.status(400).json({
+        error: { code: 'VALIDATION_ERROR', message: 'Invalid donation data' },
+      });
+    }
+
+    // Get or create donor
+    let donorResult = await query('SELECT id FROM donors WHERE email = $1', [donorEmail]);
+
+    let donorId = donorResult.rows[0]?.id;
+    if (!donorId) {
+      const createDonorResult = await query(
+        'INSERT INTO donors (name, email) VALUES ($1, $2) RETURNING id',
+        [donorName, donorEmail]
+      );
+      donorId = createDonorResult.rows[0].id;
+    }
+
+    // Create donation
+    const donationResult = await query(
+      `INSERT INTO donations (donor_id, amount, donation_type, status, currency, created_at)
+       VALUES ($1, $2, $3, $4, $5, NOW())
+       RETURNING id, amount, donation_type, status, created_at`,
+      [donorId, amount, donationType, 'completed', 'USD']
+    );
+
+    const donation = donationResult.rows[0];
+
+    res.status(201).json({
+      success: true,
+      data: {
+        id: donation.id,
+        amount: donation.amount,
+        type: donation.donation_type,
+        status: donation.status,
+        createdAt: donation.created_at,
+      },
+    });
+  } catch (error: any) {
+    logger.error('Create manual donation error:', error);
+    res.status(500).json({
+      error: {
+        code: 'CREATE_FAILED',
+        message: error.message || 'Failed to create donation',
+      },
+    });
+  }
+}
+
 // Get impact statistics (real data from database)
 export async function getImpactStatistics(req: Request, res: Response) {
   try {

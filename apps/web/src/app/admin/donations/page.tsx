@@ -34,6 +34,9 @@ export default function DonationsPage() {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterType, setFilterType] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [formData, setFormData] = useState({ donorName: '', donorEmail: '', amount: '', donationType: 'one_time' });
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -83,6 +86,34 @@ export default function DonationsPage() {
     });
   };
 
+  const handleCreateDonation = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.donorName || !formData.donorEmail || !formData.amount) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    try {
+      setCreating(true);
+      const api = getApiClient();
+      await api.post('/donations/admin/create', {
+        donorName: formData.donorName,
+        donorEmail: formData.donorEmail,
+        amount: parseFloat(formData.amount),
+        donationType: formData.donationType,
+      });
+
+      setShowAddModal(false);
+      setFormData({ donorName: '', donorEmail: '', amount: '', donationType: 'one_time' });
+      fetchData();
+    } catch (err: any) {
+      setError(err.message || 'Failed to create donation');
+    } finally {
+      setCreating(false);
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
@@ -102,9 +133,17 @@ export default function DonationsPage() {
     <div className="p-4 md:p-8">
       <div className="max-w-7xl">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Donations</h1>
-          <p className="text-gray-600 mt-2 text-sm md:text-base">Manage and track all donations received</p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Donations</h1>
+            <p className="text-gray-600 mt-2 text-sm md:text-base">Manage and track all donations received</p>
+          </div>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition text-sm"
+          >
+            + Add Donation
+          </button>
         </div>
 
         {/* Error State */}
@@ -249,6 +288,85 @@ export default function DonationsPage() {
             </>
           )}
         </div>
+
+        {/* Add Donation Modal */}
+        {showAddModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+              <div className="p-6 border-b">
+                <h2 className="text-2xl font-bold text-gray-900">Add Manual Donation</h2>
+              </div>
+
+              <form onSubmit={handleCreateDonation} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Donor Name</label>
+                  <input
+                    type="text"
+                    value={formData.donorName}
+                    onChange={(e) => setFormData({ ...formData, donorName: e.target.value })}
+                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
+                    placeholder="e.g., John Smith"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                  <input
+                    type="email"
+                    value={formData.donorEmail}
+                    onChange={(e) => setFormData({ ...formData, donorEmail: e.target.value })}
+                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
+                    placeholder="john@example.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Amount ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.amount}
+                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
+                    placeholder="100.00"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Type</label>
+                  <select
+                    value={formData.donationType}
+                    onChange={(e) => setFormData({ ...formData, donationType: e.target.value })}
+                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
+                  >
+                    <option value="one_time">One-Time</option>
+                    <option value="recurring">Recurring</option>
+                  </select>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="submit"
+                    disabled={creating}
+                    className="flex-1 px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 transition"
+                  >
+                    {creating ? 'Creating...' : 'Create'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAddModal(false);
+                      setFormData({ donorName: '', donorEmail: '', amount: '', donationType: 'one_time' });
+                    }}
+                    className="flex-1 px-4 py-2 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -19,6 +19,7 @@ import {
   generateBatchReportHandler,
   getBatchReportHandler,
   getImpactStatistics,
+  createManualDonation,
 } from '@/controllers/donationController';
 import { authenticate, adminOnly } from '@/middleware/auth';
 
@@ -38,6 +39,7 @@ donationRouter.post('/webhook/stripe', (req: Request, res: Response) => {
 // Admin routes
 donationRouter.get('/', authenticate, adminOnly, listDonations);
 donationRouter.get('/stats', authenticate, adminOnly, getDonationStatistics);
+donationRouter.post('/admin/create', authenticate, adminOnly, createManualDonation);
 donationRouter.get('/:id', authenticate, adminOnly, getDonation);
 donationRouter.post('/:id/refund', authenticate, adminOnly, processRefund);
 
