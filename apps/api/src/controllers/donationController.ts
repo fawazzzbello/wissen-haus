@@ -11,6 +11,7 @@ import {
 } from '@/services/paymentService';
 import { getDonationManagementService } from '@/services/donation/donationManagementService';
 import { logger } from '@/utils/logger';
+import { query } from '@/config/database';
 
 // Create checkout session for donation
 export async function createDonationCheckout(req: Request, res: Response) {
@@ -677,6 +678,62 @@ export async function getBatchReportHandler(req: Request, res: Response) {
       error: {
         code: 'FETCH_FAILED',
         message: error.message || 'Failed to fetch batch report',
+      },
+    });
+  }
+}
+
+// Get impact statistics (real data from database)
+export async function getImpactStatistics(req: Request, res: Response) {
+  try {
+    const donationsResult = await query(`
+      SELECT
+        SUM(amount) as total_raised,
+        COUNT(DISTINCT donor_id) as unique_donors
+      FROM donations
+      WHERE status = 'completed'
+    `);
+
+    const settingsResult = await query(`
+      SELECT setting_key, setting_value
+      FROM site_settings
+      WHERE setting_key IN ('stat1_value', 'stat2_value', 'stat3_value', 'stat4_value')
+      ORDER BY setting_key
+    `);
+
+    const statMap: { [key: string]: string } = {};
+    settingsResult.rows.forEach((row: any) => {
+      statMap[row.setting_key] = row.setting_value;
+    });
+
+    const stats = {
+      totalRaised: parseFloat(donationsResult.rows[0]?.total_raised || 0),
+      uniqueDonors: parseInt(donationsResult.rows[0]?.unique_donors || 0),
+      stat1: {
+        value: statMap['stat1_value'] || '5,000+',
+        label: 'Students Reached'
+      },
+      stat2: {
+        value: statMap['stat2_value'] || '500+',
+        label: 'Active Mentors'
+      },
+      stat3: {
+        value: statMap['stat3_value'] || '95%',
+        label: 'Success Rate'
+      },
+      stat4: {
+        value: statMap['stat4_value'] || '20+',
+        label: 'Communities'
+      },
+    };
+
+    res.json(stats);
+  } catch (error: any) {
+    logger.error('Get impact stats error:', error);
+    res.status(500).json({
+      error: {
+        code: 'FETCH_FAILED',
+        message: 'Failed to fetch impact statistics',
       },
     });
   }

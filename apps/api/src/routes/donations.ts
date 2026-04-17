@@ -18,6 +18,7 @@ import {
   getDonorNotesHandler,
   generateBatchReportHandler,
   getBatchReportHandler,
+  getImpactStatistics,
 } from '@/controllers/donationController';
 import { authenticate, adminOnly } from '@/middleware/auth';
 
@@ -25,6 +26,7 @@ export const donationRouter = Router();
 
 // Public donation routes
 donationRouter.post('/create-checkout-session', createDonationCheckout);
+donationRouter.get('/impact-stats', getImpactStatistics);
 
 // Stripe webhook (raw body required, no auth)
 donationRouter.post('/webhook/stripe', (req: Request, res: Response) => {
