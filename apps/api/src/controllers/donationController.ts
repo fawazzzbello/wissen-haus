@@ -701,14 +701,18 @@ export async function createManualDonation(req: Request, res: Response) {
       });
     }
 
+    // Split name into first and last
+    const [firstName, ...lastNameParts] = donorName.trim().split(' ');
+    const lastName = lastNameParts.join(' ') || '';
+
     // Get or create donor
     let donorResult = await query('SELECT id FROM donors WHERE email = $1', [donorEmail]);
 
     let donorId = donorResult.rows[0]?.id;
     if (!donorId) {
       const createDonorResult = await query(
-        'INSERT INTO donors (name, email) VALUES ($1, $2) RETURNING id',
-        [donorName, donorEmail]
+        'INSERT INTO donors (email, first_name, last_name) VALUES ($1, $2, $3) RETURNING id',
+        [donorEmail, firstName, lastName]
       );
       donorId = createDonorResult.rows[0].id;
     }
