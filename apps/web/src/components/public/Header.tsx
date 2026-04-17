@@ -1,16 +1,55 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getApiClient } from '@/lib/api-client';
+
+interface BrandingSettings {
+  site_name?: string;
+  logo_url?: string;
+}
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [settings, setSettings] = useState<BrandingSettings>({
+    site_name: 'Wissen-Haus',
+    logo_url: '',
+  });
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const api = getApiClient();
+        const response = await api.get('/settings');
+        const allSettings = response.data.settings || {};
+        setSettings({
+          site_name: allSettings.site_name || 'Wissen-Haus',
+          logo_url: allSettings.logo_url || '',
+        });
+      } catch (error) {
+        console.error('Error fetching settings:', error);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-slate-900 via-primary-900 to-slate-900 backdrop-blur-md border-b border-primary-500/20 shadow-2xl">
       <nav className="container py-4 flex justify-between items-center">
-        <Link href="/" className="text-3xl font-bold bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent hover:from-primary-300 hover:to-primary-500 transition-all duration-300">
-          ✨ Wissen-Haus
+        <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity duration-300">
+          {settings.logo_url && (
+            <img
+              src={settings.logo_url}
+              alt={settings.site_name}
+              className="h-10 w-auto"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          )}
+          <span className="text-2xl font-bold bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">
+            {settings.site_name}
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
