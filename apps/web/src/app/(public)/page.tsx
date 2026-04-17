@@ -279,44 +279,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-16 px-4">
-        <div className="container mx-auto">
-          <div className="grid md:grid-cols-4 gap-8 mb-12">
-            <div>
-              <h3 className="text-white font-bold text-lg mb-4">About Us</h3>
-              <p className="text-sm">
-                Wissen-Haus Empowerment Foundation is dedicated to transforming lives through education.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-white font-bold text-lg mb-4">Programs</h3>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="#" className="hover:text-green-400">Academic Excellence</Link></li>
-                <li><Link href="#" className="hover:text-green-400">Skills Development</Link></li>
-                <li><Link href="#" className="hover:text-green-400">Leadership</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-white font-bold text-lg mb-4">Quick Links</h3>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/about" className="hover:text-green-400">About</Link></li>
-                <li><Link href="/contact" className="hover:text-green-400">Contact</Link></li>
-                <li><Link href="/donate" className="hover:text-green-400">Donate</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-white font-bold text-lg mb-4">Contact</h3>
-              <p className="text-sm mb-2">📧 {content.contact_email || 'hello@wissen-haus.org'}</p>
-              <p className="text-sm">📱 {content.phone_number || '+1 (555) 123-4567'}</p>
-            </div>
-          </div>
-          <div className="border-t border-gray-700 pt-8 text-center text-sm">
-            <p>&copy; 2026 Wissen-Haus Empowerment Foundation. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
