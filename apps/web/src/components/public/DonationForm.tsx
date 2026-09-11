@@ -6,6 +6,34 @@ import { useRouter } from 'next/navigation';
 
 const presetAmounts = [25, 50, 100, 250, 500, 1000];
 
+// Stop a hung checkout request from leaving the button disabled forever.
+const CHECKOUT_TIMEOUT_MS = 20000;
+
+// Send a failure event so abandoned checkout starts show up in analytics.
+// PostHog is loaded at runtime on the site; this is a no-op when it is absent.
+function trackDonationEvent(event: string, properties: Record<string, unknown>) {
+  if (typeof window === 'undefined') return;
+  const posthog = (window as unknown as {
+    posthog?: { capture?: (event: string, properties?: Record<string, unknown>) => void };
+  }).posthog;
+  posthog?.capture?.(event, properties);
+}
+
+// Keep raw provider and network text out of the donor-facing message.
+function donorFacingMessage(err: any): string {
+  if (err?.code === 'ECONNABORTED') {
+    return 'The payment service took too long to respond. Please try again.';
+  }
+  return 'We were unable to start your payment. Please try again in a moment.';
+}
+
+function failureReason(err: any): string {
+  if (err?.message === 'MISSING_PAYMENT_DETAILS') return 'missing_payment_details';
+  if (err?.code === 'ECONNABORTED') return 'timeout';
+  if (err?.response?.status) return `http_${err.response.status}`;
+  return 'network_error';
+}
+
 export default function DonationForm() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -44,42 +72,61 @@ export default function DonationForm() {
     e.preventDefault();
     setError('');
     setSuccess('');
+
+    const amount = formData.customAmount ? parseFloat(formData.customAmount) : formData.amount;
+
+    // Validate before showing the loading state, so these stay friendly.
+    if (!formData.email || !formData.firstName || !formData.lastName) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    if (!amount || amount < 1) {
+      setError('Donation amount must be at least $1.00');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      // Validate form
-      if (!formData.email || !formData.firstName || !formData.lastName) {
-        throw new Error('Please fill in all required fields');
-      }
-
-      const amount = formData.customAmount ? parseFloat(formData.customAmount) : formData.amount;
-
-      if (amount < 1) {
-        throw new Error('Donation amount must be at least $1.00');
-      }
-
       // Create checkout session
       const apiClient = getApiClient();
-      const response = await apiClient.post('/donations/create-checkout-session', {
-        email: formData.email,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone || undefined,
-        country: formData.country || undefined,
-        amount,
-        currency: formData.currency,
-        description: formData.message || 'Donation to Wissen-Haus',
-        type: 'one_time',
-      });
+      const response = await apiClient.post(
+        '/donations/create-checkout-session',
+        {
+          email: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone || undefined,
+          country: formData.country || undefined,
+          amount,
+          currency: formData.currency,
+          description: formData.message || 'Donation to Wissen-Haus',
+          type: 'one_time',
+        },
+        { timeout: CHECKOUT_TIMEOUT_MS }
+      );
+
+      const sessionId = response.data?.sessionId;
+      const clientSecret = response.data?.clientSecret;
+
+      // A 200 without usable payment details is still a failure.
+      if (!sessionId || !clientSecret) {
+        throw new Error('MISSING_PAYMENT_DETAILS');
+      }
 
       // Store donation info and redirect to payment
-      sessionStorage.setItem('donation_intent', response.data.sessionId);
-      sessionStorage.setItem('client_secret', response.data.clientSecret);
+      sessionStorage.setItem('donation_intent', sessionId);
+      sessionStorage.setItem('client_secret', clientSecret);
 
       router.push('/donate/checkout');
     } catch (err: any) {
-      setError(err.message || 'Failed to process donation');
-    } finally {
+      trackDonationEvent('donation_failed', {
+        amount,
+        currency: formData.currency,
+        reason: failureReason(err),
+      });
+      setError(donorFacingMessage(err));
       setIsLoading(false);
     }
   };

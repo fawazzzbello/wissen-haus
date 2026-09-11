@@ -55,7 +55,7 @@ export async function createDonationCheckout(req: Request, res: Response) {
     res.status(500).json({
       error: {
         code: 'CHECKOUT_FAILED',
-        message: error.message || 'Failed to create checkout session',
+        message: 'Unable to create checkout session. Please try again.',
       },
     });
   }
